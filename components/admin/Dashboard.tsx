@@ -14,7 +14,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { supabaseAdminService } from '@/services/supabaseAdminService';
-import { wpService } from '@/services/wpService';
+import { cmsService } from '@/services/cmsService';
 
 interface DashboardStats {
   totalUsers: number;
@@ -56,10 +56,10 @@ const Dashboard: React.FC = () => {
       const settings = await supabaseAdminService.getSettings();
       
       // Test WordPress connection
-      const wpTest = await wpService.testConnection();
+      const wpTest = await cmsService.testConnection();
       
       // Test filters API
-      const filtersTest = await wpService.testFiltersConnection();
+      const filtersTest = await cmsService.testFiltersConnection();
       
       // Get basic stats (mock data for now - you can implement real queries)
       const mockStats = {

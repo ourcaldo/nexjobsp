@@ -112,11 +112,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
               return;
             }
 
-            // Apply settings to wpService
-            const { wpService } = await import('@/services/wpService');
-            wpService.setBaseUrl(settings.api_url);
-            wpService.setFiltersApiUrl(settings.filters_api_url);
-            wpService.setAuthToken(settings.auth_token || '');
+            // Apply settings to cmsService
+            const { cmsService } = await import('@/services/cmsService');
+            cmsService.setBaseUrl(settings.api_url);
+            cmsService.setFiltersApiUrl(settings.filters_api_url);
+            cmsService.setAuthToken(settings.auth_token || '');
           } catch (error) {
             console.error('Error initializing settings:', error);
             // Continue with default settings if initialization fails

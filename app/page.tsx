@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { WordPressService, FilterData } from '@/services/wpService';
+import { CMSService, FilterData } from '@/services/cmsService';
 import { SupabaseAdminService } from '@/services/supabaseAdminService';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
@@ -13,16 +13,16 @@ async function getHomeData() {
   try {
     const settings = await SupabaseAdminService.getSettingsServerSide();
 
-    // Create isolated wpService instance for this request
-    const currentWpService = new WordPressService();
-    currentWpService.setBaseUrl(settings.api_url);
-    currentWpService.setFiltersApiUrl(settings.filters_api_url);
-    currentWpService.setAuthToken(settings.auth_token || '');
+    // Create isolated cmsService instance for this request
+    const currentCmsService = new CMSService();
+    currentCmsService.setBaseUrl(settings.api_url);
+    currentCmsService.setFiltersApiUrl(settings.filters_api_url);
+    currentCmsService.setAuthToken(settings.auth_token || '');
 
     // Fetch data
     const [articles, filterData] = await Promise.all([
-      currentWpService.getArticles(3),
-      currentWpService.getFiltersData()
+      currentCmsService.getArticles(3),
+      currentCmsService.getFiltersData()
     ]);
 
     return {

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Search, TrendingUp, ArrowRight, Users, Building, Code, Heart, Calculator, Truck, Briefcase } from 'lucide-react';
-import { wpService, FilterData } from '@/services/wpService';
+import { cmsService, FilterData } from '@/services/cmsService';
 import { userBookmarkService } from '@/services/userBookmarkService';
 import { supabase } from '@/lib/supabase';
 import { adminService } from '@/services/adminService';
@@ -39,18 +39,18 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
       loadFilterData();
     } else {
       // Extract job categories from filter data
-      if (filterData.nexjob_kategori_pekerjaan) {
-        setJobCategories(filterData.nexjob_kategori_pekerjaan.slice(0, 9));
+      if (filterData.job_categories) {
+        setJobCategories(filterData.job_categories.map(c => c.name).slice(0, 9));
       }
     }
   }, [filterData]);
 
   const loadFilterData = async () => {
     try {
-      const data = await wpService.getFiltersData();
+      const data = await cmsService.getFiltersData();
       setFilterData(data);
-      if (data.nexjob_kategori_pekerjaan) {
-        setJobCategories(data.nexjob_kategori_pekerjaan.slice(0, 9));
+      if (data.job_categories) {
+        setJobCategories(data.job_categories.map(c => c.name).slice(0, 9));
       }
     } catch (error) {
       console.error('Error loading filter data:', error);
@@ -75,7 +75,7 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
 
   const getProvinceOptions = () => {
     if (!filterData) return [];
-    return Object.keys(filterData.nexjob_lokasi_provinsi).map(province => ({
+    return Object.keys(filterData.locations).map(province => ({
       value: province,
       label: province
     }));

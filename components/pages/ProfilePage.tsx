@@ -13,7 +13,7 @@ import { useToast } from '@/components/ui/ToastProvider';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobCard from '@/components/JobCard';
-import { wpService } from '@/services/wpService';
+import { cmsService } from '@/services/cmsService';
 import { Job } from '@/types/job';
 
 interface ProfilePageProps {
@@ -127,7 +127,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ settings }) => {
       const jobIds = bookmarks.map(bookmark => bookmark.job_id);
       
       if (jobIds.length > 0) {
-        const jobs = await wpService.getJobsByIds(jobIds);
+        const jobs = await cmsService.getJobsByIds(jobIds);
         setBookmarkedJobs(jobs);
       } else {
         setBookmarkedJobs([]);

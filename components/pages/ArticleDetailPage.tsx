@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, User, ArrowRight, Loader2, AlertCircle, Tag, Folder } from 'lucide-react';
-import { wpService } from '@/services/wpService';
+import { cmsService } from '@/services/cmsService';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import SchemaMarkup from '@/components/SEO/SchemaMarkup';
@@ -83,7 +83,7 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
     setError(null);
 
     try {
-      const articleData = await wpService.getArticleBySlug(slug);
+      const articleData = await cmsService.getArticleBySlug(slug);
 
       if (!articleData) {
         setError('Artikel tidak ditemukan');
@@ -94,7 +94,7 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
       currentSlugRef.current = slug;
 
       // Load related articles
-      const relatedData = await wpService.getRelatedArticles(articleData.id.toString(), 3);
+      const relatedData = await cmsService.getRelatedArticles(articleData.id.toString(), 3);
       setRelatedArticles(relatedData);
 
       // Track page view and article read

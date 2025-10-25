@@ -19,7 +19,7 @@ import {
   Badge
 } from 'lucide-react';
 import { Job } from '@/types/job';
-import { wpService } from '@/services/wpService';
+import { cmsService } from '@/services/cmsService';
 import { bookmarkService } from '@/services/bookmarkService';
 import { userBookmarkService } from '@/services/userBookmarkService';
 import { supabase } from '@/lib/supabase';
@@ -48,7 +48,7 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, slug, settings }) =>
   useEffect(() => {
     const fetchRelatedJobs = async () => {
       try {
-        const relatedData = await wpService.getRelatedJobs(job.id, job.kategori_pekerjaan, 4);
+        const relatedData = await cmsService.getRelatedJobs(job.id, job.kategori_pekerjaan, 4);
         setRelatedJobs(relatedData);
       } catch (err) {
         console.error('Error loading related jobs:', err);
@@ -170,7 +170,7 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, slug, settings }) =>
   const getJobTags = (tagString: string) => {
     if (!tagString) return [];
 
-    // Tags are already decoded in wpService, so just split them
+    // Tags are already decoded in cmsService, so just split them
     return tagString.split(', ').map(tag => tag.trim()).filter(tag => tag.length > 0);
   };
 

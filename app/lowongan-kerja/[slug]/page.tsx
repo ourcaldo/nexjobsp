@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { wpService } from '@/services/wpService';
+import { cmsService } from '@/services/cmsService';
 import { SupabaseAdminService } from '@/services/supabaseAdminService';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
@@ -19,7 +19,7 @@ interface JobPageProps {
 async function getJobData(slug: string) {
   try {
     const [job, settings] = await Promise.all([
-      wpService.getJobBySlug(slug),
+      cmsService.getJobBySlug(slug),
       SupabaseAdminService.getSettingsServerSide()
     ]);
 
@@ -89,7 +89,7 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
 export async function generateStaticParams() {
   try {
     // Get some popular jobs for initial static generation
-    const response = await wpService.getJobs({}, 1, 50); // Get first 50 jobs
+    const response = await cmsService.getJobs({}, 1, 50); // Get first 50 jobs
     return response.jobs.map(job => ({
       slug: job.slug
     }));

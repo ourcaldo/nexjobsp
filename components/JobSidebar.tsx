@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Briefcase, Clock, GraduationCap, Building, Users, Filter, MapPin, ChevronDown, ChevronUp, Star, Zap, DollarSign } from 'lucide-react';
-import { wpService, FilterData } from '@/services/wpService';
+import { cmsService, FilterData } from '@/services/cmsService';
 
 interface JobSidebarProps {
   filters: {
@@ -50,7 +50,7 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
 
   const loadFilterData = async () => {
     try {
-      const data = await wpService.getFiltersData();
+      const data = await cmsService.getFiltersData();
       setFilterData(data);
     } catch (error) {
       console.error('Failed to load filter data:', error);
@@ -88,13 +88,13 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
     if (!filterData) return [];
     
     // If province is selected, return cities for that province
-    if (selectedProvince && filterData.nexjob_lokasi_provinsi[selectedProvince]) {
-      return filterData.nexjob_lokasi_provinsi[selectedProvince];
+    if (selectedProvince && filterData.locations[selectedProvince]) {
+      return filterData.locations[selectedProvince];
     }
     
     // Otherwise, return all cities from all provinces
     const allCities: string[] = [];
-    Object.values(filterData.nexjob_lokasi_provinsi).forEach(cities => {
+    Object.values(filterData.locations).forEach(cities => {
       allCities.push(...cities);
     });
     
@@ -259,72 +259,52 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
         )}
 
         {/* Job Categories */}
-        {filterData?.nexjob_kategori_pekerjaan && (
+        {filterData?.job_categories && (
           renderCheckboxGroup(
             'Kategori Pekerjaan',
             <Briefcase className="h-4 w-4 text-gray-400" />,
             'categories',
-            filterData.nexjob_kategori_pekerjaan
+            filterData.job_categories.map(c => c.name)
           )
         )}
 
         {/* Job Types */}
-        {filterData?.nexjob_tipe_pekerjaan && (
+        {filterData?.employment_types && (
           renderCheckboxGroup(
             'Tipe Pekerjaan',
             <Briefcase className="h-4 w-4 text-gray-400" />,
             'jobTypes',
-            filterData.nexjob_tipe_pekerjaan
+            filterData.employment_types
           )
         )}
 
         {/* Salary Filter */}
-        {filterData?.nexjob_gaji && (
+        {filterData?.salary_ranges && (
           renderCheckboxGroup(
             'Gaji',
             <DollarSign className="h-4 w-4 text-gray-400" />,
             'salaries',
-            filterData.nexjob_gaji
+            filterData.salary_ranges
           )
         )}
 
         {/* Experience */}
-        {filterData?.nexjob_pengalaman_kerja && (
+        {filterData?.experience_levels && (
           renderCheckboxGroup(
             'Pengalaman',
             <Clock className="h-4 w-4 text-gray-400" />,
             'experiences',
-            filterData.nexjob_pengalaman_kerja
-          )
-        )}
-
-        {/* Education */}
-        {filterData?.nexjob_pendidikan && (
-          renderCheckboxGroup(
-            'Pendidikan',
-            <GraduationCap className="h-4 w-4 text-gray-400" />,
-            'educations',
-            filterData.nexjob_pendidikan
+            filterData.experience_levels
           )
         )}
 
         {/* Industries */}
-        {filterData?.nexjob_industri && (
+        {filterData?.industries && (
           renderCheckboxGroup(
             'Industri',
             <Building className="h-4 w-4 text-gray-400" />,
             'industries',
-            filterData.nexjob_industri
-          )
-        )}
-
-        {/* Work Policies */}
-        {filterData?.nexjob_kebijakan_kerja && (
-          renderCheckboxGroup(
-            'Kebijakan Kerja',
-            <Users className="h-4 w-4 text-gray-400" />,
-            'workPolicies',
-            filterData.nexjob_kebijakan_kerja
+            filterData.industries
           )
         )}
       </div>

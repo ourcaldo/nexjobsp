@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Bookmark, AlertCircle, Loader2 } from 'lucide-react';
 import { Job } from '@/types/job';
-import { wpService } from '@/services/wpService';
+import { cmsService } from '@/services/cmsService';
 import { bookmarkService } from '@/services/bookmarkService';
 import JobCard from '@/components/JobCard';
 import Breadcrumbs from '@/components/Breadcrumbs';
@@ -32,7 +32,7 @@ const BookmarkPage: React.FC = () => {
       }
 
       // Fetch all jobs and filter by bookmarked IDs
-      const allJobsResponse = await wpService.getJobs({}, 1, 100);
+      const allJobsResponse = await cmsService.getJobs({}, 1, 100);
       const bookmarked = allJobsResponse.jobs.filter(job => bookmarkIds.includes(job.id));
       setBookmarkedJobs(bookmarked);
     } catch (err) {

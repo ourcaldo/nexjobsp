@@ -2,7 +2,7 @@ import { Job } from '@/types/job';
 import { supabaseAdminService } from './supabaseAdminService';
 import { env } from '@/lib/env';
 
-interface FilterData {
+export interface FilterData {
   employment_types: string[];
   experience_levels: string[];
   job_categories: Array<{ id: string; name: string; slug: string }>;
@@ -71,7 +71,7 @@ interface PaginationMeta {
   hasPrevPage: boolean;
 }
 
-class CMSService {
+export class CMSService {
   private baseUrl: string;
   private timeout: number;
   private authToken: string;
@@ -585,6 +585,59 @@ class CMSService {
     } catch (error) {
       console.error('Error fetching tags:', error);
       return { success: false, data: { tags: [], pagination: {} } };
+    }
+  }
+
+  // Legacy compatibility methods
+  setFiltersApiUrl(url: string) {
+    console.warn('setFiltersApiUrl is deprecated with CMS API');
+  }
+
+  async testFiltersConnection(): Promise<{ success: boolean; data?: any; error?: string }> {
+    try {
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/categories?limit=1`);
+      const data = await response.json();
+      return { success: true, data: data };
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      };
+    }
+  }
+
+  async getRelatedJobs(jobId: string, limit: number = 5): Promise<Job[]> {
+    try {
+      // Get current job to find its category
+      const currentJob = await this.getJobById(jobId);
+      if (!currentJob) return [];
+
+      // Fetch jobs from the same category
+      const response = await this.getJobs({ category: currentJob.kategori_pekerjaan }, 1, limit + 1);
+      
+      // Filter out current job and limit results
+      return response.jobs
+        .filter(job => job.id !== jobId)
+        .slice(0, limit);
+    } catch (error) {
+      console.error('Error fetching related jobs:', error);
+      return [];
+    }
+  }
+
+  async getRelatedArticles(articleSlug: string, limit: number = 5) {
+    try {
+      // Fetch latest articles excluding current one
+      const response = await this.getArticles(1, limit + 5);
+      
+      if (!response.success) return [];
+
+      return response.data.posts
+        .filter((post: any) => post.slug !== articleSlug)
+        .slice(0, limit);
+    } catch (error) {
+      console.error('Error fetching related articles:', error);
+      return [];
     }
   }
 }

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, Filter, X, Loader2, AlertCircle } from 'lucide-react';
 import { Job } from '@/types/job';
-import { wpService, FilterData } from '@/services/wpService';
+import { cmsService, FilterData } from '@/services/cmsService';
 import { userBookmarkService } from '@/services/userBookmarkService';
 import { supabase } from '@/lib/supabase';
 import { useAnalytics } from '@/hooks/useAnalytics';
@@ -94,7 +94,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
 
     try {
       // Load filter data
-      const filterDataResult = await wpService.getFiltersData();
+      const filterDataResult = await cmsService.getFiltersData();
       setFilterData(filterDataResult);
 
       // Initialize filters from URL params
@@ -134,7 +134,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
       currentFiltersRef.current = filters;
 
       // Load jobs
-      const jobsResult = await wpService.getJobs(filters, 1, 24);
+      const jobsResult = await cmsService.getJobs(filters, 1, 24);
 
       setJobs(jobsResult.jobs);
       setCurrentPage(jobsResult.currentPage);
@@ -180,7 +180,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
         router.replace(newUrl, undefined, { shallow: true });
       }
 
-      const response = await wpService.getJobs(filters, 1, 24);
+      const response = await cmsService.getJobs(filters, 1, 24);
       setJobs(response.jobs);
       setCurrentPage(response.currentPage);
       setHasMore(response.hasMore);
@@ -233,7 +233,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     setLoadingMore(true);
     try {
       const filters = getCurrentFilters();
-      const response = await wpService.getJobs(filters, currentPage + 1, 24);
+      const response = await cmsService.getJobs(filters, currentPage + 1, 24);
 
       if (response.jobs.length > 0) {
         setJobs(prevJobs => [...prevJobs, ...response.jobs]);
@@ -409,7 +409,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
 
   const getProvinceOptions = useMemo(() => {
     if (!filterData) return [];
-    return Object.keys(filterData.nexjob_lokasi_provinsi).map(province => ({
+    return Object.keys(filterData.locations).map(province => ({
       value: province,
       label: province
     }));

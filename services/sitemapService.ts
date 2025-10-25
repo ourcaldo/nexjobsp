@@ -1,5 +1,5 @@
 import { supabaseAdminService } from './supabaseAdminService';
-import { wpService } from './wpService';
+import { cmsService } from './cmsService';
 import { cmsArticleService } from './cmsArticleService';
 import { Job } from '@/types/job';
 import { getCurrentDomain } from '@/lib/env';
@@ -455,7 +455,7 @@ class SitemapService {
       // If no cache or cache expired, fetch fresh data
       console.log('Fetching fresh sitemap data (cache expired or not found)...');
 
-      // Initialize wpService with current admin settings
+      // Initialize cmsService with current admin settings
       const settings = await supabaseAdminService.getSettings();
 
       // Check if settings is defined before accessing its properties
@@ -470,9 +470,9 @@ class SitemapService {
         };
       }
 
-      wpService.setBaseUrl(settings.api_url);
-      wpService.setFiltersApiUrl(settings.filters_api_url);
-      wpService.setAuthToken(settings.auth_token || '');
+      cmsService.setBaseUrl(settings.api_url);
+      cmsService.setFiltersApiUrl(settings.filters_api_url);
+      cmsService.setAuthToken(settings.auth_token || '');
 
       // Fetch data with better error handling and retries
       const [jobsResult, articlesResult] = await Promise.allSettled([
@@ -536,7 +536,7 @@ class SitemapService {
   private async fetchJobsWithRetry(maxRetries: number = 3): Promise<Job[]> {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const jobs = await wpService.getAllJobsForSitemap();
+        const jobs = await cmsService.getAllJobsForSitemap();
         return jobs;
       } catch (error) {
         console.error(`Attempt ${attempt} to fetch jobs failed:`, error);

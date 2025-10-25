@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Save, TestTube, Loader2, CheckCircle, XCircle, Globe, Key } from 'lucide-react';
 import { supabaseAdminService } from '@/services/supabaseAdminService';
-import { wpService } from '@/services/wpService';
+import { cmsService } from '@/services/cmsService';
 import { useToast } from '@/components/ui/ToastProvider';
 
 const WordPressSettings: React.FC = () => {
@@ -98,10 +98,10 @@ const WordPressSettings: React.FC = () => {
       if (result.success) {
         showToast('success', 'WordPress settings saved successfully!');
 
-        // Update wpService with new settings
-        wpService.setBaseUrl(settings.api_url);
-        wpService.setFiltersApiUrl(settings.filters_api_url);
-        wpService.setAuthToken(settings.auth_token);
+        // Update cmsService with new settings
+        cmsService.setBaseUrl(settings.api_url);
+        cmsService.setFiltersApiUrl(settings.filters_api_url);
+        cmsService.setAuthToken(settings.auth_token);
       } else {
         showToast('error', result.error || 'Failed to save settings');
       }
