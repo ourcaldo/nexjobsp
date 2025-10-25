@@ -187,38 +187,17 @@ const Header: React.FC = () => {
     };
   }, [initializeAuth, loadBookmarkCount]);
 
-  // Re-check auth state on route changes (but only when necessary)
+  // Re-check auth state on route changes (App Router - using pathname)
   useEffect(() => {
-    const handleRouteChangeStart = () => {
-      console.log('Route change started');
-      // Don't set loading or clear user state on route changes
-    };
-
-    const handleRouteChangeComplete = () => {
-      console.log('Route change completed');
-      // Only re-check auth if we don't have a user or if going to profile page
-      if (!user || router.pathname.includes('/profile')) {
-        setTimeout(() => {
-          initializeAuth(false); // Don't force refresh unless necessary
-        }, 100);
-      }
-    };
-
-    const handleRouteChangeError = () => {
-      console.log('Route change error');
-      // Don't change loading state on route errors
-    };
-
-    router.events.on('routeChangeStart', handleRouteChangeStart);
-    router.events.on('routeChangeComplete', handleRouteChangeComplete);
-    router.events.on('routeChangeError', handleRouteChangeError);
-    
-    return () => {
-      router.events.off('routeChangeStart', handleRouteChangeStart);
-      router.events.off('routeChangeComplete', handleRouteChangeComplete);
-      router.events.off('routeChangeError', handleRouteChangeError);
-    };
-  }, [router.events, initializeAuth, user, router.pathname]);
+    // Only re-check auth if we don't have a user or if going to profile page
+    if (!user || pathname?.includes('/profile')) {
+      const timer = setTimeout(() => {
+        initializeAuth(false); // Don't force refresh unless necessary
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [pathname, initializeAuth, user]);
 
   const handleLogout = async () => {
     try {
