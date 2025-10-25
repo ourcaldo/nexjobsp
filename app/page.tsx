@@ -15,15 +15,18 @@ async function getHomeData() {
 
     // Create isolated cmsService instance for this request
     const currentCmsService = new CMSService();
-    currentCmsService.setBaseUrl(settings.api_url);
-    currentCmsService.setFiltersApiUrl(settings.filters_api_url);
-    currentCmsService.setAuthToken(settings.auth_token || '');
+    if (settings.cms_endpoint) currentCmsService.setBaseUrl(settings.cms_endpoint);
+    if (settings.cms_token) currentCmsService.setAuthToken(settings.cms_token);
+    if (settings.cms_timeout) currentCmsService.setTimeout(parseInt(settings.cms_timeout));
 
     // Fetch data
-    const [articles, filterData] = await Promise.all([
-      currentCmsService.getArticles(3),
+    const [articlesResponse, filterData] = await Promise.all([
+      currentCmsService.getArticles(1, 3),
       currentCmsService.getFiltersData()
     ]);
+
+    // Extract articles from CMS response
+    const articles = articlesResponse.success ? articlesResponse.data.posts : [];
 
     return {
       articles,
