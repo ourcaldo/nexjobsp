@@ -42,22 +42,21 @@ nexjob-portal/
 │   ├── profile/                    # User profile page
 │   ├── sitemap-*/                  # Dynamic sitemap generation
 │   └── [slug].tsx                  # Dynamic CMS pages
-├── src/
-│   ├── components/                 # React components
-│   │   ├── admin/                  # Admin panel components
-│   │   ├── pages/                  # Page-level components
-│   │   ├── ui/                     # Reusable UI components
-│   │   ├── Advertisement/          # Ad display components
-│   │   ├── Analytics/              # GA & GTM components
-│   │   ├── Layout/                 # Header & Footer
-│   │   └── SEO/                    # Schema markup
-│   ├── services/                   # Business logic & API calls
-│   ├── types/                      # TypeScript definitions
-│   ├── utils/                      # Helper functions
-│   ├── hooks/                      # Custom React hooks
-│   └── lib/                        # Core utilities (env, supabase)
-├── supabase/migrations/            # Database migrations
-├── styles/globals.css              # Global Tailwind styles
+├── components/                      # React components
+│   ├── admin/                       # Admin panel components
+│   ├── pages/                       # Page-level components
+│   ├── ui/                          # Reusable UI components
+│   ├── Advertisement/               # Ad display components
+│   ├── Analytics/                   # GA & GTM components
+│   ├── Layout/                      # Header & Footer
+│   └── SEO/                         # Schema markup
+├── services/                        # Business logic & API calls
+├── types/                           # TypeScript definitions
+├── utils/                           # Helper functions
+├── hooks/                           # Custom React hooks
+├── lib/                             # Core utilities (env, supabase)
+├── supabase/migrations/             # Database migrations
+├── styles/globals.css               # Global Tailwind styles
 └── Configuration files
 ```
 
@@ -182,7 +181,7 @@ SITEMAP_CACHE_TTL=300
 - Dark mode support preparation
 
 ### Component Library
-- **UI Components**: Reusable components in `/src/components/ui/`
+- **UI Components**: Reusable components in `/components/ui/`
 - **Skeletons**: Loading states for better UX
 - **Toast Notifications**: User feedback system
 - **Modals**: Login prompts and confirmations

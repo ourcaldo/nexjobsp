@@ -103,14 +103,15 @@ nexjob-portal/
 │   ├── lowongan-kerja/      # Job listing pages
 │   ├── artikel/             # Article pages
 │   └── ...
-├── src/
-│   ├── components/          # React components
-│   │   ├── admin/          # Admin-specific components
-│   │   ├── pages/          # Page-level components
-│   │   └── ui/             # Reusable UI components
-│   ├── services/           # API and business logic
-│   ├── types/              # TypeScript definitions
-│   └── utils/              # Helper functions
+├── components/              # React components
+│   ├── admin/              # Admin-specific components
+│   ├── pages/              # Page-level components
+│   └── ui/                 # Reusable UI components
+├── services/               # API and business logic
+├── types/                  # TypeScript definitions
+├── utils/                  # Helper functions
+├── hooks/                  # Custom React hooks
+├── lib/                    # Core utilities
 ├── supabase/
 │   └── migrations/         # Database migrations
 └── styles/                 # Global styles
