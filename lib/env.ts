@@ -3,10 +3,10 @@ export const env = {
   // Site Configuration
   SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://nexjob.tech',
   
-  // WordPress API
-  WP_API_URL: process.env.NEXT_PUBLIC_WP_API_URL || 'https://cms.nexjob.tech/wp-json/wp/v2',
-  WP_FILTERS_API_URL: process.env.NEXT_PUBLIC_WP_FILTERS_API_URL || 'https://cms.nexjob.tech/wp-json/nex/v1/filters-data',
-  WP_AUTH_TOKEN: process.env.NEXT_PUBLIC_WP_AUTH_TOKEN || '',
+  // CMS API
+  CMS_ENDPOINT: process.env.NEXT_PUBLIC_CMS_ENDPOINT || 'https://cms.tugasin.me',
+  CMS_TOKEN: process.env.CMS_TOKEN || '',
+  CMS_TIMEOUT: process.env.CMS_TIMEOUT || '10000',
   
   // Supabase
   SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || '',

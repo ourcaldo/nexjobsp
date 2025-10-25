@@ -75,10 +75,10 @@ export interface AdminSettings {
   supabase_storage_region?: string;
   supabase_storage_access_key?: string;
   supabase_storage_secret_key?: string;
-  // WordPress API Configuration (editable from admin)
-  wp_posts_api_url?: string;
-  wp_jobs_api_url?: string;
-  wp_auth_token?: string;
+  // CMS API Configuration (editable from admin)
+  cms_endpoint?: string;
+  cms_token?: string;
+  cms_timeout?: string;
   // Dynamic SEO Templates
   location_page_title_template?: string;
   location_page_description_template?: string;
