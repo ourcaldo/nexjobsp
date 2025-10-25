@@ -1,9 +1,11 @@
+'use client';
+
 import React, { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import { advertisementService } from '@/services/advertisementService';
 
 const PopupAd: React.FC = () => {
-  const router = useRouter();
+  const pathname = usePathname();
   const [popupConfig, setPopupConfig] = useState({
     url: '',
     enabled: false,
@@ -21,7 +23,7 @@ const PopupAd: React.FC = () => {
 
   // Check if current page should trigger popup
   const shouldTriggerOnPage = useCallback((loadSettings: string[]): boolean => {
-    const currentPath = router.asPath;
+    const currentPath = pathname || '';
 
     if (loadSettings.includes('all_pages')) {
       return true;
@@ -33,7 +35,7 @@ const PopupAd: React.FC = () => {
     }
 
     return false;
-  }, [router.asPath]);
+  }, [pathname]);
 
   /**
    * Generate a random alphanumeric string.
@@ -58,8 +60,8 @@ const PopupAd: React.FC = () => {
    * Generate a page-unique key for session tracking.
    */
   const getPageKey = useCallback((): string => {
-    return router.pathname;
-  }, [router.pathname]);
+    return pathname || '';
+  }, [pathname]);
 
   /**
    * Clear sessionStorage from other pages to ensure only current page has session
@@ -193,7 +195,7 @@ const PopupAd: React.FC = () => {
         });
       }
     };
-  }, [isConfigLoaded, popupConfig, router.pathname, shouldTriggerOnPage, getPageKey, clearOtherPagesSessions, handleUserEventTrigger]);
+  }, [isConfigLoaded, popupConfig, pathname, shouldTriggerOnPage, getPageKey, clearOtherPagesSessions, handleUserEventTrigger]);
 
   // Component renders nothing (invisible)
   return null;

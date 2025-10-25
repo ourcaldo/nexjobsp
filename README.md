@@ -97,24 +97,26 @@ Visit `http://localhost:3000` to see your application.
 
 ```
 nexjob-portal/
-├── pages/                    # Next.js pages and API routes
-│   ├── api/                 # API endpoints
-│   ├── admin/               # Admin panel pages
-│   ├── lowongan-kerja/      # Job listing pages
-│   ├── artikel/             # Article pages
-│   └── ...
-├── components/              # React components
-│   ├── admin/              # Admin-specific components
-│   ├── pages/              # Page-level components
-│   └── ui/                 # Reusable UI components
-├── services/               # API and business logic
-├── types/                  # TypeScript definitions
-├── utils/                  # Helper functions
-├── hooks/                  # Custom React hooks
-├── lib/                    # Core utilities
+├── app/                     # Next.js App Router
+│   ├── api/                # API route handlers
+│   ├── admin/              # Admin panel pages
+│   ├── lowongan-kerja/     # Job listing pages
+│   ├── artikel/            # Article pages
+│   ├── layout.tsx          # Root layout
+│   ├── page.tsx            # Homepage
+│   └── providers.tsx       # Client providers
+├── components/             # React components
+│   ├── admin/             # Admin-specific components
+│   ├── pages/             # Page-level components
+│   └── ui/                # Reusable UI components
+├── services/              # API and business logic
+├── types/                 # TypeScript definitions
+├── utils/                 # Helper functions
+├── hooks/                 # Custom React hooks
+├── lib/                   # Core utilities
 ├── supabase/
-│   └── migrations/         # Database migrations
-└── styles/                 # Global styles
+│   └── migrations/        # Database migrations
+└── styles/                # Global styles
 ```
 
 ## 🔧 Configuration

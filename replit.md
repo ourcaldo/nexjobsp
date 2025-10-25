@@ -28,8 +28,8 @@ Nexjob is a full-featured job portal platform built with Next.js 14, TypeScript,
 
 ```
 nexjob-portal/
-├── pages/                           # Next.js pages (App Router not used)
-│   ├── api/                        # API routes
+├── app/                             # Next.js App Router
+│   ├── api/                        # API route handlers
 │   │   ├── admin/                  # Admin-only endpoints
 │   │   ├── public/                 # Public API endpoints
 │   │   └── user/                   # User-specific endpoints
@@ -41,7 +41,10 @@ nexjob-portal/
 │   ├── lowongan-kerja/             # Job pages (/lowongan-kerja/*)
 │   ├── profile/                    # User profile page
 │   ├── sitemap-*/                  # Dynamic sitemap generation
-│   └── [slug].tsx                  # Dynamic CMS pages
+│   ├── [slug]/                     # Dynamic CMS pages
+│   ├── layout.tsx                  # Root layout
+│   ├── page.tsx                    # Homepage
+│   └── providers.tsx               # Client providers
 ├── components/                      # React components
 │   ├── admin/                       # Admin panel components
 │   ├── pages/                       # Page-level components

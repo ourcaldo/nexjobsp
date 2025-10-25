@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   Plus, 
   Edit, 
@@ -31,6 +33,7 @@ type ContentType = 'articles' | 'pages' | 'jobs';
 
 const CmsPages: React.FC = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { showToast } = useToast();
 
   const [loading, setLoading] = useState(true);
@@ -42,7 +45,7 @@ const CmsPages: React.FC = () => {
 
   // Initialize activeContentType from URL parameter
   const getInitialContentType = (): ContentType => {
-    const type = router.query.type as string;
+    const type = searchParams.get('type');
     if (type === 'articles' || type === 'pages' || type === 'jobs') {
       return type as ContentType;
     }
@@ -118,14 +121,14 @@ const CmsPages: React.FC = () => {
 
   // Update activeContentType when URL query changes
   useEffect(() => {
-    const type = router.query.type as string;
+    const type = searchParams.get('type');
     if (type === 'articles' || type === 'pages' || type === 'jobs') {
       setActiveContentType(type as ContentType);
-    } else if (router.isReady && !type) {
+    } else if (!type) {
       // Default to pages if no type is specified
       setActiveContentType('pages');
     }
-  }, [router.query.type, router.isReady]);
+  }, [searchParams]);
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({
@@ -139,10 +142,9 @@ const CmsPages: React.FC = () => {
     setFilters(prev => ({ ...prev, offset: 0 }));
 
     // Update URL to reflect the content type
-    router.push({
-      pathname: router.pathname,
-      query: { ...router.query, type }
-    }, undefined, { shallow: true });
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('type', type);
+    router.push(`?${params.toString()}`);
   };
 
   const handleStatusFilter = (status: string) => {

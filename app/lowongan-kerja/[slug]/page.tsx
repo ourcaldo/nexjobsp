@@ -1,0 +1,127 @@
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { wpService } from '@/services/wpService';
+import { SupabaseAdminService } from '@/services/supabaseAdminService';
+import { getCurrentDomain } from '@/lib/env';
+import Header from '@/components/Layout/Header';
+import Footer from '@/components/Layout/Footer';
+import JobDetailPage from '@/components/pages/JobDetailPage';
+import SchemaMarkup from '@/components/SEO/SchemaMarkup';
+import { generateJobPostingSchema, generateBreadcrumbSchema } from '@/utils/schemaUtils';
+import { Job } from '@/types/job';
+
+interface JobPageProps {
+  params: {
+    slug: string;
+  };
+}
+
+async function getJobData(slug: string) {
+  try {
+    const [job, settings] = await Promise.all([
+      wpService.getJobBySlug(slug),
+      SupabaseAdminService.getSettingsServerSide()
+    ]);
+
+    const currentUrl = getCurrentDomain();
+
+    if (!job) {
+      notFound();
+    }
+
+    return {
+      job,
+      slug,
+      settings,
+      currentUrl
+    };
+  } catch (error) {
+    console.error('Error fetching job:', error);
+    notFound();
+  }
+}
+
+export async function generateMetadata({ params }: JobPageProps): Promise<Metadata> {
+  try {
+    const { job, slug, settings, currentUrl } = await getJobData(params.slug);
+
+    const pageTitle = job.seo_title || `${job.title} - ${job.company_name} | Nexjob`;
+    const pageDescription = job.seo_description || `Lowongan ${job.title} di ${job.company_name}, ${job.lokasi_kota}. Gaji: ${job.gaji}. Lamar sekarang!`;
+    const canonicalUrl = `${currentUrl}/lowongan-kerja/${slug}/`;
+    const ogImage = settings.default_job_og_image || `${currentUrl}/og-job-default.jpg`;
+
+    return {
+      title: pageTitle,
+      description: pageDescription,
+      keywords: `${job.title}, ${job.company_name}, ${job.lokasi_kota}, ${job.kategori_pekerjaan}, lowongan kerja`,
+      authors: [{ name: 'Nexjob' }],
+      openGraph: {
+        title: pageTitle,
+        description: pageDescription,
+        type: 'article',
+        url: canonicalUrl,
+        images: [ogImage],
+        siteName: 'Nexjob',
+        publishedTime: job.created_at,
+        modifiedTime: job.created_at,
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: pageTitle,
+        description: pageDescription,
+        images: [ogImage],
+      },
+      alternates: {
+        canonical: canonicalUrl,
+      },
+      other: {
+        'article:section': job.kategori_pekerjaan,
+        'article:tag': job.kategori_pekerjaan,
+      },
+    };
+  } catch (error) {
+    return {
+      title: 'Job Not Found - Nexjob',
+    };
+  }
+}
+
+export async function generateStaticParams() {
+  try {
+    // Get some popular jobs for initial static generation
+    const response = await wpService.getJobs({}, 1, 50); // Get first 50 jobs
+    return response.jobs.map(job => ({
+      slug: job.slug
+    }));
+  } catch (error) {
+    console.error('Error generating static paths:', error);
+    return [];
+  }
+}
+
+export const revalidate = 300; // ISR: Revalidate every 5 minutes
+export const dynamicParams = true; // Enable dynamic params for jobs not in static paths
+
+export default async function JobPage({ params }: JobPageProps) {
+  const { job, slug, settings, currentUrl } = await getJobData(params.slug);
+
+  const breadcrumbItems = [
+    { label: 'Lowongan Kerja', href: '/lowongan-kerja/' },
+    { label: job.title }
+  ];
+
+  const jobSchema = generateJobPostingSchema(job);
+  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
+
+  return (
+    <>
+      <SchemaMarkup schema={[jobSchema, breadcrumbSchema]} />
+      
+      <Header />
+      <main>
+        <JobDetailPage job={job} slug={slug} settings={settings} />
+      </main>
+      <Footer />
+    </>
+  );
+}

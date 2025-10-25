@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { MapPin, Clock, Briefcase, GraduationCap, ExternalLink, Building, Bookmark, EyeOff, Flame } from 'lucide-react';
@@ -6,7 +8,7 @@ import { supabase } from '@/lib/supabase';
 import { userBookmarkService } from '@/services/userBookmarkService';
 import { useToast } from '@/components/ui/ToastProvider';
 import BookmarkLoginModal from '@/components/ui/BookmarkLoginModal';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 interface JobCardProps {
   job: Job;

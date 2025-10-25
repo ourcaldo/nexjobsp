@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Save, Loader2, FileText, Image as ImageIcon, Globe, Search } from 'lucide-react';
 import Image from 'next/image';

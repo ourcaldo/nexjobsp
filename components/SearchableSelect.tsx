@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, MapPin, Search } from 'lucide-react';
 

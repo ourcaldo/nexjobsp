@@ -1,6 +1,8 @@
+'use client';
+
 import { useEffect } from 'react';
 import Script from 'next/script';
-import { useRouter } from 'next/router';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { env } from '@/lib/env';
 
 declare global {
@@ -11,24 +13,20 @@ declare global {
 }
 
 const GoogleAnalytics = () => {
-  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (!env.GA_ID) return;
 
-    const handleRouteChange = (url: string) => {
-      if (typeof window.gtag !== 'undefined') {
-        window.gtag('config', env.GA_ID!, {
-          page_path: url,
-        });
-      }
-    };
+    const url = pathname + (searchParams?.toString() ? `?${searchParams.toString()}` : '');
 
-    router.events.on('routeChangeComplete', handleRouteChange);
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange);
-    };
-  }, [router.events]);
+    if (typeof window.gtag !== 'undefined') {
+      window.gtag('config', env.GA_ID!, {
+        page_path: url,
+      });
+    }
+  }, [pathname, searchParams]);
 
   // Don't render in development unless explicitly enabled
   if (!env.GA_ID || (env.IS_DEVELOPMENT && !process.env.NEXT_PUBLIC_GA_ENABLE_DEV)) {

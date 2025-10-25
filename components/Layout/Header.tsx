@@ -1,6 +1,8 @@
+'use client';
+
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { useRouter, usePathname } from 'next/navigation';
 import { Search, User, Bookmark, Menu, X, LogOut, Settings } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -26,6 +28,7 @@ import BookmarkLoginModal from '@/components/ui/BookmarkLoginModal';
 
 const Header: React.FC = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
   const [bookmarkCount, setBookmarkCount] = useState(0);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -264,35 +267,31 @@ const Header: React.FC = () => {
   };
 
   const isActive = (path: string) => {
+    if (!pathname) return false;
+    
     if (path === '/') {
-      return router.pathname === '/' && router.asPath === '/';
+      return pathname === '/';
     }
 
     if (path === '/lowongan-kerja/') {
-      return router.pathname === '/lowongan-kerja' || 
-             router.pathname === '/lowongan-kerja/index' ||
-             router.asPath === '/lowongan-kerja/' ||
-             router.asPath === '/lowongan-kerja' ||
-             router.pathname.startsWith('/lowongan-kerja');
+      return pathname === '/lowongan-kerja' || 
+             pathname === '/lowongan-kerja/' ||
+             pathname.startsWith('/lowongan-kerja/');
     }
 
     if (path === '/artikel/') {
-      return router.pathname === '/artikel' || 
-             router.pathname === '/artikel/index' ||
-             router.asPath === '/artikel/' ||
-             router.asPath === '/artikel' ||
-             router.pathname.startsWith('/artikel');
+      return pathname === '/artikel' || 
+             pathname === '/artikel/' ||
+             pathname.startsWith('/artikel/');
     }
 
     if (path === '/profile/') {
-      return router.pathname === '/profile' || 
-             router.pathname === '/profile/index' ||
-             router.asPath === '/profile/' ||
-             router.asPath === '/profile' ||
-             router.pathname.startsWith('/profile');
+      return pathname === '/profile' || 
+             pathname === '/profile/' ||
+             pathname.startsWith('/profile/');
     }
 
-    return router.pathname === path || router.asPath === path;
+    return pathname === path || pathname === path + '/';
   };
 
   return (

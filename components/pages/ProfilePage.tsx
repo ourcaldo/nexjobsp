@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { User, Mail, Phone, Calendar, MapPin, Camera, Save, Loader2, LogOut, Bookmark } from 'lucide-react';

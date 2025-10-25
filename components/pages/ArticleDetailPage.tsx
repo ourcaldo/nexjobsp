@@ -1,9 +1,9 @@
+'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import Head from 'next/head';
 import { Calendar, User, ArrowRight, Loader2, AlertCircle, Tag, Folder } from 'lucide-react';
 import { wpService } from '@/services/wpService';
 import { useAnalytics } from '@/hooks/useAnalytics';
@@ -180,23 +180,6 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
 
   return (
     <>
-      {/* Dynamic Head */}
-      <Head>
-        <title>{getPageTitle()}</title>
-        <meta name="description" content={getPageDescription()} />
-        <meta name="robots" content={getRobotsContent()} />
-        <meta property="og:title" content={getPageTitle()} />
-        <meta property="og:description" content={getPageDescription()} />
-        <meta property="og:type" content="article" />
-        <meta property="og:url" content={getCanonicalUrl()} />
-        <meta property="og:image" content={getOGImage()} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={getPageTitle()} />
-        <meta name="twitter:description" content={getPageDescription()} />
-        <meta name="twitter:image" content={getOGImage()} />
-        <link rel="canonical" href={getCanonicalUrl()} />
-      </Head>
-
       {/* Schema Markup */}
       {article && (
         <>

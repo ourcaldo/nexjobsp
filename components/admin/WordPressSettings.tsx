@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Save, TestTube, Loader2, CheckCircle, XCircle, Globe, Key } from 'lucide-react';
 import { supabaseAdminService } from '@/services/supabaseAdminService';
