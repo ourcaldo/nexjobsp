@@ -23,7 +23,7 @@ async function getArticleData() {
     const featuredArticle = articles.length > 0 ? articles[0] : null;
 
     const latestArticles = articles
-      .filter(article => article.id !== featuredArticle?.id)
+      .filter((article: any) => article.id !== featuredArticle?.id)
       .slice(0, 3);
 
     const tagsSet = new Set<string>();
@@ -68,7 +68,7 @@ async function getArticleData() {
         name: cat.name,
         slug: cat.slug,
         description: cat.description
-      })),
+      })).slice(0, 9), // Limit to top 9 categories
       featuredArticle: formattedArticles[0] || null,
       latestArticles: formattedArticles.slice(1, 4),
       tags,
@@ -137,7 +137,7 @@ export default async function ArtikelPage() {
   ];
 
   const articleListingSchema = generateArticleListingSchema(
-    articles.map(article => ({
+    articles.map((article: any) => ({
       title: { rendered: article.title },
       seo_description: article.excerpt,
       excerpt: { rendered: article.excerpt || '' },

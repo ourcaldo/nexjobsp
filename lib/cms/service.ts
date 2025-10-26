@@ -103,7 +103,7 @@ export class CMSService {
       // Update CMS settings if available in database
       if (settings.cms_endpoint) this.baseUrl = settings.cms_endpoint;
       if (settings.cms_token) this.authToken = settings.cms_token;
-      if (settings.cms_timeout) this.timeout = parseInt(settings.cms_timeout);
+      if (settings.cms_timeout) this.timeout = typeof settings.cms_timeout === 'number' ? settings.cms_timeout : parseInt(String(settings.cms_timeout));
     } catch (error) {
       console.warn('Could not load admin settings, using environment variables');
     }

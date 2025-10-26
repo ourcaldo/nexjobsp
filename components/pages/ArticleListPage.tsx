@@ -44,19 +44,23 @@ export default function ArticleListPage({
   const [articles, setArticles] = useState<NxdbArticle[]>(initialArticles);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const articlesPerPage = 10;
 
-  const handleCategoryChange = async (categorySlug: string) => {
+  const fetchArticles = async (page: number, categorySlug?: string) => {
     setLoading(true);
-    setSelectedCategory(categorySlug);
-
+    
     try {
       let articlesResponse;
+      const catSlug = categorySlug || selectedCategory;
       
-      if (categorySlug === 'all') {
-        articlesResponse = await cmsService.getArticles(1, 20);
+      if (catSlug === 'all') {
+        articlesResponse = await cmsService.getArticles(page, articlesPerPage);
       } else {
-        const category = categories.find(cat => cat.slug === categorySlug);
-        articlesResponse = await cmsService.getArticles(1, 100, category?.id);
+        const category = categories.find(cat => cat.slug === catSlug);
+        articlesResponse = await cmsService.getArticles(page, articlesPerPage, category?.id);
       }
 
       if (articlesResponse.success) {
@@ -80,13 +84,28 @@ export default function ArticleListPage({
             email: article.author.email
           } : null
         }));
+        
         setArticles(formattedArticles);
+        setTotalPages(articlesResponse.data.pagination.totalPages);
+        setHasNextPage(articlesResponse.data.pagination.hasNextPage);
       }
     } catch (error) {
       console.error('Error filtering articles:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCategoryChange = async (categorySlug: string) => {
+    setSelectedCategory(categorySlug);
+    setCurrentPage(1);
+    await fetchArticles(1, categorySlug);
+  };
+
+  const handlePageChange = async (page: number) => {
+    setCurrentPage(page);
+    await fetchArticles(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const getCategoryColor = (index: number) => {
@@ -165,7 +184,7 @@ export default function ArticleListPage({
           {/* Main Content */}
           <div className="lg:col-span-3">
             {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {[...Array(6)].map((_, index) => (
                   <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden animate-pulse">
                     <div className="aspect-video bg-gray-200"></div>
@@ -191,8 +210,9 @@ export default function ArticleListPage({
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {articles.map((article, index) => (
+              <>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {articles.map((article, index) => (
                   <article
                     key={article.id}
                     className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group"
@@ -256,7 +276,58 @@ export default function ArticleListPage({
                     </Link>
                   </article>
                 ))}
-              </div>
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="mt-12 flex justify-center items-center space-x-2">
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors"
+                    >
+                      Previous
+                    </button>
+                    
+                    <div className="flex space-x-2">
+                      {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => handlePageChange(pageNum)}
+                            className={`px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${
+                              currentPage === pageNum
+                                ? 'bg-primary-600 text-white border-primary-600'
+                                : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={!hasNextPage}
+                      className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white transition-colors"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
 
