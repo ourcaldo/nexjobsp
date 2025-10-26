@@ -155,6 +155,49 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-26 15:22 - Article Filtering Security Fix **[COMPLETED]**
+- **Issue**: Article category filtering failed with 401 Unauthorized error
+- **Root Cause**: Client-side component (`ArticleListPage`) was directly calling external CMS API, which requires `cms_token` authentication. The token couldn't be loaded client-side for security reasons.
+- **Solution**: Implemented server-side API proxy pattern to keep secrets secure
+
+**Implementation Details**:
+
+**Files Created**:
+- `app/api/articles/route.ts` - New server-side API route that proxies CMS requests
+  - Accepts query parameters: page, limit, category, search
+  - Calls `cmsService.getArticles()` server-side with cms_token from database
+  - Returns formatted response to client
+
+**Files Modified**:
+- `lib/cms/service.ts` - Added lazy initialization pattern:
+  - Removed async initialization from constructor (caused race conditions)
+  - Added `ensureInitialized()` method that loads settings from `admin_settings` table
+  - All API methods now call `await this.ensureInitialized()` before making requests
+  - Settings loaded from database (`cms_endpoint`, `cms_token`, `cms_timeout`)
+  - Promise caching prevents multiple simultaneous loads
+  
+- `components/pages/ArticleListPage.tsx` - Updated client-side filtering:
+  - Removed direct `cmsService` import and calls
+  - Changed `fetchArticles()` to call `/api/articles` endpoint via fetch()
+  - Builds query params and passes category ID to API route
+  - Client never sees or handles `cms_token`
+
+**Security Improvements**:
+- ✅ `cms_token` never exposed to client-side/browser
+- ✅ All CMS API calls with authentication happen server-side only
+- ✅ Client components use secure Next.js API routes as proxy
+- ✅ Settings loaded from `admin_settings` database table
+- ✅ Lazy initialization prevents race conditions
+
+**Verification**:
+- ✅ Article listing page loads successfully
+- ✅ Category filtering works without errors
+- ✅ API requests return 200 status: `GET /api/articles/?page=1&limit=10&category={id} 200`
+- ✅ No cms_token visible in browser network requests
+- ✅ Server-side logs show successful CMS API calls with proper authentication
+
+**Impact**: This fix implements security best practices by keeping sensitive API tokens server-side only. The server-side proxy pattern ensures that external API authentication happens securely while maintaining full client-side functionality.
+
 ### 2025-10-26 - Project Import & Initial Setup
 - **14:30** - Copied .env.example to .env for environment configuration
 - **14:30** - Installed all npm dependencies (578 packages)

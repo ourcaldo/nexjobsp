@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { NxdbArticle, NxdbArticleCategory } from '@/lib/supabase';
-import { cmsService } from '@/lib/cms/service';
 import { formatDistance } from 'date-fns';
 import { Calendar, User, Tag, Folder, ArrowRight, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
@@ -53,15 +52,20 @@ export default function ArticleListPage({
     setLoading(true);
     
     try {
-      let articlesResponse;
       const catSlug = categorySlug || selectedCategory;
+      const category = categories.find(cat => cat.slug === catSlug);
       
-      if (catSlug === 'all') {
-        articlesResponse = await cmsService.getArticles(page, articlesPerPage);
-      } else {
-        const category = categories.find(cat => cat.slug === catSlug);
-        articlesResponse = await cmsService.getArticles(page, articlesPerPage, category?.id);
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: articlesPerPage.toString(),
+      });
+      
+      if (catSlug !== 'all' && category?.id) {
+        params.set('category', category.id);
       }
+
+      const response = await fetch(`/api/articles?${params.toString()}`);
+      const articlesResponse = await response.json();
 
       if (articlesResponse.success) {
         const formattedArticles = articlesResponse.data.posts.map((article: any) => ({
