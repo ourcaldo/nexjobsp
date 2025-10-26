@@ -3,9 +3,10 @@ import { env } from '@/lib/env';
 
 export class SupabaseAdminService {
   private defaultSettings: Omit<AdminSettings, 'id' | 'created_at' | 'updated_at'> = {
-    api_url: env.WP_API_URL,
-    filters_api_url: env.WP_FILTERS_API_URL,
-    auth_token: env.WP_AUTH_TOKEN,
+    // TugasCMS API Configuration
+    cms_endpoint: env.CMS_ENDPOINT || 'https://cms.nexjob.tech',
+    cms_token: env.CMS_TOKEN,
+    cms_timeout: parseInt(env.CMS_TIMEOUT || '10000'),
     site_title: env.SITE_NAME,
     site_tagline: 'Find Your Dream Job',
     site_description: env.SITE_DESCRIPTION,
@@ -17,10 +18,6 @@ export class SupabaseAdminService {
     supabase_storage_region: 'ap-southeast-1',
     supabase_storage_access_key: '642928fa32b65d648ce65ea04c64100e',
     supabase_storage_secret_key: '082c3ce06c08ba1b347af99f16ff634fd12b4949a6cdda16df30dcc5741609dc',
-    // WordPress API Configuration
-    wp_posts_api_url: 'https://cms.nexjob.tech/wp-json/wp/v2/posts',
-    wp_jobs_api_url: 'https://cms.nexjob.tech/wp-json/wp/v2/lowongan-kerja',
-    wp_auth_token: env.WP_AUTH_TOKEN,
     // Dynamic SEO Templates
     location_page_title_template: 'Lowongan Kerja di {{lokasi}} - {{site_title}}',
     location_page_description_template: 'Temukan lowongan kerja terbaru di {{lokasi}}. Dapatkan pekerjaan impian Anda dengan gaji terbaik di {{site_title}}.',
@@ -663,9 +660,10 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
   // Get default settings as a static method
   static getDefaultSettings(): AdminSettings {
     return {
-      api_url: env.WP_API_URL,
-      filters_api_url: env.WP_FILTERS_API_URL,
-      auth_token: env.WP_AUTH_TOKEN,
+      // TugasCMS API Configuration
+      cms_endpoint: env.CMS_ENDPOINT || 'https://cms.nexjob.tech',
+      cms_token: env.CMS_TOKEN,
+      cms_timeout: parseInt(env.CMS_TIMEOUT || '10000'),
       site_title: env.SITE_NAME,
       site_tagline: 'Find Your Dream Job',
       site_description: env.SITE_DESCRIPTION,
@@ -677,10 +675,6 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
       supabase_storage_region: 'ap-southeast-1',
       supabase_storage_access_key: '642928fa32b65d648ce65ea04c64100e',
       supabase_storage_secret_key: '082c3ce06c08ba1b347af99f16ff634fd12b4949a6cdda16df30dcc5741609dc',
-      // WordPress API Configuration
-      wp_posts_api_url: 'https://cms.nexjob.tech/wp-json/wp/v2/posts',
-      wp_jobs_api_url: 'https://cms.nexjob.tech/wp-json/wp/v2/lowongan-kerja',
-      wp_auth_token: env.WP_AUTH_TOKEN,
       // Dynamic SEO Templates
       location_page_title_template: 'Lowongan Kerja di {{lokasi}} - {{site_title}}',
       location_page_description_template: 'Temukan lowongan kerja terbaru di {{lokasi}}. Dapatkan pekerjaan impian Anda dengan gaji terbaik di {{site_title}}.',

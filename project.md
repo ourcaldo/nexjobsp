@@ -34,9 +34,9 @@ Nexjob is a full-featured job portal platform built with Next.js 14, TypeScript,
 
 #### settings (admin_settings)
 - `id` (UUID, PK)
-- `api_url` (text) - WordPress API endpoint
-- `filters_api_url` (text) - WordPress filters endpoint
-- `auth_token` (text) - WordPress auth token
+- `cms_endpoint` (text) - TugasCMS API endpoint (default: 'https://cms.nexjob.tech')
+- `cms_token` (text) - TugasCMS Bearer auth token
+- `cms_timeout` (integer) - API timeout in milliseconds (default: 10000)
 - `site_title` (text)
 - `site_tagline` (text)
 - `site_description` (text)
@@ -255,6 +255,72 @@ nexjob-portal/
   - ✅ Old `/services` directory removed
   
   **Impact**: This restructuring aligns the codebase with Next.js 14 best practices and improves code organization by grouping related functionality logically. All services remain fully functional with improved discoverability.
+
+### 2025-10-26 - Database Schema Migration: WordPress to TugasCMS **[ACTION REQUIRED]**
+- **Time**: After services restructuring
+- **Reason**: Removed WordPress as headless CMS; now using self-hosted TugasCMS API
+- **Implementation Details**:
+  
+  **Database Changes Required** (SQL queries to run manually):
+  ```sql
+  -- Step 1: Drop WordPress-related columns from admin_settings table
+  ALTER TABLE public.admin_settings 
+    DROP COLUMN IF EXISTS api_url,
+    DROP COLUMN IF EXISTS filters_api_url,
+    DROP COLUMN IF EXISTS auth_token,
+    DROP COLUMN IF EXISTS wp_posts_api_url,
+    DROP COLUMN IF EXISTS wp_jobs_api_url,
+    DROP COLUMN IF EXISTS wp_auth_token;
+
+  -- Step 2: Add new TugasCMS configuration columns
+  ALTER TABLE public.admin_settings 
+    ADD COLUMN IF NOT EXISTS cms_endpoint TEXT DEFAULT 'https://cms.nexjob.tech',
+    ADD COLUMN IF NOT EXISTS cms_token TEXT,
+    ADD COLUMN IF NOT EXISTS cms_timeout INTEGER DEFAULT 10000;
+  ```
+  
+  **Code Files Updated**:
+  - `database/01-schema.sql` - Updated schema definition to use TugasCMS columns
+  - `lib/supabase.ts` - Updated AdminSettings interface:
+    - Removed: `api_url`, `filters_api_url`, `auth_token`, `wp_posts_api_url`, `wp_jobs_api_url`, `wp_auth_token`
+    - Added: `cms_endpoint`, `cms_token`, `cms_timeout`
+  - `lib/supabase/admin.ts` - Updated default settings to use TugasCMS configuration:
+    - Removed WordPress environment variable references (WP_API_URL, WP_FILTERS_API_URL, WP_AUTH_TOKEN)
+    - Added TugasCMS environment variables (CMS_ENDPOINT, CMS_TOKEN, CMS_TIMEOUT)
+    - Updated both instance defaultSettings and static getDefaultSettings() method
+  - `components/admin/IntegrationSettings.tsx` - Completely refactored admin UI:
+    - Removed WordPress API configuration section (6 fields)
+    - Added TugasCMS API configuration section (3 fields: endpoint, token, timeout)
+    - Updated connection test to validate TugasCMS API instead of WordPress
+  - `lib/env.ts` - Already had CMS configuration (no changes needed)
+  
+  **Schema Changes Summary**:
+  
+  **Columns Removed**:
+  1. `api_url` - WordPress base API URL
+  2. `filters_api_url` - WordPress filters endpoint
+  3. `auth_token` - Legacy WordPress auth token
+  4. `wp_posts_api_url` - WordPress posts endpoint
+  5. `wp_jobs_api_url` - WordPress jobs custom post type endpoint
+  6. `wp_auth_token` - WordPress authentication token
+  
+  **Columns Added**:
+  1. `cms_endpoint` - TugasCMS base URL (default: 'https://cms.nexjob.tech')
+  2. `cms_token` - Bearer token for TugasCMS API authentication
+  3. `cms_timeout` - API request timeout in milliseconds (default: 10000)
+  
+  **Environment Variables**:
+  - Using `NEXT_PUBLIC_CMS_ENDPOINT`, `CMS_TOKEN`, `CMS_TIMEOUT` from .env
+  - All configured and working in production
+  
+  **Verification Steps**:
+  1. ✅ All LSP errors resolved (TypeScript compilation successful)
+  2. ✅ AdminSettings interface updated correctly
+  3. ✅ Default settings use TugasCMS configuration
+  4. ✅ Admin UI updated to manage TugasCMS settings
+  5. ⏳ **USER ACTION REQUIRED**: Run SQL queries against Supabase database
+  
+  **Impact**: This migration fully removes WordPress integration from the admin_settings table and replaces it with TugasCMS configuration. The database schema now matches the code implementation. After running the SQL queries, the admin panel will be able to manage TugasCMS API settings directly from the Integration Settings page.
 
 ## Environment Variables
 

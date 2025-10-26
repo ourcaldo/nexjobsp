@@ -258,9 +258,10 @@ export interface NxdbPageTagRelation {
 
 export interface AdminSettings {
   id?: string;
-  api_url: string;
-  filters_api_url: string;
-  auth_token?: string;
+  // TugasCMS API Configuration
+  cms_endpoint: string;
+  cms_token?: string;
+  cms_timeout?: number;
   site_title: string;
   site_tagline: string;
   site_description: string;
@@ -284,10 +285,6 @@ export interface AdminSettings {
   storage_region?: string;
   storage_access_key?: string;
   storage_secret_key?: string;
-  // WordPress API Configuration (editable from admin)
-  wp_posts_api_url: string;
-  wp_jobs_api_url: string;
-  wp_auth_token?: string;
   // Dynamic SEO Templates
   location_page_title_template: string;
   location_page_description_template: string;

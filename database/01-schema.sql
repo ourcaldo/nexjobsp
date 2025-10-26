@@ -50,13 +50,10 @@ CREATE POLICY "Super admins can view all profiles" ON profiles
 CREATE TABLE IF NOT EXISTS admin_settings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     
-    -- WordPress API Configuration
-    api_url TEXT,
-    filters_api_url TEXT,
-    auth_token TEXT,
-    wp_posts_api_url TEXT,
-    wp_jobs_api_url TEXT,
-    wp_auth_token TEXT,
+    -- TugasCMS API Configuration
+    cms_endpoint TEXT DEFAULT 'https://cms.nexjob.tech',
+    cms_token TEXT,
+    cms_timeout INTEGER DEFAULT 10000,
     
     -- Site Information
     site_title TEXT,

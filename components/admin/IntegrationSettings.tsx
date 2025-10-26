@@ -8,13 +8,10 @@ import { useToast } from '@/components/ui/ToastProvider';
 const IntegrationSettings: React.FC = () => {
   const { showToast } = useToast();
   const [settings, setSettings] = useState({
-    // WordPress API Configuration
-    api_url: '',
-    filters_api_url: '',
-    auth_token: '',
-    wp_posts_api_url: '',
-    wp_jobs_api_url: '',
-    wp_auth_token: ''
+    // TugasCMS API Configuration
+    cms_endpoint: '',
+    cms_token: '',
+    cms_timeout: 10000
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -27,12 +24,9 @@ const IntegrationSettings: React.FC = () => {
       const adminSettings = await supabaseAdminService.getSettings();
       if (adminSettings) {
         setSettings({
-          api_url: adminSettings.api_url || '',
-          filters_api_url: adminSettings.filters_api_url || '',
-          auth_token: adminSettings.auth_token || '',
-          wp_posts_api_url: adminSettings.wp_posts_api_url || '',
-          wp_jobs_api_url: adminSettings.wp_jobs_api_url || '',
-          wp_auth_token: adminSettings.wp_auth_token || ''
+          cms_endpoint: adminSettings.cms_endpoint || 'https://cms.nexjob.tech',
+          cms_token: adminSettings.cms_token || '',
+          cms_timeout: adminSettings.cms_timeout || 10000
         });
       }
     } catch (error) {
@@ -60,56 +54,49 @@ const IntegrationSettings: React.FC = () => {
     setTestResults(null);
 
     try {
-      // Test WordPress API connection
-      const wpApiTest = {
-        name: 'WordPress API',
-        success: false,
-        error: ''
-      };
-
-      // Test filters API connection
-      const filtersApiTest = {
-        name: 'Filters API',
+      // Test TugasCMS API connection
+      const cmsApiTest = {
+        name: 'TugasCMS API',
         success: false,
         error: ''
       };
 
       // Simple validation tests
-      if (settings.api_url) {
+      if (settings.cms_endpoint) {
         try {
           // Basic URL validation
-          new URL(settings.api_url);
-          wpApiTest.success = true;
+          new URL(settings.cms_endpoint);
+          
+          // Optional: Test actual connection
+          const response = await fetch(`${settings.cms_endpoint}/api/v1/posts?limit=1`, {
+            headers: settings.cms_token ? {
+              'Authorization': `Bearer ${settings.cms_token}`
+            } : {}
+          });
+          
+          if (response.ok) {
+            cmsApiTest.success = true;
+          } else {
+            cmsApiTest.error = `API returned status ${response.status}`;
+          }
         } catch (error) {
-          wpApiTest.error = 'Invalid WordPress API URL format';
+          cmsApiTest.error = 'Failed to connect to CMS API';
         }
       } else {
-        wpApiTest.error = 'Missing WordPress API URL';
-      }
-
-      if (settings.filters_api_url) {
-        try {
-          // Basic URL validation
-          new URL(settings.filters_api_url);
-          filtersApiTest.success = true;
-        } catch (error) {
-          filtersApiTest.error = 'Invalid Filters API URL format';
-        }
-      } else {
-        filtersApiTest.error = 'Missing Filters API URL';
+        cmsApiTest.error = 'Missing CMS endpoint URL';
       }
 
       const results = {
-        success: wpApiTest.success && filtersApiTest.success,
-        tests: [wpApiTest, filtersApiTest]
+        success: cmsApiTest.success,
+        tests: [cmsApiTest]
       };
 
       setTestResults(results);
       
       if (results.success) {
-        showToast('success', 'All integration tests passed!');
+        showToast('success', 'CMS connection test passed!');
       } else {
-        showToast('error', 'Some integration tests failed. Check the results below.');
+        showToast('error', 'CMS connection test failed. Check the results below.');
       }
     } catch (error) {
       console.error('Error testing integrations:', error);
@@ -169,123 +156,71 @@ const IntegrationSettings: React.FC = () => {
         </div>
       </div>
 
-      {/* WordPress API Configuration */}
+      {/* TugasCMS API Configuration */}
       <div className="bg-white shadow-sm rounded-lg border border-gray-200">
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900 flex items-center">
             <Globe className="h-6 w-6 mr-3 text-primary-600" />
-            WordPress API Configuration
+            TugasCMS API Configuration
           </h2>
           <p className="mt-1 text-sm text-gray-600">
-            Configure your WordPress headless CMS connection settings.
+            Configure your TugasCMS external API connection settings.
           </p>
         </div>
 
         <div className="p-6 space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              WordPress API Base URL
+              CMS API Endpoint
             </label>
             <input
               type="url"
-              name="api_url"
-              value={settings.api_url}
+              name="cms_endpoint"
+              value={settings.cms_endpoint}
               onChange={handleInputChange}
-              placeholder="https://cms.nexjob.tech/wp-json/wp/v2"
+              placeholder="https://cms.nexjob.tech"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
             />
             <p className="mt-1 text-xs text-gray-500">
-              Base URL for WordPress REST API
+              Base URL for TugasCMS API endpoint
             </p>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Filters API URL
+              CMS API Token
             </label>
             <input
-              type="url"
-              name="filters_api_url"
-              value={settings.filters_api_url}
+              type="password"
+              name="cms_token"
+              value={settings.cms_token}
               onChange={handleInputChange}
-              placeholder="https://cms.nexjob.tech/wp-json/nex/v1/filters-data"
+              placeholder="cms_your-api-token"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
             />
             <p className="mt-1 text-xs text-gray-500">
-              Custom API endpoint for filter data
+              Bearer token for TugasCMS API authentication
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Posts API URL
-              </label>
-              <input
-                type="url"
-                name="wp_posts_api_url"
-                value={settings.wp_posts_api_url}
-                onChange={handleInputChange}
-                placeholder="https://cms.nexjob.tech/wp-json/wp/v2/posts"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                WordPress posts endpoint
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Jobs API URL
-              </label>
-              <input
-                type="url"
-                name="wp_jobs_api_url"
-                value={settings.wp_jobs_api_url}
-                onChange={handleInputChange}
-                placeholder="https://cms.nexjob.tech/wp-json/wp/v2/lowongan-kerja"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                Custom post type endpoint for jobs
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Legacy Auth Token
-              </label>
-              <input
-                type="password"
-                name="auth_token"
-                value={settings.auth_token}
-                onChange={handleInputChange}
-                placeholder="your-auth-token"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                Legacy authentication token (if required)
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                WordPress Auth Token
-              </label>
-              <input
-                type="password"
-                name="wp_auth_token"
-                value={settings.wp_auth_token}
-                onChange={handleInputChange}
-                placeholder="your-wp-auth-token"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-              />
-              <p className="mt-1 text-xs text-gray-500">
-                WordPress authentication token for API access
-              </p>
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              API Timeout (ms)
+            </label>
+            <input
+              type="number"
+              name="cms_timeout"
+              value={settings.cms_timeout}
+              onChange={handleInputChange}
+              placeholder="10000"
+              min="1000"
+              max="60000"
+              step="1000"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Request timeout in milliseconds (default: 10000ms)
+            </p>
           </div>
         </div>
       </div>
