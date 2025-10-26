@@ -51,7 +51,9 @@ async function getArticleData(categorySlug: string, slug: string) {
     };
 
     const hasCategory = article.categories?.some((cat: any) => cat.slug === categorySlug);
-    if (!hasCategory) {
+    const isUncategorized = categorySlug === 'uncategorized' && (!article.categories || article.categories.length === 0);
+    
+    if (!hasCategory && !isUncategorized) {
       return null;
     }
 

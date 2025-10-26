@@ -1,5 +1,7 @@
+'use client';
+
 import { useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import { env } from '@/lib/env';
 
 interface AnalyticsEvent {
@@ -18,7 +20,7 @@ interface PageViewData {
 }
 
 export const useAnalytics = () => {
-  const router = useRouter();
+  const pathname = usePathname();
 
   // Track page views
   const trackPageView = (data?: Partial<PageViewData>) => {

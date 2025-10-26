@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { supabaseAdminService } from '@/lib/supabase/admin';
+import { cmsPageService } from '@/lib/cms/pages';
 import { NxdbPage } from '@/lib/supabase';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
@@ -18,7 +18,7 @@ interface PageProps {
 
 export async function generateStaticParams() {
   try {
-    const pages = await supabaseAdminService.getPages({ status: 'published' });
+    const pages = await cmsPageService.getPages({ status: 'published' });
     
     return pages.map((page) => ({
       slug: page.slug,
@@ -30,7 +30,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const page = await supabaseAdminService.getPageBySlug(params.slug);
+  const page = await cmsPageService.getPageBySlug(params.slug);
   
   if (!page) {
     return {
@@ -69,7 +69,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export const revalidate = 86400; // ISR: Revalidate every 24 hours
 
 export default async function DynamicPage({ params }: PageProps) {
-  const page = await supabaseAdminService.getPageBySlug(params.slug);
+  const page = await cmsPageService.getPageBySlug(params.slug);
 
   if (!page) {
     notFound();

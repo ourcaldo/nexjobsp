@@ -668,7 +668,8 @@ class SitemapService {
   // Get CMS pages for sitemap
   async getCmsPages(): Promise<{ pages: any[] }> {
     try {
-      const pages = await supabaseAdminService.getPages({ status: 'published' });
+      const { cmsPageService } = await import('@/lib/cms/pages');
+      const pages = await cmsPageService.getPages({ status: 'published' });
 
       return {
         pages: pages.map((page: any) => ({
