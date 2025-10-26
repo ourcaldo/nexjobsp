@@ -31,6 +31,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'uzlzyosmbxgghhmafidk.supabase.co',
       },
+      {
+        protocol: 'https',
+        hostname: 'syd.cloud.appwrite.io',
+      },
     ],
     unoptimized: false,
   },

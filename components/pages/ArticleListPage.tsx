@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { NxdbArticle, NxdbArticleCategory } from '@/lib/supabase';
-import { cmsArticleService } from '@/lib/cms/articles';
+import { cmsService } from '@/lib/cms/service';
 import { formatDistance } from 'date-fns';
 import { Calendar, User, Tag, Folder, ArrowRight, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
@@ -50,17 +50,37 @@ export default function ArticleListPage({
     setSelectedCategory(categorySlug);
 
     try {
+      let articlesResponse;
+      
       if (categorySlug === 'all') {
-        const articlesData = await cmsArticleService.getPublishedArticles(20, 0);
-        setArticles(articlesData.articles);
+        articlesResponse = await cmsService.getArticles(1, 20);
       } else {
-        const articlesData = await cmsArticleService.getPublishedArticles(100, 0);
-        const filteredArticles = articlesData.articles.filter(article => 
-          article.categories && 
-          article.categories.length > 0 && 
-          article.categories.some(cat => cat.slug === categorySlug)
-        );
-        setArticles(filteredArticles);
+        const category = categories.find(cat => cat.slug === categorySlug);
+        articlesResponse = await cmsService.getArticles(1, 100, category?.id);
+      }
+
+      if (articlesResponse.success) {
+        const formattedArticles = articlesResponse.data.posts.map((article: any) => ({
+          id: article.id,
+          title: article.title,
+          slug: article.slug,
+          excerpt: article.excerpt,
+          content: article.content,
+          featured_image: article.featured_image || article.featuredImage,
+          published_at: article.publish_date || article.publishDate,
+          post_date: article.publish_date || article.publishDate,
+          updated_at: article.updated_at || article.updatedAt,
+          seo_title: article.seo?.title || article.seo_title,
+          meta_description: article.seo?.metaDescription || article.meta_description,
+          categories: article.categories || [],
+          tags: article.tags || [],
+          author: article.author ? {
+            id: article.author.id,
+            full_name: article.author.full_name || article.author.name,
+            email: article.author.email
+          } : null
+        }));
+        setArticles(formattedArticles);
       }
     } catch (error) {
       console.error('Error filtering articles:', error);

@@ -1,6 +1,5 @@
 import { supabaseAdminService } from '@/lib/supabase/admin';
 import { cmsService } from '@/lib/cms/service';
-import { cmsArticleService } from '@/lib/cms/articles';
 import { Job } from '@/types/job';
 import { getCurrentDomain } from '@/lib/env';
 
@@ -641,15 +640,21 @@ class SitemapService {
   // Get CMS articles for sitemap
   async getCmsArticles(): Promise<{ articles: any[] }> {
     try {
-      const { articles } = await cmsArticleService.getPublishedArticles(10000, 0);
+      const articlesResponse = await cmsService.getArticles(1, 10000);
+
+      if (!articlesResponse.success) {
+        return { articles: [] };
+      }
+
+      const posts = articlesResponse.data.posts;
 
       return {
-        articles: articles.map(article => ({
+        articles: posts.map((article: any) => ({
           slug: article.slug,
           title: article.title,
           excerpt: article.excerpt,
-          date: article.published_at || article.post_date,
-          modified: article.updated_at,
+          date: article.publish_date || article.publishDate,
+          modified: article.updated_at || article.updatedAt,
           categories: article.categories || [],
           category: article.categories?.[0]?.slug || 'uncategorized'
         }))
@@ -663,15 +668,10 @@ class SitemapService {
   // Get CMS pages for sitemap
   async getCmsPages(): Promise<{ pages: any[] }> {
     try {
-      const { cmsPageService } = await import('./cmsPageService');
-      const { pages } = await cmsPageService.getPages({
-        status: 'published',
-        limit: 10000,
-        offset: 0
-      });
+      const pages = await supabaseAdminService.getPages({ status: 'published' });
 
       return {
-        pages: pages.map(page => ({
+        pages: pages.map((page: any) => ({
           slug: page.slug,
           title: page.title,
           excerpt: page.excerpt,
