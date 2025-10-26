@@ -75,37 +75,58 @@ export class CMSService {
   private baseUrl: string;
   private timeout: number;
   private authToken: string;
+  private settingsInitialized: boolean = false;
+  private initializationPromise: Promise<void> | null = null;
 
   // Cache for filter data with 1 hour cache
   private filterDataCache: { data: FilterData; timestamp: number } | null = null;
   private readonly FILTER_CACHE_TTL = parseInt(process.env.FILTER_CACHE_TTL || '3600000'); // 1 hour
 
   constructor() {
-    // Initialize with environment variables
-    this.baseUrl = env.CMS_ENDPOINT;
+    // Initialize with fallback values (will be overridden by database settings)
+    this.baseUrl = env.CMS_ENDPOINT || 'https://cms.nexjob.tech';
     this.timeout = parseInt(env.CMS_TIMEOUT || '10000');
-    this.authToken = env.CMS_TOKEN;
-
-    // Try to get settings from admin service (browser only)
-    if (typeof window !== 'undefined') {
-      this.updateFromAdminSettings();
-    }
+    this.authToken = env.CMS_TOKEN || '';
   }
 
-  private async updateFromAdminSettings() {
+  private async ensureInitialized(): Promise<void> {
+    if (this.settingsInitialized) {
+      return;
+    }
+
+    if (this.initializationPromise) {
+      return this.initializationPromise;
+    }
+
+    this.initializationPromise = this.loadSettingsFromDatabase();
+    await this.initializationPromise;
+  }
+
+  private async loadSettingsFromDatabase(): Promise<void> {
     try {
       const settings = await supabaseAdminService.getSettings();
+      
       if (!settings) {
-        console.warn('Settings not available, using environment variables');
+        this.settingsInitialized = true;
         return;
       }
 
-      // Update CMS settings if available in database
-      if (settings.cms_endpoint) this.baseUrl = settings.cms_endpoint;
-      if (settings.cms_token) this.authToken = settings.cms_token;
-      if (settings.cms_timeout) this.timeout = typeof settings.cms_timeout === 'number' ? settings.cms_timeout : parseInt(String(settings.cms_timeout));
+      // Update CMS settings from database
+      if (settings.cms_endpoint) {
+        this.baseUrl = settings.cms_endpoint;
+      }
+      if (settings.cms_token) {
+        this.authToken = settings.cms_token;
+      }
+      if (settings.cms_timeout) {
+        this.timeout = typeof settings.cms_timeout === 'number' 
+          ? settings.cms_timeout 
+          : parseInt(String(settings.cms_timeout));
+      }
+
+      this.settingsInitialized = true;
     } catch (error) {
-      console.warn('Could not load admin settings, using environment variables');
+      this.settingsInitialized = true;
     }
   }
 
@@ -277,14 +298,13 @@ export class CMSService {
 
   // Get filter data with caching
   async getFiltersData(): Promise<FilterData> {
+    await this.ensureInitialized();
+    
     try {
       // Use cache if valid
       if (this.isFilterCacheValid() && this.filterDataCache) {
-        console.log('Using cached filter data');
         return this.filterDataCache.data;
       }
-
-      console.log('Fetching fresh filter data from CMS');
 
       // Fetch categories and tags in parallel
       const [categoriesResponse, tagsResponse] = await Promise.all([
@@ -375,6 +395,8 @@ export class CMSService {
   }
 
   async testConnection(): Promise<{ success: boolean; data?: any; error?: string }> {
+    await this.ensureInitialized();
+    
     try {
       const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/job-posts?limit=1`);
       const data: CMSResponse<{ posts: CMSJobPost[] }> = await response.json();
@@ -389,6 +411,8 @@ export class CMSService {
 
   async getJobsByIds(jobIds: string[]): Promise<Job[]> {
     if (jobIds.length === 0) return [];
+    
+    await this.ensureInitialized();
 
     try {
       const promises = jobIds.map(async (jobId) => {
@@ -421,9 +445,10 @@ export class CMSService {
   }
 
   async getJobs(filters?: any, page: number = 1, perPage: number = 24): Promise<JobsResponse> {
+    await this.ensureInitialized();
+    
     try {
       const url = this.buildJobsUrl(filters, page, perPage);
-      console.log('Fetching jobs from CMS:', url);
 
       const response = await this.fetchWithTimeout(url);
       const data: CMSResponse<{ posts: CMSJobPost[]; pagination: PaginationMeta }> = await response.json();
@@ -496,6 +521,8 @@ export class CMSService {
   }
 
   async getJobBySlug(slug: string): Promise<Job | null> {
+    await this.ensureInitialized();
+    
     try {
       const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/job-posts/${slug}`);
       const data: CMSResponse<CMSJobPost> = await response.json();
@@ -512,6 +539,8 @@ export class CMSService {
   }
 
   async getJobById(id: string): Promise<Job | null> {
+    await this.ensureInitialized();
+    
     try {
       const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/job-posts/${id}`);
       const data: CMSResponse<CMSJobPost> = await response.json();
@@ -529,6 +558,8 @@ export class CMSService {
 
   // Blog/Article methods
   async getArticles(page: number = 1, limit: number = 20, category?: string, search?: string) {
+    await this.ensureInitialized();
+    
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -552,6 +583,8 @@ export class CMSService {
   }
 
   async getArticleBySlug(slug: string) {
+    await this.ensureInitialized();
+    
     try {
       const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/posts/${slug}`);
       const data = await response.json();
@@ -563,6 +596,8 @@ export class CMSService {
   }
 
   async getCategories(page: number = 1, limit: number = 50) {
+    await this.ensureInitialized();
+    
     try {
       const response = await this.fetchWithTimeout(
         `${this.baseUrl}/api/v1/categories?page=${page}&limit=${limit}`
@@ -576,6 +611,8 @@ export class CMSService {
   }
 
   async getTags(page: number = 1, limit: number = 50) {
+    await this.ensureInitialized();
+    
     try {
       const response = await this.fetchWithTimeout(
         `${this.baseUrl}/api/v1/tags?page=${page}&limit=${limit}`
@@ -594,6 +631,8 @@ export class CMSService {
   }
 
   async testFiltersConnection(): Promise<{ success: boolean; data?: any; error?: string }> {
+    await this.ensureInitialized();
+    
     try {
       const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/categories?limit=1`);
       const data = await response.json();
@@ -607,6 +646,8 @@ export class CMSService {
   }
 
   async getRelatedJobs(jobId: string, limit: number = 5): Promise<Job[]> {
+    await this.ensureInitialized();
+    
     try {
       // Get current job to find its category
       const currentJob = await this.getJobById(jobId);
@@ -626,6 +667,8 @@ export class CMSService {
   }
 
   async getRelatedArticles(articleSlug: string, limit: number = 5) {
+    await this.ensureInitialized();
+    
     try {
       // Fetch latest articles excluding current one
       const response = await this.getArticles(1, limit + 5);

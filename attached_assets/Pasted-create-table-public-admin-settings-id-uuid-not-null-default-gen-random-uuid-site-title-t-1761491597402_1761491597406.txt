@@ -1,0 +1,63 @@
+create table public.admin_settings (
+  id uuid not null default gen_random_uuid (),
+  site_title text null,
+  site_tagline text null,
+  site_description text null,
+  site_url text null,
+  ga_id text null,
+  gtm_id text null,
+  supabase_storage_endpoint text null,
+  supabase_storage_region text null,
+  supabase_storage_access_key text null,
+  supabase_storage_secret_key text null,
+  location_page_title_template text null,
+  location_page_description_template text null,
+  category_page_title_template text null,
+  category_page_description_template text null,
+  jobs_title text null,
+  jobs_description text null,
+  articles_title text null,
+  articles_description text null,
+  login_page_title text null,
+  login_page_description text null,
+  signup_page_title text null,
+  signup_page_description text null,
+  profile_page_title text null,
+  profile_page_description text null,
+  home_og_image text null,
+  jobs_og_image text null,
+  articles_og_image text null,
+  default_job_og_image text null,
+  default_article_og_image text null,
+  popup_ad_url text null,
+  popup_ad_enabled boolean null default false,
+  popup_ad_load_settings jsonb null default '[]'::jsonb,
+  popup_ad_max_executions integer null default 0,
+  popup_ad_device text null default 'All'::text,
+  sidebar_archive_ad_code text null,
+  sidebar_single_ad_code text null,
+  single_top_ad_code text null,
+  single_bottom_ad_code text null,
+  single_middle_ad_code text null,
+  sitemap_update_interval integer null default 300,
+  auto_generate_sitemap boolean null default true,
+  last_sitemap_update timestamp with time zone null,
+  robots_txt text null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  cms_endpoint text null default 'https://cms.nexjob.tech'::text,
+  cms_token text null,
+  cms_timeout integer null default 10000,
+  constraint admin_settings_pkey primary key (id),
+  constraint admin_settings_popup_ad_device_check check (
+    (
+      popup_ad_device = any (
+        array['All'::text, 'Desktop'::text, 'Mobile'::text]
+      )
+    )
+  )
+) TABLESPACE pg_default;
+
+create trigger update_admin_settings_updated_at BEFORE
+update on admin_settings for EACH row
+execute FUNCTION update_updated_at_column ();
