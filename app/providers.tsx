@@ -101,7 +101,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
               return;
             }
 
-            const { supabaseAdminService } = await import('@/services/supabaseAdminService');
+            const { supabaseAdminService } = await import('@/lib/supabase/admin');
 
             // Use cached settings for frontend to avoid repeated DB calls
             const settings = await supabaseAdminService.getSettings(false);
@@ -113,7 +113,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             }
 
             // Apply settings to cmsService
-            const { cmsService } = await import('@/services/cmsService');
+            const { cmsService } = await import('@/lib/cms/service');
             cmsService.setBaseUrl(settings.api_url);
             cmsService.setFiltersApiUrl(settings.filters_api_url);
             cmsService.setAuthToken(settings.auth_token || '');

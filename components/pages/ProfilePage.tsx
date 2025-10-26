@@ -52,7 +52,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ settings }) => {
   const loadProfile = useCallback(async (userId: string) => {
     try {
       // Use API layer instead of direct database access
-      const { userProfileApiService } = await import('@/services/userProfileApiService');
+      const { userProfileApiService } = await import('@/lib/api/user-profile');
       const result = await userProfileApiService.getCurrentUserProfile();
 
       if (!result.success) {
@@ -174,7 +174,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ settings }) => {
       }
 
       // Use API layer to update profile
-      const { userProfileApiService } = await import('@/services/userProfileApiService');
+      const { userProfileApiService } = await import('@/lib/api/user-profile');
       const updateResult = await userProfileApiService.updateUserProfile({
         photo_url: result.url
       });
@@ -210,7 +210,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ settings }) => {
       };
 
       // Use API layer instead of direct database access
-      const { userProfileApiService } = await import('@/services/userProfileApiService');
+      const { userProfileApiService } = await import('@/lib/api/user-profile');
       const result = await userProfileApiService.updateUserProfile(updateData);
 
       if (!result.success) {
