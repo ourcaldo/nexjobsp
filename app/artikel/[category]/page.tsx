@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { cmsArticleService } from '@/lib/cms/articles';
-import { NxdbArticle, NxdbArticleCategory } from '@/lib/supabase';
+import { cmsService } from '@/lib/cms/service';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
@@ -20,26 +19,60 @@ interface ArticleCategoryPageProps {
 
 async function getCategoryData(categorySlug: string) {
   try {
-    const [allCategories] = await Promise.all([
-      cmsArticleService.getCategories()
-    ]);
+    const categoriesResponse = await cmsService.getCategories();
+    if (!categoriesResponse.success) {
+      return null;
+    }
 
-    const category = allCategories.find(cat => cat.slug === categorySlug);
+    const allCategories = categoriesResponse.data.categories;
+    const category = allCategories.find((cat: any) => cat.slug === categorySlug);
 
     if (!category) {
       return null;
     }
 
-    const articlesData = await cmsArticleService.getPublishedArticles(100, 0);
-    const articles = articlesData.articles.filter(article =>
-      article.categories?.some(cat => cat.id === category.id)
-    );
+    const articlesResponse = await cmsService.getArticles(1, 100, category.id);
+    
+    if (!articlesResponse.success) {
+      return null;
+    }
+
+    const articles = articlesResponse.data.posts.map((article: any) => ({
+      id: article.id,
+      title: article.title,
+      slug: article.slug,
+      excerpt: article.excerpt,
+      content: article.content,
+      featured_image: article.featured_image || article.featuredImage,
+      published_at: article.publish_date || article.publishDate,
+      post_date: article.publish_date || article.publishDate,
+      updated_at: article.updated_at || article.updatedAt,
+      seo_title: article.seo?.title || article.seo_title,
+      meta_description: article.seo?.metaDescription || article.meta_description,
+      categories: article.categories || [],
+      tags: article.tags || [],
+      author: article.author ? {
+        id: article.author.id,
+        full_name: article.author.full_name || article.author.name,
+        email: article.author.email
+      } : null
+    }));
 
     return {
       articles,
-      category,
-      allCategories,
-      total: articles.length
+      category: {
+        id: category.id,
+        name: category.name,
+        slug: category.slug,
+        description: category.description
+      },
+      allCategories: allCategories.map((cat: any) => ({
+        id: cat.id,
+        name: cat.name,
+        slug: cat.slug,
+        description: cat.description
+      })),
+      total: articlesResponse.data.pagination.total
     };
   } catch (error) {
     console.error('Error fetching category data:', error);
@@ -49,8 +82,12 @@ async function getCategoryData(categorySlug: string) {
 
 export async function generateStaticParams() {
   try {
-    const categories = await cmsArticleService.getCategories();
-    return categories.map((category) => ({
+    const categoriesResponse = await cmsService.getCategories();
+    if (!categoriesResponse.success) {
+      return [];
+    }
+
+    return categoriesResponse.data.categories.map((category: any) => ({
       category: category.slug,
     }));
   } catch (error) {
@@ -94,7 +131,7 @@ export async function generateMetadata({ params }: ArticleCategoryPageProps): Pr
   };
 }
 
-export const revalidate = 3600; // ISR: Revalidate every 1 hour
+export const revalidate = 3600;
 
 export default async function ArticleCategoryPage({ params }: ArticleCategoryPageProps) {
   const data = await getCategoryData(params.category);
@@ -134,7 +171,6 @@ export default async function ArticleCategoryPage({ params }: ArticleCategoryPag
 
       <main className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 py-8">
-          {/* Header */}
           <div className="mb-8">
             <nav className="mb-4">
               <ol className="flex items-center space-x-2 text-sm text-gray-500">
@@ -168,7 +204,6 @@ export default async function ArticleCategoryPage({ params }: ArticleCategoryPag
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Categories Sidebar */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-8">
                 <h2 className="text-lg font-medium text-gray-900 mb-4">Kategori Lainnya</h2>
@@ -197,7 +232,6 @@ export default async function ArticleCategoryPage({ params }: ArticleCategoryPag
               </div>
             </div>
 
-            {/* Articles */}
             <div className="lg:col-span-3">
               {articles.length === 0 ? (
                 <div className="text-center py-12">
@@ -233,13 +267,13 @@ export default async function ArticleCategoryPage({ params }: ArticleCategoryPag
 
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-2">
-                            {article.categories?.map(category => (
+                            {article.categories?.map((cat: any) => (
                               <span
-                                key={category.id}
+                                key={cat.id}
                                 className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800"
                               >
                                 <Folder className="h-3 w-3 mr-1" />
-                                {category.name}
+                                {cat.name}
                               </span>
                             ))}
                           </div>

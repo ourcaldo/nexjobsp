@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { cmsArticleService } from '@/lib/cms/articles';
+import { cmsService } from '@/lib/cms/service';
 import { supabaseAdminService } from '@/lib/supabase/admin';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
@@ -11,31 +11,66 @@ import ArticleListPage from '@/components/pages/ArticleListPage';
 
 async function getArticleData() {
   try {
-    const [articlesData, categories, seoSettings] = await Promise.all([
-      cmsArticleService.getPublishedArticles(20, 0),
-      cmsArticleService.getCategories(),
+    const [articlesResponse, categoriesResponse, seoSettings] = await Promise.all([
+      cmsService.getArticles(1, 20),
+      cmsService.getCategories(),
       supabaseAdminService.getSettings()
     ]);
 
-    const featuredArticle = articlesData.articles.length > 0 ? articlesData.articles[0] : null;
+    const articles = articlesResponse.success ? articlesResponse.data.posts : [];
+    const categories = categoriesResponse.success ? categoriesResponse.data.categories : [];
 
-    const latestArticles = articlesData.articles
+    const featuredArticle = articles.length > 0 ? articles[0] : null;
+
+    const latestArticles = articles
       .filter(article => article.id !== featuredArticle?.id)
       .slice(0, 3);
 
     const tagsSet = new Set<string>();
-    articlesData.articles.forEach(article => {
-      if (article.tags) {
-        article.tags.forEach(tag => tagsSet.add(tag.name));
+    articles.forEach((article: any) => {
+      if (article.tags && Array.isArray(article.tags)) {
+        article.tags.forEach((tag: any) => {
+          if (tag && tag.name) {
+            tagsSet.add(tag.name);
+          }
+        });
       }
     });
     const tags = Array.from(tagsSet).slice(0, 12);
 
+    const formattedArticles = articles.map((article: any) => ({
+      id: article.id,
+      title: article.title,
+      slug: article.slug,
+      excerpt: article.excerpt,
+      content: article.content,
+      featured_image: article.featured_image || article.featuredImage,
+      published_at: article.publish_date || article.publishDate,
+      post_date: article.publish_date || article.publishDate,
+      updated_at: article.updated_at || article.updatedAt,
+      seo_title: article.seo?.title || article.seo_title,
+      meta_description: article.seo?.metaDescription || article.meta_description,
+      status: article.status,
+      author_id: article.author_id || article.authorId,
+      categories: article.categories || [],
+      tags: article.tags || [],
+      author: article.author ? {
+        id: article.author.id,
+        full_name: article.author.full_name || article.author.name,
+        email: article.author.email
+      } : null
+    }));
+
     return {
-      articles: articlesData.articles,
-      categories,
-      featuredArticle,
-      latestArticles,
+      articles: formattedArticles,
+      categories: categories.map((cat: any) => ({
+        id: cat.id,
+        name: cat.name,
+        slug: cat.slug,
+        description: cat.description
+      })),
+      featuredArticle: formattedArticles[0] || null,
+      latestArticles: formattedArticles.slice(1, 4),
       tags,
       seoSettings
     };
@@ -91,7 +126,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export const revalidate = 300; // ISR: Revalidate every 5 minutes
+export const revalidate = 300;
 
 export default async function ArtikelPage() {
   const { articles, categories, featuredArticle, latestArticles, tags, seoSettings } = await getArticleData();

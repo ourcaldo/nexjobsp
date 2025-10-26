@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { cmsArticleService } from '@/lib/cms/articles';
-import { NxdbArticle } from '@/lib/supabase';
+import { cmsService } from '@/lib/cms/service';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
@@ -22,13 +21,36 @@ interface ArticleDetailPageProps {
 
 async function getArticleData(categorySlug: string, slug: string) {
   try {
-    const article = await cmsArticleService.getArticleBySlug(slug);
+    const articleResponse = await cmsService.getArticleBySlug(slug);
 
-    if (!article) {
+    if (!articleResponse.success || !articleResponse.data) {
       return null;
     }
 
-    const hasCategory = article.categories?.some(cat => cat.slug === categorySlug);
+    const rawArticle = articleResponse.data;
+
+    const article = {
+      id: rawArticle.id,
+      title: rawArticle.title,
+      slug: rawArticle.slug,
+      excerpt: rawArticle.excerpt,
+      content: rawArticle.content,
+      featured_image: rawArticle.featured_image || rawArticle.featuredImage,
+      published_at: rawArticle.publish_date || rawArticle.publishDate,
+      post_date: rawArticle.publish_date || rawArticle.publishDate,
+      updated_at: rawArticle.updated_at || rawArticle.updatedAt,
+      seo_title: rawArticle.seo?.title || rawArticle.seo_title,
+      meta_description: rawArticle.seo?.metaDescription || rawArticle.meta_description,
+      categories: rawArticle.categories || [],
+      tags: rawArticle.tags || [],
+      author: rawArticle.author ? {
+        id: rawArticle.author.id,
+        full_name: rawArticle.author.full_name || rawArticle.author.name,
+        email: rawArticle.author.email
+      } : null
+    };
+
+    const hasCategory = article.categories?.some((cat: any) => cat.slug === categorySlug);
     if (!hasCategory) {
       return null;
     }
@@ -45,8 +67,13 @@ async function getArticleData(categorySlug: string, slug: string) {
 
 export async function generateStaticParams() {
   try {
-    const { articles } = await cmsArticleService.getPublishedArticles(100, 0);
-    return articles.map(article => ({
+    const articlesResponse = await cmsService.getArticles(1, 100);
+    
+    if (!articlesResponse.success) {
+      return [];
+    }
+
+    return articlesResponse.data.posts.map((article: any) => ({
       category: article.categories?.[0]?.slug || 'uncategorized',
       slug: article.slug
     }));
@@ -71,7 +98,7 @@ export async function generateMetadata({ params }: ArticleDetailPageProps): Prom
   return {
     title: `${article.seo_title || article.title} - Nexjob`,
     description: article.meta_description || article.excerpt,
-    keywords: article.tags?.map(tag => tag.name).join(', '),
+    keywords: article.tags?.map((tag: any) => tag.name).join(', '),
     openGraph: {
       title: article.seo_title || article.title,
       description: article.meta_description || article.excerpt,
@@ -82,7 +109,7 @@ export async function generateMetadata({ params }: ArticleDetailPageProps): Prom
       modifiedTime: article.updated_at,
       authors: [article.author?.full_name || article.author?.email || 'Nexjob'],
       section: article.categories?.[0]?.name || 'Article',
-      tags: article.tags?.map(tag => tag.name),
+      tags: article.tags?.map((tag: any) => tag.name),
     },
     twitter: {
       card: 'summary_large_image',
@@ -96,7 +123,7 @@ export async function generateMetadata({ params }: ArticleDetailPageProps): Prom
   };
 }
 
-export const revalidate = 3600; // ISR: Revalidate every 1 hour
+export const revalidate = 3600;
 
 export default async function ArticleDetailPage({ params }: ArticleDetailPageProps) {
   const data = await getArticleData(params.category, params.slug);
@@ -128,7 +155,6 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
 
       <main className="min-h-screen bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 py-8">
-          {/* Breadcrumb */}
           <nav className="mb-8">
             <ol className="flex items-center space-x-2 text-sm text-gray-500">
               {breadcrumbItems.map((item, index) => (
@@ -146,10 +172,9 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
             </ol>
           </nav>
 
-          {/* Article Header */}
           <header className="mb-8">
             <div className="flex items-center space-x-4 mb-4">
-              {article.categories?.map(category => (
+              {article.categories?.map((category: any) => (
                 <span
                   key={category.id}
                   className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800"
@@ -186,7 +211,6 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
             </div>
           </header>
 
-          {/* Featured Image */}
           {article.featured_image && (
             <div className="mb-8">
               <Image
@@ -199,14 +223,12 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
             </div>
           )}
 
-          {/* Article Content */}
           <article className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 md:p-8 mb-8">
             <div className="prose prose-lg max-w-none">
               <CMSContent content={article.content} />
             </div>
           </article>
 
-          {/* Tags */}
           {article.tags && article.tags.length > 0 && (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
               <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
@@ -214,7 +236,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
                 Tags
               </h3>
               <div className="flex flex-wrap gap-2">
-                {article.tags.map(tag => (
+                {article.tags.map((tag: any) => (
                   <span
                     key={tag.id}
                     className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors"
