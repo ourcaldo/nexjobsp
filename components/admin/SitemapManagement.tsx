@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { RefreshCw, Loader2, CheckCircle, Clock, FileText, BarChart3, Settings } from 'lucide-react';
-import { supabaseAdminService } from '@/services/supabaseAdminService';
+import { supabaseAdminService } from '@/lib/supabase/admin';
 import { useToast } from '@/components/ui/ToastProvider';
 
 const SitemapManagement: React.FC = () => {

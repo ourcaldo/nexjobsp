@@ -23,7 +23,7 @@ const debugAuth = async () => {
   console.groupEnd();
 };
 
-import { userBookmarkService } from '@/services/userBookmarkService';
+import { userBookmarkService } from '@/lib/api/user-bookmarks';
 import BookmarkLoginModal from '@/components/ui/BookmarkLoginModal';
 
 const Header: React.FC = () => {

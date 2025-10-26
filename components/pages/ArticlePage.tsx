@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, User, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
-import { cmsService } from '@/services/cmsService';
+import { cmsService } from '@/lib/cms/service';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import SchemaMarkup from '@/components/SEO/SchemaMarkup';
 import { generateArticleListingSchema, generateBreadcrumbSchema } from '@/utils/schemaUtils';

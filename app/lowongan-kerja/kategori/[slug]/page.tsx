@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { SupabaseAdminService } from '@/services/supabaseAdminService';
+import { SupabaseAdminService } from '@/lib/supabase/admin';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobSearchPage from '@/components/pages/JobSearchPage';

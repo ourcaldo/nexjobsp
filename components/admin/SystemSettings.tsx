@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Save, Loader2, Settings, Database, Globe, BarChart3 } from 'lucide-react';
-import { supabaseAdminService } from '@/services/supabaseAdminService';
+import { supabaseAdminService } from '@/lib/supabase/admin';
 import { useToast } from '@/components/ui/ToastProvider';
 
 const SystemSettings: React.FC = () => {

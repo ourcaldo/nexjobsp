@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase';
-import { supabaseStorageService } from '@/services/supabaseStorageService';
+import { supabaseStorageService } from '@/lib/supabase/storage';
 
 export async function POST(request: NextRequest) {
   try {

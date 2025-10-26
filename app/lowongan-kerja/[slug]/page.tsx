@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { cmsService } from '@/services/cmsService';
-import { SupabaseAdminService } from '@/services/supabaseAdminService';
+import { cmsService } from '@/lib/cms/service';
+import { SupabaseAdminService } from '@/lib/supabase/admin';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';

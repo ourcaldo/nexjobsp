@@ -5,14 +5,14 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, User, ArrowRight, Loader2, AlertCircle, Tag, Folder } from 'lucide-react';
-import { cmsService } from '@/services/cmsService';
+import { cmsService } from '@/lib/cms/service';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import SchemaMarkup from '@/components/SEO/SchemaMarkup';
 import { generateArticleSchema, generateBreadcrumbSchema, generateAuthorSchema } from '@/utils/schemaUtils';
 import ArticleSidebar from '@/components/ArticleSidebar';
 import AdDisplay from '@/components/Advertisement/AdDisplay';
-import { advertisementService } from '@/services/advertisementService';
+import { advertisementService } from '@/lib/utils/advertisements';
 
 interface ArticleDetailPageProps {
   slug: string;

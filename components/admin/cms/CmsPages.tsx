@@ -21,8 +21,8 @@ import {
   Filter,
   MoreHorizontal
 } from 'lucide-react';
-import { cmsPageService } from '@/services/cmsPageService';
-import { cmsArticleService } from '@/services/cmsArticleService';
+import { cmsPageService } from '@/lib/cms/pages';
+import { cmsArticleService } from '@/lib/cms/articles';
 import { NxdbPage, NxdbArticle } from '@/lib/supabase';
 import { useToast } from '@/components/ui/ToastProvider';
 import { formatDistance } from 'date-fns';

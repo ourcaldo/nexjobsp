@@ -13,8 +13,8 @@ import {
   CheckCircle,
   AlertCircle
 } from 'lucide-react';
-import { supabaseAdminService } from '@/services/supabaseAdminService';
-import { cmsService } from '@/services/cmsService';
+import { supabaseAdminService } from '@/lib/supabase/admin';
+import { cmsService } from '@/lib/cms/service';
 
 interface DashboardStats {
   totalUsers: number;

@@ -19,9 +19,9 @@ import {
   Badge
 } from 'lucide-react';
 import { Job } from '@/types/job';
-import { cmsService } from '@/services/cmsService';
-import { bookmarkService } from '@/services/bookmarkService';
-import { userBookmarkService } from '@/services/userBookmarkService';
+import { cmsService } from '@/lib/cms/service';
+import { bookmarkService } from '@/lib/utils/bookmarks';
+import { userBookmarkService } from '@/lib/api/user-bookmarks';
 import { supabase } from '@/lib/supabase';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import Breadcrumbs from '@/components/Breadcrumbs';

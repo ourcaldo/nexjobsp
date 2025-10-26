@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { sitemapService } from '@/services/sitemapService';
+import { sitemapService } from '@/lib/utils/sitemap';
 
 export const revalidate = 3600; // Revalidate every hour
 

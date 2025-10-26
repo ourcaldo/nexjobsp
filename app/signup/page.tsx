@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { SupabaseAdminService } from '@/services/supabaseAdminService';
+import { SupabaseAdminService } from '@/lib/supabase/admin';
 import { getCurrentDomain } from '@/lib/env';
 import { renderTemplate } from '@/utils/templateUtils';
 import SignupPage from '@/components/pages/SignupPage';

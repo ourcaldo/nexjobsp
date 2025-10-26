@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { supabaseAdminService } from '@/services/supabaseAdminService';
+import { supabaseAdminService } from '@/lib/supabase/admin';
 import { useToast } from '@/components/ui/ToastProvider';
 import { Save, Eye, EyeOff, AlertCircle } from 'lucide-react';
 

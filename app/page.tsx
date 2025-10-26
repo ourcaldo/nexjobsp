@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { CMSService, FilterData } from '@/services/cmsService';
-import { SupabaseAdminService } from '@/services/supabaseAdminService';
+import { CMSService, FilterData } from '@/lib/cms/service';
+import { SupabaseAdminService } from '@/lib/supabase/admin';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';

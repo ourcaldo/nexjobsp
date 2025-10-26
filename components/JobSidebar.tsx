@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Briefcase, Clock, GraduationCap, Building, Users, Filter, MapPin, ChevronDown, ChevronUp, Star, Zap, DollarSign } from 'lucide-react';
-import { cmsService, FilterData } from '@/services/cmsService';
+import { cmsService, FilterData } from '@/lib/cms/service';
 
 interface JobSidebarProps {
   filters: {

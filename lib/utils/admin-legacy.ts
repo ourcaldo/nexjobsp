@@ -1,4 +1,4 @@
-import { supabaseAdminService } from './supabaseAdminService';
+import { supabaseAdminService } from '@/lib/supabase/admin';
 
 // Legacy compatibility layer for existing code
 class LegacyAdminService {

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { cmsArticleService } from '@/services/cmsArticleService';
-import { supabaseAdminService } from '@/services/supabaseAdminService';
+import { cmsArticleService } from '@/lib/cms/articles';
+import { supabaseAdminService } from '@/lib/supabase/admin';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';

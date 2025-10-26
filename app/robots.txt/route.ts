@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { SupabaseAdminService } from '@/services/supabaseAdminService';
+import { SupabaseAdminService } from '@/lib/supabase/admin';
 import { getCurrentDomain } from '@/lib/env';
 
 export const revalidate = 3600; // Revalidate every hour

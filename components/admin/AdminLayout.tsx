@@ -24,7 +24,7 @@ import {
   ChevronUp,
   Briefcase
 } from 'lucide-react';
-import { supabaseAdminService } from '@/services/supabaseAdminService';
+import { supabaseAdminService } from '@/lib/supabase/admin';
 import { useToast } from '@/components/ui/ToastProvider';
 
 interface AdminLayoutProps {

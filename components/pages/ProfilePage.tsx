@@ -7,13 +7,13 @@ import Link from 'next/link';
 import { User, Mail, Phone, Calendar, MapPin, Camera, Save, Loader2, LogOut, Bookmark } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Profile } from '@/lib/supabase';
-import { supabaseStorageService } from '@/services/supabaseStorageService';
-import { userBookmarkService } from '@/services/userBookmarkService';
+import { supabaseStorageService } from '@/lib/supabase/storage';
+import { userBookmarkService } from '@/lib/api/user-bookmarks';
 import { useToast } from '@/components/ui/ToastProvider';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobCard from '@/components/JobCard';
-import { cmsService } from '@/services/cmsService';
+import { cmsService } from '@/lib/cms/service';
 import { Job } from '@/types/job';
 
 interface ProfilePageProps {

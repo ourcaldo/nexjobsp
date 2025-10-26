@@ -16,10 +16,10 @@ import {
   Plus,
   X
 } from 'lucide-react';
-import { cmsArticleService, CreateArticleData, UpdateArticleData } from '@/services/cmsArticleService';
-import { cmsPageService, CreatePageData, UpdatePageData } from '@/services/cmsPageService';
-import { supabaseAdminService } from '@/services/supabaseAdminService';
-import { supabaseStorageService } from '@/services/supabaseStorageService';
+import { cmsArticleService, CreateArticleData, UpdateArticleData } from '@/lib/cms/articles';
+import { cmsPageService, CreatePageData, UpdatePageData } from '@/lib/cms/pages';
+import { supabaseAdminService } from '@/lib/supabase/admin';
+import { supabaseStorageService } from '@/lib/supabase/storage';
 import { NxdbArticle, NxdbPage, NxdbArticleCategory, NxdbArticleTag, NxdbPageCategory, NxdbPageTag } from '@/lib/supabase';
 import { useToast } from '@/components/ui/ToastProvider';
 import TiptapEditor from './TiptapEditor';

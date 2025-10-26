@@ -120,7 +120,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
       }
 
       // Only for profile/admin pages: use API layer to get full profile
-      const { userProfileApiService } = await import('./userProfileApiService');
+      const { userProfileApiService } = await import('@/lib/api/user-profile');
       const result = await userProfileApiService.getCurrentUserProfile();
 
       if (!result.success) {
@@ -290,7 +290,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
 
       if (isAdmin) {
         // For super admin: use admin API (full settings with sensitive data)
-        const { adminSettingsApiService } = await import('./adminSettingsApiService');
+        const { adminSettingsApiService } = await import('@/lib/api/admin-settings');
         const settings = await adminSettingsApiService.getSettings(forceRefresh);
 
         if (settings) {
@@ -298,7 +298,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
         }
       } else {
         // For public/regular users: use public API (safe settings only)
-        const { publicSettingsApiService } = await import('./publicSettingsApiService');
+        const { publicSettingsApiService } = await import('@/lib/api/public-settings');
         const publicSettings = await publicSettingsApiService.getSettings(forceRefresh);
 
         if (publicSettings) {
@@ -390,7 +390,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
       }
 
       // Client-side: use API layer
-      const { adminSettingsApiService } = await import('./adminSettingsApiService');
+      const { adminSettingsApiService } = await import('@/lib/api/admin-settings');
       const result = await adminSettingsApiService.saveSettings(settings);
 
       if (result.success) {
@@ -399,7 +399,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
 
         // Also clear public cache
         try {
-          const { publicSettingsApiService } = await import('./publicSettingsApiService');
+          const { publicSettingsApiService } = await import('@/lib/api/public-settings');
           publicSettingsApiService.clearCache();
         } catch (error) {
           console.log('Could not clear public cache:', error);

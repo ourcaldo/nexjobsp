@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { cmsPageService } from '@/services/cmsPageService';
+import { cmsPageService } from '@/lib/cms/pages';
 import { NxdbPage } from '@/lib/supabase';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';

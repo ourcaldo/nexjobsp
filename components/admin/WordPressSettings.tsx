@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Save, TestTube, Loader2, CheckCircle, XCircle, Globe, Key } from 'lucide-react';
-import { supabaseAdminService } from '@/services/supabaseAdminService';
-import { cmsService } from '@/services/cmsService';
+import { supabaseAdminService } from '@/lib/supabase/admin';
+import { cmsService } from '@/lib/cms/service';
 import { useToast } from '@/components/ui/ToastProvider';
 
 const WordPressSettings: React.FC = () => {

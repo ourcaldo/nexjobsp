@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { MapPin, Clock, Briefcase, GraduationCap, ExternalLink, Building, Bookmark, EyeOff, Flame } from 'lucide-react';
 import { Job } from '@/types/job';
 import { supabase } from '@/lib/supabase';
-import { userBookmarkService } from '@/services/userBookmarkService';
+import { userBookmarkService } from '@/lib/api/user-bookmarks';
 import { useToast } from '@/components/ui/ToastProvider';
 import BookmarkLoginModal from '@/components/ui/BookmarkLoginModal';
 import { useRouter } from 'next/navigation';

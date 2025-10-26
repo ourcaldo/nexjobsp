@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
-import { advertisementService } from '@/services/advertisementService';
+import { advertisementService } from '@/lib/utils/advertisements';
 
 const PopupAd: React.FC = () => {
   const pathname = usePathname();

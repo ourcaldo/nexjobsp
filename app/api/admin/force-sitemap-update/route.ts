@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase';
-import { adminService } from '@/services/adminService';
-import { sitemapService } from '@/services/sitemapService';
+import { adminService } from '@/lib/utils/admin-legacy';
+import { sitemapService } from '@/lib/utils/sitemap';
 
 export async function POST(request: NextRequest) {
   const supabase = createServerSupabaseClient();

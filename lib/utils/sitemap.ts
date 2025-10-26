@@ -1,6 +1,6 @@
-import { supabaseAdminService } from './supabaseAdminService';
-import { cmsService } from './cmsService';
-import { cmsArticleService } from './cmsArticleService';
+import { supabaseAdminService } from '@/lib/supabase/admin';
+import { cmsService } from '@/lib/cms/service';
+import { cmsArticleService } from '@/lib/cms/articles';
 import { Job } from '@/types/job';
 import { getCurrentDomain } from '@/lib/env';
 

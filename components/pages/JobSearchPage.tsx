@@ -4,8 +4,8 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, Filter, X, Loader2, AlertCircle } from 'lucide-react';
 import { Job } from '@/types/job';
-import { cmsService, FilterData } from '@/services/cmsService';
-import { userBookmarkService } from '@/services/userBookmarkService';
+import { cmsService, FilterData } from '@/lib/cms/service';
+import { userBookmarkService } from '@/lib/api/user-bookmarks';
 import { supabase } from '@/lib/supabase';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import JobCard from '@/components/JobCard';

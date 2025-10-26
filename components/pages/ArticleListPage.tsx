@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { NxdbArticle, NxdbArticleCategory } from '@/lib/supabase';
-import { cmsArticleService } from '@/services/cmsArticleService';
+import { cmsArticleService } from '@/lib/cms/articles';
 import { formatDistance } from 'date-fns';
 import { Calendar, User, Tag, Folder, ArrowRight, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';

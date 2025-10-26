@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { cmsArticleService } from '@/services/cmsArticleService';
+import { cmsArticleService } from '@/lib/cms/articles';
 import { NxdbArticle, NxdbArticleCategory } from '@/lib/supabase';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';

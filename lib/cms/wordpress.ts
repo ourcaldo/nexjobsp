@@ -1,5 +1,5 @@
 import { Job } from '@/types/job';
-import { supabaseAdminService } from './supabaseAdminService';
+import { supabaseAdminService } from '@/lib/supabase/admin';
 import { env } from '@/lib/env';
 
 interface FilterData {
