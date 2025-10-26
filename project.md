@@ -7,9 +7,9 @@ Nexjob is a full-featured job portal platform built with Next.js 14, TypeScript,
 - **Framework**: Next.js 14.2.30 (App Router)
 - **Language**: TypeScript 5.8.3
 - **Database**: PostgreSQL via Supabase
-- **CMS**: WordPress (Headless)
+- **CMS**: TugasCMS (External API at https://cms.nexjob.tech)
 - **Authentication**: Supabase Auth
-- **Storage**: Supabase Storage
+- **Storage**: Supabase Storage (Profiles), Appwrite (CMS Assets)
 - **Styling**: Tailwind CSS
 - **Rich Text**: TipTap Editor
 
@@ -128,10 +128,8 @@ nexjob-portal/
 │   └── SEO/                          # Schema markup
 ├── lib/                              # Core utilities & services
 │   ├── cms/                          # CMS-related functionality
-│   │   ├── service.ts                # CMS API client
-│   │   ├── wordpress.ts              # WordPress REST API client
-│   │   ├── articles.ts               # Article CRUD operations
-│   │   └── pages.ts                  # Page CRUD operations
+│   │   ├── service.ts                # External CMS API client (TugasCMS)
+│   │   └── pages.ts                  # Database-based page operations
 │   ├── supabase/                     # Supabase-related functionality
 │   │   ├── admin.ts                  # Admin operations
 │   │   └── storage.ts                # Storage operations
@@ -163,6 +161,49 @@ nexjob-portal/
 - **14:31** - Restarted workflow, Next.js dev server running on port 5000
 - **14:32** - Project successfully imported and running
 - **Status**: Application accessible but showing CMS connection timeouts (expected without proper WordPress credentials)
+
+### 2025-10-26 - External CMS Migration **[COMPLETED]**
+- **16:00** - Migrated article system from database to external CMS API
+- **Implementation Details**:
+  
+  **What Changed**:
+  - Articles now fetched from external TugasCMS API (https://cms.nexjob.tech)
+  - Removed WordPress integration (wordpress.ts, WordPressSettings.tsx, /backend/admin/wordpress)
+  - Removed backend CMS management (deleted /app/backend/admin/cms directory)
+  - Deleted database-based article services (lib/cms/articles.ts - old version)
+  - Database-based pages (lib/cms/pages.ts) remain functional for app/[slug] route
+  
+  **Files Updated**:
+  - `app/artikel/page.tsx` - Now uses `cmsService.getArticles()` for external API
+  - `app/artikel/[category]/page.tsx` - Category filtering via external CMS API
+  - `app/artikel/[category]/[slug]/page.tsx` - Individual articles from external API
+  - `components/pages/ArticleListPage.tsx` - Client-side filtering using external API
+  - `lib/utils/sitemap.ts` - Updated to fetch articles from external CMS
+  - `lib/cms/service.ts` - External CMS API client (articles, categories, tags, jobs)
+  - `next.config.js` - Added Appwrite CDN domain (syd.cloud.appwrite.io)
+  - `hooks/useAnalytics.ts` - Fixed for App Router (usePathname instead of useRouter)
+  
+  **API Configuration**:
+  - CMS Endpoint: `https://cms.nexjob.tech/api/v1`
+  - Authentication: Bearer token (`cms_4iL1SEEXB7oQoiYDEfNJBTpeHeFVLP3k`)
+  - Timeout: 10 seconds
+  - Configured in `.env` file
+  
+  **Bug Fixes**:
+  - Fixed uncategorized article routing (articles without categories now accessible at `/artikel/uncategorized/[slug]`)
+  - Fixed image hosting for CMS images (Appwrite storage)
+  - Fixed NextRouter hook error in useAnalytics (App Router compatibility)
+  
+  **Verification**:
+  - ✅ External CMS API connection successful
+  - ✅ Article listing page working correctly
+  - ✅ Category pages displaying filtered articles
+  - ✅ Individual article pages loading from external API
+  - ✅ Images from Appwrite CDN displaying correctly
+  - ✅ Uncategorized articles accessible
+  - ✅ Database-based pages still functional
+  
+  **Impact**: Articles are now managed externally via TugasCMS, simplifying the backend and removing the need for internal article management. Database-based pages remain for custom CMS content while articles come from the external API.
 
 ### 2025-10-26 - /services Directory Restructuring **[COMPLETED]**
 - **15:00** - Beginning restructuring of /services directory to Next.js-friendly /lib structure
@@ -224,10 +265,10 @@ NEXT_PUBLIC_SITE_URL=https://nexjob.tech
 NEXT_PUBLIC_SITE_NAME=Nexjob
 NEXT_PUBLIC_SITE_DESCRIPTION=Platform pencarian kerja terpercaya di Indonesia
 
-# WordPress API (Headless CMS)
-NEXT_PUBLIC_WP_API_URL=https://cms.nexjob.tech/wp-json/wp/v2
-NEXT_PUBLIC_WP_FILTERS_API_URL=https://cms.nexjob.tech/wp-json/nex/v1/filters-data
-NEXT_PUBLIC_WP_AUTH_TOKEN=
+# External CMS API (TugasCMS)
+NEXT_PUBLIC_CMS_ENDPOINT=https://cms.nexjob.tech
+NEXT_PUBLIC_CMS_TOKEN=cms_4iL1SEEXB7oQoiYDEfNJBTpeHeFVLP3k
+NEXT_PUBLIC_CMS_TIMEOUT=10000
 
 # Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=https://uzlzyosmbxgghhmafidk.supabase.co
@@ -356,11 +397,13 @@ SITEMAP_CACHE_TTL=300
 9. **Next.js Patterns**: Follow Next.js 14 App Router conventions
 10. **TypeScript**: Use strict typing throughout
 
-### WordPress CMS Integration
-- Jobs sourced from WordPress REST API
-- Filter data cached with 1-hour TTL
-- Custom fields with `nexjob_` prefix
-- Category mapping for SEO-friendly URLs
+### External CMS Integration (TugasCMS)
+- Articles and jobs fetched from external API at https://cms.nexjob.tech
+- Filter data cached with 1-hour TTL (configurable via environment)
+- REST API with Bearer token authentication
+- Category and tag support for articles
+- Images hosted on Appwrite CDN (syd.cloud.appwrite.io)
+- Pages remain database-based (nxdb_pages table) for custom content
 
 ### Deployment
 - Platform: Replit (Autoscale)
@@ -371,5 +414,5 @@ SITEMAP_CACHE_TTL=300
 
 ---
 
-**Last Updated**: October 26, 2025, 15:00 WIB
+**Last Updated**: October 26, 2025, 16:10 WIB
 **Maintained By**: Replit AI Agent
