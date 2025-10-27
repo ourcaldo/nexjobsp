@@ -19,7 +19,6 @@ import {
   Badge
 } from 'lucide-react';
 import { Job } from '@/types/job';
-import { cmsService } from '@/lib/cms/service';
 import { bookmarkService } from '@/lib/utils/bookmarks';
 import { userBookmarkService } from '@/lib/api/user-bookmarks';
 import { supabase } from '@/lib/supabase';
@@ -48,8 +47,12 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, slug, settings }) =>
   useEffect(() => {
     const fetchRelatedJobs = async () => {
       try {
-        const relatedData = await cmsService.getRelatedJobs(job.id, job.kategori_pekerjaan, 4);
-        setRelatedJobs(relatedData);
+        const response = await fetch(`/api/job-posts/${job.id}/related?limit=4`);
+        const data = await response.json();
+        
+        if (data.success && data.data) {
+          setRelatedJobs(data.data);
+        }
       } catch (err) {
         console.error('Error loading related jobs:', err);
       }

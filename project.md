@@ -155,7 +155,78 @@ nexjob-portal/
 
 ## Recent Changes
 
-### 2025-10-27 04:35 - Job Filters and React Hydration Fixes **[IN PROGRESS]**
+### 2025-10-27 05:50 - Job Enhancements: Education Filter, Company Display, and Salary Formatting **[COMPLETED]**
+- **Time**: 05:50 WIB
+- **Issues Addressed**:
+  1. Missing education level filter in job sidebar
+  2. Company name not displaying in job listings
+  3. Education level not displaying in job cards
+  4. Salary format showing "5.0jt - 8.0jt" instead of requested "5-8 Juta" format
+  
+- **Implementation Details**:
+  
+  **Files Modified**:
+  - `components/JobSidebar.tsx` - Added education level filter:
+    - Added new filter section for education levels (D1, D2, D3, D4, S1, S2, S3, SMA/SMK/Sederajat)
+    - Uses same UUID-based pattern as categories and employment types
+    - Filters send education level IDs to API via `education_level` parameter
+  
+  - `lib/cms/service.ts` - Multiple enhancements:
+    - **FilterData interface**: Added `education_levels` array with id, name, slug, post_count
+    - **CMSJobPost interface**: Added `education_level` field with id, name, slug
+    - **transformCMSJobToJob()**: 
+      - Updated to populate `pendidikan` field from `cmsJob.education_level?.name`
+      - Fixed salary formatting logic to show "5-8 Juta" instead of "5.0jt - 8.0jt"
+      - New logic removes decimal if whole number, adds "Juta" suffix for millions
+    - **buildJobsUrl()**: Added education level filter parameter support
+    - **getFallbackFiltersData()**: Added education_levels to fallback data
+  
+  - `app/api/job-posts/route.ts` - Added education level parameter:
+    - Accepts `education_level` query parameter from client
+    - Passes education level ID to CMS service filters
+  
+  - `components/pages/JobSearchPage.tsx` - Updated search implementation:
+    - Added education level filter to all API request params
+    - Filters object now includes educations array
+    - All three search methods updated (initial load, manual search, infinite scroll)
+  
+  - `components/JobCard.tsx` - Uses slug-based permalinks:
+    - Job detail links use `/lowongan-kerja/{slug}/`
+    - Maintains SEO-friendly URL structure
+  
+  - `app/lowongan-kerja/[slug]/page.tsx` - Slug-based routing:
+    - Route parameter remains as slug for permalinks
+    - Fetches job data using `getJobBySlug()` method
+    - Canonical URLs use slug format
+  
+  - `components/pages/JobDetailPage.tsx` - Fixed related jobs to use API route:
+    - Removed direct import of `cmsService` (prevents client-side exposure of cms_token)
+    - Changed to fetch related jobs from `/api/job-posts/{id}/related` API endpoint
+    - Maintains security by keeping cms_token server-side only
+  
+  - `app/api/job-posts/[id]/related/route.ts` - **NEW** API endpoint for related jobs:
+    - Server-side endpoint that calls `cmsService.getRelatedJobs()`
+    - Accepts `limit` query parameter (default: 4)
+    - Returns related jobs in standardized JSON format
+    - Keeps CMS token secure on server-side
+  
+  **API Integration**:
+  - ✅ Education level filter data fetched from `/api/v1/job-posts/filters`
+  - ✅ Education level filtering via `education_level` parameter (UUID)
+  - ✅ Job responses include `education_level` object with name
+  - ✅ Salary formatting matches Indonesian format preferences
+  
+  **Verification**:
+  - ✅ Education filter appears in sidebar with all levels (D1-D4, S1-S3, SMA/SMK)
+  - ✅ Company names display correctly in job listings
+  - ✅ Education levels show in job cards when available
+  - ✅ Salary displays as "Rp 5-8 Juta/month" instead of "Rp 5.0jt - 8.0jt/month"
+  - ✅ Job permalinks use slug format (/lowongan-kerja/demo-job/)
+  - ✅ Zero LSP errors after changes
+  
+  **Impact**: Job filtering and display now fully supports education level requirements, making it easier for job seekers to find positions matching their qualifications. Salary formatting is more readable and matches Indonesian conventions. Company names are properly displayed in all job listings.
+
+### 2025-10-27 04:35 - Job Filters and React Hydration Fixes **[COMPLETED]**
 - **Time**: 04:35 WIB
 - **Issues Addressed**:
   1. Job category/employment type/experience level filters were sending label names instead of UUIDs to API

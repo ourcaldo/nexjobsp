@@ -20,6 +20,10 @@ export async function GET(request: NextRequest) {
       filters.experiences = [searchParams.get('experience_level')];
     }
     
+    if (searchParams.get('education_level')) {
+      filters.educations = [searchParams.get('education_level')];
+    }
+    
     if (searchParams.get('job_category')) {
       filters.categories = [searchParams.get('job_category')];
     }

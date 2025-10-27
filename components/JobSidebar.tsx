@@ -300,6 +300,16 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
             filterData.experience_levels.map(el => ({ id: el.id, name: el.name }))
           )
         )}
+
+        {/* Education Level */}
+        {filterData?.education_levels && filterData.education_levels.length > 0 && (
+          renderCheckboxGroup(
+            'Pendidikan',
+            <GraduationCap className="h-4 w-4 text-gray-400" />,
+            'educations',
+            filterData.education_levels.map(edu => ({ id: edu.id, name: edu.name }))
+          )
+        )}
       </div>
 
       {/* Clear Filters */}

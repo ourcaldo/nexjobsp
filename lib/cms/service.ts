@@ -5,6 +5,7 @@ import { env } from '@/lib/env';
 export interface FilterData {
   employment_types: Array<{ id: string; name: string; slug: string; post_count: number }>;
   experience_levels: Array<{ id: string; name: string; slug: string; years_min: number; years_max: number | null; post_count: number }>;
+  education_levels: Array<{ id: string; name: string; slug: string; post_count: number }>;
   categories: Array<{ id: string; name: string; slug: string; description: string | null; post_count: number }>;
   tags: Array<{ id: string; name: string; slug: string; post_count: number }>;
   salary_range: { min: string; max: string; currencies: string[] };
@@ -41,6 +42,7 @@ interface CMSJobPost {
   job_company_website: string | null;
   employment_type: { id: string; name: string; slug: string } | null;
   experience_level: { id: string; name: string; slug: string; years_min: number; years_max: number | null } | null;
+  education_level: { id: string; name: string; slug: string } | null;
   job_salary_min: string | null;
   job_salary_max: string | null;
   job_salary_currency: string | null;
@@ -215,12 +217,16 @@ export class CMSService {
       const currencySymbol = currency === 'IDR' ? 'Rp ' : currency === 'USD' ? '$' : '';
       const formatNumber = (num: number) => {
         if (num >= 1000000) {
-          return `${(num / 1000000).toFixed(1)}jt`;
+          const millions = num / 1000000;
+          return millions % 1 === 0 ? `${millions}` : `${millions.toFixed(1)}`;
         }
         return num.toLocaleString('id-ID');
       };
 
       if (minNum && maxNum) {
+        if (minNum >= 1000000 && maxNum >= 1000000) {
+          return `${currencySymbol}${formatNumber(minNum)}-${formatNumber(maxNum)} Juta${period ? '/' + period : ''}`;
+        }
         return `${currencySymbol}${formatNumber(minNum)} - ${formatNumber(maxNum)}${period ? '/' + period : ''}`;
       } else if (minNum) {
         return `${currencySymbol}${formatNumber(minNum)}+${period ? '/' + period : ''}`;
@@ -249,7 +255,7 @@ export class CMSService {
       lokasi_provinsi: cmsJob.province?.name || '',
       lokasi_kota: cmsJob.regency?.name || '',
       tipe_pekerjaan: cmsJob.employment_type?.name || 'Full Time',
-      pendidikan: '',
+      pendidikan: cmsJob.education_level?.name || '',
       industry: '',
       pengalaman: cmsJob.experience_level?.name || '',
       tag: cmsJob.job_tags?.[0]?.name || '',
@@ -302,6 +308,14 @@ export class CMSService {
     }
     if (filters.experiences && filters.experiences.length > 0) {
       params.set('experience_level', filters.experiences[0]);
+    }
+
+    // Education level filter
+    if (filters.education) {
+      params.set('education_level', filters.education);
+    }
+    if (filters.educations && filters.educations.length > 0) {
+      params.set('education_level', filters.educations[0]);
     }
 
     // Category filter
@@ -365,6 +379,7 @@ export class CMSService {
     return {
       employment_types: [],
       experience_levels: [],
+      education_levels: [],
       categories: [],
       tags: [],
       salary_range: { min: '0', max: '0', currencies: ['IDR'] },
@@ -504,18 +519,22 @@ export class CMSService {
     await this.ensureInitialized();
     
     try {
+      // Use query parameter to filter by slug instead of path parameter
       const params = new URLSearchParams({
-        status: 'published'
+        slug: slug,
+        status: 'published',
+        limit: '1'
       });
       
-      const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/job-posts/${slug}?${params.toString()}`);
-      const data: CMSResponse<CMSJobPost> = await response.json();
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/job-posts?${params.toString()}`);
+      const data: CMSResponse<{ posts: CMSJobPost[]; pagination: PaginationMeta }> = await response.json();
 
-      if (!data.success) {
+      if (!data.success || !data.data.posts || data.data.posts.length === 0) {
         return null;
       }
 
-      return this.transformCMSJobToJob(data.data);
+      // Return the first post from results
+      return this.transformCMSJobToJob(data.data.posts[0]);
     } catch (error) {
       console.error('Error fetching job by slug:', error);
       return null;
