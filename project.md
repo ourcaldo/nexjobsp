@@ -155,6 +155,73 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-27 16:30 - Article Detail Page Complete Redesign **[COMPLETED]**
+- **Time**: 16:30 WIB
+- **Features Added**:
+  1. Complete article detail page redesign with full-width images (no cropping)
+  2. Sidebar on the right with advertisements
+  3. Table of Contents below featured image
+  4. Related articles section below main content (filtered by category)
+  5. Increased left/right padding for better readability
+  
+- **Implementation Details**:
+  
+  **Files Deleted**:
+  - `components/pages/ArticleDetailPage.tsx` - Removed unused client-side component
+    - This was not being used by the actual article route
+    - Caused confusion with duplicate implementations
+  
+  **Files Modified**:
+  - `app/artikel/[category]/[slug]/page.tsx` - Complete rewrite:
+    - **Layout**: Changed to 2-column grid (2/3 main content + 1/3 sidebar)
+    - **Full-Width Image**: Removed aspect-ratio cropping, now displays full image with `w-full h-auto`
+    - **Increased Padding**: Changed from `p-8` to `p-6 md:p-10 lg:p-12` for better content spacing
+    - **Related Articles Position**: Moved from sidebar to BELOW main article content
+    - **Category-Based Filtering**: Uses `getRelatedArticles(slug, 5)` which filters by same category
+    - **Clean Sidebar**: Sidebar now shows only advertisements (empty related articles array)
+    
+  - `app/artikel/[category]/[slug]/ArticleContentWrapper.tsx` - New client component:
+    - Handles Table of Contents rendering
+    - Processes content with advertisement injection
+    - Adds IDs to h2/h3 headings for ToC navigation
+    - Manages ad display (top and bottom positions)
+    - Client-side component to handle dynamic content processing
+  
+  **Related Articles Implementation**:
+  - Articles fetched server-side using `cmsService.getRelatedArticles()`
+  - API call: `GET /api/v1/posts?category={category-id}&limit=5`
+  - Filters by category ID (not slug) as per TugasCMS API v1 spec
+  - Displays in 2-column grid below main content with hover effects
+  - Shows featured image, publish date, title, excerpt, and "Read More" link
+  
+  **Table of Contents**:
+  - Positioned below featured image and article metadata
+  - Parses h2 and h3 headings from content
+  - Smooth scrolling navigation to sections
+  - Active section highlighting based on scroll position
+  
+  **Padding Enhancement**:
+  - Mobile: `p-6` (24px)
+  - Tablet: `p-10` (40px)
+  - Desktop: `p-12` (48px)
+  - Provides better readability and breathing room for content
+  
+  **Verification**:
+  - ✅ Full-width images display without cropping
+  - ✅ Sidebar positioned on right side with ads
+  - ✅ Table of Contents appears below image
+  - ✅ Related articles section below main content
+  - ✅ Related articles filtered by same category ID
+  - ✅ Increased padding on left and right
+  - ✅ No LSP errors after changes
+  - ✅ Application compiles and runs successfully
+  
+  **Impact**: 
+  - **User Experience**: Significantly improved article reading experience with full images, better spacing, and easy navigation via Table of Contents
+  - **Content Discovery**: Related articles now prominently displayed below content, increasing engagement
+  - **Code Cleanliness**: Removed duplicate/unused components, single source of truth for article pages
+  - **SEO**: Full images and proper content structure improve page quality signals
+
 ### 2025-10-27 15:22 - Article Enhancements and Job Filter API Alignment **[COMPLETED]**
 - **Time**: 15:22 WIB
 - **Features Added**:
