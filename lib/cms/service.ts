@@ -265,7 +265,7 @@ export class CMSService {
         cmsJob.job_salary_currency,
         cmsJob.job_salary_period
       ),
-      kebijakan_kerja: cmsJob.job_is_remote ? 'Remote' : cmsJob.job_is_hybrid ? 'Hybrid' : '',
+      kebijakan_kerja: cmsJob.job_is_remote ? 'Remote Working' : cmsJob.job_is_hybrid ? 'Hybrid Working' : 'On-site',
       link: cmsJob.job_application_url || cmsJob.job_application_email ? 
         (cmsJob.job_application_url || `mailto:${cmsJob.job_application_email}`) : 
         `https://nexjob.tech/lowongan/${cmsJob.slug}`,
