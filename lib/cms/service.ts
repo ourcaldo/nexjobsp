@@ -732,11 +732,11 @@ export class CMSService {
           .slice(0, limit);
       }
 
-      // Get the first category slug to filter related articles
-      const categorySlug = articleData.data.categories[0].slug;
+      // Get the first category ID to filter related articles (use ID not slug!)
+      const categoryId = articleData.data.categories[0].id;
       
-      // Fetch articles from the same category
-      const relatedResponse = await this.getArticles(1, limit + 5, categorySlug);
+      // Fetch articles from the same category using category ID
+      const relatedResponse = await this.getArticles(1, limit + 5, categoryId);
       
       if (!relatedResponse.success) return [];
 

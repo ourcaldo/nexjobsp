@@ -243,18 +243,16 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
           {!loading && !error && article && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Main Content */}
-              <div className="lg:col-span-2">
-                <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+              <div className="lg:col-span-2 space-y-8">
+                <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                  {/* Featured Image - Full Size, No Cropping */}
                   {article.featuredImage && (
-                    <div className="relative w-full">
-                      <Image
+                    <div className="w-full">
+                      <img
                         src={article.featuredImage}
                         alt={article.title}
                         className="w-full h-auto"
-                        width={1200}
-                        height={800}
-                        priority
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
+                        style={{ maxWidth: '100%', height: 'auto' }}
                       />
                     </div>
                   )}
@@ -300,10 +298,10 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
                       </div>
                     )}
 
-                    {/* Table of Contents */}
+                    {/* Table of Contents - Now under the image and meta */}
                     <ArticleTableOfContents content={article.content} />
 
-                     {/* Top Advertisement */}
+                    {/* Top Advertisement */}
                     <div className="mb-8">
                       <AdDisplay position="single_top_ad_code" className="mb-6" />
                     </div>
@@ -323,6 +321,7 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
                       </div>
                     )}
 
+                    {/* Article Content */}
                     <div 
                       className="prose prose-lg max-w-none"
                       dangerouslySetInnerHTML={{ __html: parseContent(processedContent) }}
@@ -335,11 +334,11 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
                   </div>
                 </article>
 
-                {/* Related Articles */}
+                {/* Related Articles - Below Main Content */}
                 {relatedArticles.length > 0 && (
                   <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
                     <h2 className="text-2xl font-bold text-gray-900 mb-6">Artikel Terkait</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {relatedArticles.map((relatedArticle, index) => (
                         <div
                           key={relatedArticle.id}
@@ -347,7 +346,7 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
                           className="group cursor-pointer"
                           style={{ animationDelay: `${index * 0.1}s` }}
                         >
-                          <article className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-all duration-300">
+                          <article className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-all duration-300 h-full">
                             {relatedArticle.featuredImage && (
                               <div className="aspect-video overflow-hidden relative">
                                 <Image
@@ -367,6 +366,11 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
                               <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
                                 {relatedArticle.title}
                               </h3>
+                              {relatedArticle.excerpt && (
+                                <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                                  {relatedArticle.excerpt}
+                                </p>
+                              )}
                               <div className="flex items-center text-primary-600 text-sm font-medium group-hover:text-primary-700">
                                 Baca Selengkapnya
                                 <ArrowRight className="h-3 w-3 ml-1 group-hover:translate-x-1 transition-transform duration-200" />
