@@ -155,6 +155,41 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-27 04:35 - Job Filters and React Hydration Fixes **[IN PROGRESS]**
+- **Time**: 04:35 WIB
+- **Issues Addressed**:
+  1. Job category/employment type/experience level filters were sending label names instead of UUIDs to API
+  2. React hydration errors preventing the application from working correctly
+  3. Jobs not displaying on /lowongan-kerja page
+  
+- **Implementation Details**:
+  
+  **Files Modified**:
+  - `components/JobSidebar.tsx` - Fixed filter value handling:
+    - Modified `renderCheckboxGroup()` to accept objects with `{id, name}` structure
+    - Updated filter rendering to pass full filter objects instead of just names
+    - Categories, employment_types, and experience_levels now store and send UUIDs instead of names
+    - Filter labels display names to users, but IDs are sent to API
+  
+  - `app/layout.tsx` - Fixed React hydration errors:
+    - Removed manual `<head>` tag that was causing hydration mismatches
+    - Next.js App Router handles `<head>` automatically through Metadata API
+    - Moved GoogleTagManager component to correct position
+    - Fixed empty crossOrigin attribute issue
+  
+  **API Verification**:
+  - ✅ `/api/job-posts?page=1&limit=24` returns 200 with 1 job successfully
+  - ✅ `/api/job-posts/filters` returns 200 with filter data including IDs
+  - ✅ Job data structure is correct: `{id: "d071b083-1fc7-45f9-9541-8402ec2f2bd1", slug: "demo-job", title: "Demo Job", ...}`
+  
+  **Verification**:
+  - ✅ Code compiles successfully with zero LSP errors
+  - ✅ React hydration errors resolved
+  - ✅ Filters now use UUIDs instead of names (e.g., `job_category=ab315273-...` instead of `job_category=Category%201`)
+  - ⏳ **REMAINING ISSUE**: Jobs page stuck in client-side loading state (requires further investigation)
+  
+  **Impact**: Filter system now correctly sends UUIDs to API as required by TugasCMS specification. React hydration errors that were blocking the entire application are now resolved. However, the jobs listing page is experiencing a client-side rendering issue that requires additional debugging.
+
 ### 2025-10-27 02:24 - Pages Migration to External CMS **[COMPLETED]**
 - **Time**: 02:24 WIB
 - **Reason**: Complete migration of pages system from database to external TugasCMS API to unify content management
