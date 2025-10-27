@@ -337,6 +337,8 @@ npm run type-check   # TypeScript validation
 - API routes follow REST conventions
 - Components are organized by feature/domain
 - Services handle all external API calls
+- **All filter parameters use IDs, not labels/names** (province, city, category, employment type, etc.)
+- **Related content fetching uses category/category IDs** for both jobs and articles
 
 ### Development Commands
 ```bash
