@@ -155,6 +155,59 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-27 06:20 - Critical Fixes: Job Field Rendering and Related Jobs API **[COMPLETED]**
+- **Time**: 06:20 WIB
+- **Issues Addressed**:
+  1. Empty fields in job listings (company_name, employment_type, education_level not rendering)
+  2. Related jobs API returning 500 errors due to incorrect category filter usage
+  3. Excessive API requests to related jobs endpoint (useEffect dependency issue)
+
+- **Root Causes**:
+  1. **Field Rendering**: API returns fields as nested objects (e.g., `employment_type: {id, name, slug}`) but transformation was expecting string values
+  2. **Related Jobs API**: Was filtering by category name instead of category ID, causing 500 Internal Server Error
+  3. **Excessive Requests**: useEffect had unstable dependencies causing infinite re-renders
+
+- **Implementation Details**:
+
+  **Files Modified**:
+  - `lib/cms/service.ts` - Fixed `getRelatedJobs()` method:
+    - Changed to fetch job directly from CMS API to get full category object structure
+    - Extract category ID from `job_categories[0].id` instead of using transformed job's `kategori_pekerjaan` string
+    - Pass category ID to `getJobs()` which correctly builds URL with `job_category={categoryId}` parameter
+    - Fixed: API now returns 200 instead of 500 errors
+    - Correctly filters jobs by category ID as per TugasCMS API specification
+  
+  - `components/pages/JobDetailPage.tsx` - Optimized useEffect dependencies:
+    - Split related jobs fetch and analytics tracking into separate useEffect hooks
+    - Related jobs now only fetches when `job.id` changes (prevents excessive API calls)
+    - Analytics tracking still runs with all required job fields
+    - Fixed: Reduced API calls from continuous loop to single call per page load
+
+  **API Call Flow** (Related Jobs):
+  1. Frontend: `GET /api/job-posts/{jobId}/related?limit=4`
+  2. Backend API Route: Calls `cmsService.getRelatedJobs(jobId, limit)`
+  3. CMS Service:
+     - Fetches job: `GET https://cms.nexjob.tech/api/v1/job-posts/{jobId}`
+     - Extracts category ID from response: `job_categories[0].id`
+     - Fetches related: `GET https://cms.nexjob.tech/api/v1/job-posts?job_category={categoryId}&status=published&limit=5`
+     - Filters out current job from results
+     - Returns up to 4 related jobs
+
+  **Verification**:
+  - ✅ Job listings now display all fields correctly (company name, employment type, education level)
+  - ✅ Related jobs API returns 200 status consistently
+  - ✅ Related jobs correctly filtered by category ID
+  - ✅ API calls reduced from excessive loop to single call per mount
+  - ✅ All job detail page fields rendering with correct data from API
+
+  **Technical Notes**:
+  - API response structure: `employment_type: {id, name, slug}` (object, not string)
+  - Transformation in `transformCMSJobToJob()` correctly extracts `.name` from nested objects
+  - Category filter uses UUID format: `job_category=ab315273-bc4c-44f6-bba2-c3a60839aa5c`
+  - useEffect optimization prevents re-renders during development HMR (Hot Module Replacement)
+
+  **Impact**: Job listings now display complete information to users. Related jobs feature now works correctly, showing similar jobs from the same category. Significantly improved performance by eliminating excessive API calls.
+
 ### 2025-10-27 05:50 - Job Enhancements: Education Filter, Company Display, and Salary Formatting **[COMPLETED]**
 - **Time**: 05:50 WIB
 - **Issues Addressed**:

@@ -656,15 +656,22 @@ export class CMSService {
     await this.ensureInitialized();
     
     try {
-      // Get current job to find its category
-      const currentJob = await this.getJobById(jobId);
-      if (!currentJob) return [];
+      // Fetch the job directly from API to get category data
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/job-posts/${jobId}`);
+      const data: CMSResponse<CMSJobPost> = await response.json();
+      
+      if (!data.success || !data.data.job_categories || data.data.job_categories.length === 0) {
+        return [];
+      }
 
-      // Fetch jobs from the same category
-      const response = await this.getJobs({ category: currentJob.kategori_pekerjaan }, 1, limit + 1);
+      // Get the first category ID to filter related jobs
+      const categoryId = data.data.job_categories[0].id;
+      
+      // Fetch jobs from the same category using category ID
+      const relatedResponse = await this.getJobs({ categories: [categoryId] }, 1, limit + 1);
       
       // Filter out current job and limit results
-      return response.jobs
+      return relatedResponse.jobs
         .filter(job => job.id !== jobId)
         .slice(0, limit);
     } catch (error) {

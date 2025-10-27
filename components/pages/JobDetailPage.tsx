@@ -43,7 +43,7 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, slug, settings }) =>
   const [isBookmarkLoading, setIsBookmarkLoading] = useState(false);
   const [showBookmarkModal, setShowBookmarkModal] = useState(false);
 
-  // Load related jobs and setup analytics
+  // Load related jobs - only fetch once when job ID changes
   useEffect(() => {
     const fetchRelatedJobs = async () => {
       try {
@@ -59,15 +59,17 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, slug, settings }) =>
     };
 
     fetchRelatedJobs();
+  }, [job.id]);
 
-    // Track page view for analytics
+  // Track page view for analytics - separate effect
+  useEffect(() => {
     trackPageView({
       page_title: `${job.title} - ${job.company_name}`,
       content_group1: 'job_detail',
       content_group2: job.kategori_pekerjaan,
       content_group3: job.lokasi_kota,
     });
-  }, [job, trackPageView]);
+  }, [job.id, job.title, job.company_name, job.kategori_pekerjaan, job.lokasi_kota, trackPageView]);
 
   // Update bookmark state when job changes
   useEffect(() => {
