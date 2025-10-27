@@ -162,16 +162,16 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
       <Header />
 
       <main className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-8">
           <Breadcrumbs items={breadcrumbItems} />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
             {/* Main Content - 2/3 width */}
             <div className="lg:col-span-2">
-              <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                {/* Full Width Image - NO CROPPING */}
+              <article className="bg-white">
+                {/* Full Width Image */}
                 {article.featured_image && (
-                  <div className="w-full">
+                  <div className="w-full mb-8">
                     <img
                       src={article.featured_image}
                       alt={article.title}
@@ -181,7 +181,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
                   </div>
                 )}
 
-                <div className="p-6 md:p-10 lg:p-12">
+                <div className="px-8 pb-12">
                   {/* Article Meta */}
                   <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6">
                     <div className="flex items-center">
@@ -214,7 +214,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
                   </h1>
 
                   {article.meta_description && (
-                    <div className="bg-gray-50 border-l-4 border-primary-500 p-4 mb-6">
+                    <div className="bg-blue-50 border-l-4 border-primary-500 p-4 mb-6">
                       <p className="text-gray-700 text-lg leading-relaxed">
                         {article.meta_description}
                       </p>
@@ -223,7 +223,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
 
                   {/* Tags */}
                   {article.tags && article.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-6">
+                    <div className="flex flex-wrap gap-2 mb-8">
                       {article.tags.map((tag: any) => (
                         <span
                           key={tag.id}
@@ -236,54 +236,47 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
                     </div>
                   )}
 
-                  {/* Table of Contents and Content - Client Component */}
+                  {/* Table of Contents and Content */}
                   <ArticleContentWrapper content={article.content} />
                 </div>
               </article>
 
-              {/* Related Articles - BELOW Main Content */}
+              {/* Related Articles - Simple Grid, No Cards */}
               {relatedArticles.length > 0 && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 mt-8">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-6">Artikel Terkait</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {relatedArticles.map((relatedArticle: any, index: number) => (
+                <div className="mt-16">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-8 px-8">Artikel Terkait</h2>
+                  <div className="space-y-6">
+                    {relatedArticles.map((relatedArticle: any) => (
                       <a
                         key={relatedArticle.id}
                         href={`/artikel/${relatedArticle.categories?.[0]?.slug || 'uncategorized'}/${relatedArticle.slug}`}
-                        className="group cursor-pointer"
-                        style={{ animationDelay: `${index * 0.1}s` }}
+                        className="group flex gap-4 hover:bg-gray-50 p-4 -mx-4 rounded-lg transition-colors"
                       >
-                        <article className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-all duration-300 h-full">
-                          {relatedArticle.featuredImage && (
-                            <div className="aspect-video overflow-hidden relative">
-                              <Image
-                                src={relatedArticle.featuredImage}
-                                alt={relatedArticle.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                fill
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
-                              />
-                            </div>
-                          )}
-                          <div className="p-4">
-                            <div className="flex items-center text-xs text-gray-500 mb-2">
-                              <Calendar className="h-3 w-3 mr-1" />
-                              {formatDate(relatedArticle.publishDate || relatedArticle.publish_date)}
-                            </div>
-                            <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
-                              {relatedArticle.title}
-                            </h3>
-                            {relatedArticle.excerpt && (
-                              <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-                                {relatedArticle.excerpt}
-                              </p>
-                            )}
-                            <div className="flex items-center text-primary-600 text-sm font-medium group-hover:text-primary-700">
-                              Baca Selengkapnya
-                              <ArrowRight className="h-3 w-3 ml-1 group-hover:translate-x-1 transition-transform duration-200" />
-                            </div>
+                        {relatedArticle.featuredImage && (
+                          <div className="flex-shrink-0 w-32 h-24 relative overflow-hidden rounded">
+                            <Image
+                              src={relatedArticle.featuredImage}
+                              alt={relatedArticle.title}
+                              className="object-cover"
+                              fill
+                              sizes="128px"
+                            />
                           </div>
-                        </article>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center text-xs text-gray-500 mb-2">
+                            <Calendar className="h-3 w-3 mr-1" />
+                            {formatDate(relatedArticle.publishDate || relatedArticle.publish_date)}
+                          </div>
+                          <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-primary-600 transition-colors line-clamp-2">
+                            {relatedArticle.title}
+                          </h3>
+                          {relatedArticle.excerpt && (
+                            <p className="text-sm text-gray-600 line-clamp-2">
+                              {relatedArticle.excerpt}
+                            </p>
+                          )}
+                        </div>
                       </a>
                     ))}
                   </div>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -25,21 +24,24 @@ const ArticleSidebar: React.FC<ArticleSidebarProps> = ({
   const adPosition = isArchive ? 'sidebar_archive_ad_code' : 'sidebar_single_ad_code';
 
   return (
-    <aside className="space-y-8">
-      {/* Advertisement */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <AdDisplay position={adPosition} />
+    <aside className="space-y-12">
+      {/* Advertisement - Simple container */}
+      <div>
+        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Advertisement</h3>
+        <div className="bg-gray-100 p-4">
+          <AdDisplay position={adPosition} />
+        </div>
       </div>
 
-      {/* Related Articles */}
+      {/* Related Articles - No card */}
       {relatedArticles.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">
             Artikel Terkait
           </h3>
           <div className="space-y-4">
             {relatedArticles.slice(0, 5).map((article) => (
-              <div key={article.id} className="border-b border-gray-100 pb-4 last:border-b-0">
+              <div key={article.id} className="pb-4 border-b border-gray-200 last:border-b-0">
                 <Link 
                   href={`/artikel/${article.slug}`}
                   className="block group"
@@ -79,27 +81,27 @@ const ArticleSidebar: React.FC<ArticleSidebarProps> = ({
 
       {/* Another Ad Space */}
       {!isArchive && (
-        <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="bg-gray-100 p-4">
           <AdDisplay position="sidebar_single_ad_code" />
         </div>
       )}
 
-      {/* Popular Categories */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      {/* Popular Categories - Simple list */}
+      <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Kategori Populer
         </h3>
-        <div className="space-y-2">
-          <Link href="/artikel/karir" className="block text-sm text-gray-600 hover:text-primary-600">
+        <div className="space-y-3">
+          <Link href="/artikel/karir" className="block text-gray-600 hover:text-primary-600 hover:pl-2 transition-all">
             Tips Karir
           </Link>
-          <Link href="/artikel/interview" className="block text-sm text-gray-600 hover:text-primary-600">
+          <Link href="/artikel/interview" className="block text-gray-600 hover:text-primary-600 hover:pl-2 transition-all">
             Persiapan Interview
           </Link>
-          <Link href="/artikel/cv" className="block text-sm text-gray-600 hover:text-primary-600">
+          <Link href="/artikel/cv" className="block text-gray-600 hover:text-primary-600 hover:pl-2 transition-all">
             Panduan CV
           </Link>
-          <Link href="/artikel/gaji" className="block text-sm text-gray-600 hover:text-primary-600">
+          <Link href="/artikel/gaji" className="block text-gray-600 hover:text-primary-600 hover:pl-2 transition-all">
             Negosiasi Gaji
           </Link>
         </div>

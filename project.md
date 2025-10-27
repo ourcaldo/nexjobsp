@@ -155,6 +155,53 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-27 16:52 - Removed Card-Heavy Design **[COMPLETED]**
+- **Time**: 16:52 WIB
+- **Design Changes**:
+  1. Removed card wrapper from main article content
+  2. Simplified related articles to horizontal list (no individual cards)
+  3. Removed all card styling from sidebar components
+  4. Increased outer container padding for better spacing
+
+- **Implementation Details**:
+  
+  **Files Modified**:
+  - `app/artikel/[category]/[slug]/page.tsx`:
+    - **Main Article**: Removed card wrapper (bg-white, rounded-xl, shadow, border)
+    - Now just plain white background with no card styling
+    - **Outer Padding**: Changed from `px-4` to `px-6 md:px-8 lg:px-12` (24px → 32px → 48px)
+    - **Related Articles**: Changed from grid of cards to simple horizontal list
+    - Each related article now uses hover effect instead of card containers
+    - Displays thumbnail image (128px), date, title, excerpt in clean layout
+  
+  - `components/ArticleSidebar.tsx`:
+    - **Removed all card wrappers**: No more bg-white rounded shadow styling
+    - **Advertisement**: Simple gray background (bg-gray-100) instead of white card
+    - **Categories**: Plain list with hover indent effect, no card wrapper
+    - **Spacing**: Uses `space-y-12` for section separation instead of card borders
+    - Added section headings with better typography hierarchy
+  
+  **Design Philosophy**:
+  - Rely on **spacing and typography** for visual hierarchy instead of cards
+  - Use **subtle backgrounds** (bg-gray-100) for advertisements only
+  - Use **borders** (border-b) to separate list items instead of individual cards
+  - Use **hover effects** for interactivity instead of constant shadows
+  - Keep only essential containers, remove redundant visual wrapping
+  
+  **Verification**:
+  - ✅ Main article has no card styling
+  - ✅ Related articles are simple list items, not cards
+  - ✅ Sidebar has no card wrappers
+  - ✅ Outer padding increased for better spacing
+  - ✅ Fast Refresh completed without errors
+  - ✅ Application runs successfully
+  
+  **Impact**: 
+  - **Visual Clarity**: Significantly reduced visual clutter from nested cards
+  - **Modern Design**: Clean, minimal design with proper spacing and hierarchy
+  - **Performance**: Fewer DOM elements and CSS classes to render
+  - **User Experience**: Less distraction, better focus on content
+
 ### 2025-10-27 16:30 - Article Detail Page Complete Redesign **[COMPLETED]**
 - **Time**: 16:30 WIB
 - **Features Added**:
