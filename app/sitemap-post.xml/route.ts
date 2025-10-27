@@ -6,10 +6,10 @@ export const revalidate = 3600; // Revalidate every hour
 export async function GET() {
   try {
     // Fetch sitemap XML from CMS and transform URLs
-    const xmlContent = await cmsService.getSitemapXML('/api/v1/sitemaps/sitemap.xml');
+    const xmlContent = await cmsService.getSitemapXML('/api/v1/sitemaps/sitemap-post.xml');
 
     if (!xmlContent) {
-      return new NextResponse('Error fetching sitemap from CMS', { status: 500 });
+      return new NextResponse('Error fetching post sitemap from CMS', { status: 500 });
     }
 
     return new Response(xmlContent, {
@@ -19,7 +19,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('Error proxying main sitemap:', error);
-    return new NextResponse('Error proxying main sitemap', { status: 500 });
+    console.error('Error proxying post sitemap:', error);
+    return new NextResponse('Error proxying post sitemap', { status: 500 });
   }
 }

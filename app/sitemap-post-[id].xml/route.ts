@@ -3,13 +3,21 @@ import { cmsService } from '@/lib/cms/service';
 
 export const revalidate = 3600; // Revalidate every hour
 
-export async function GET() {
+interface RouteParams {
+  params: {
+    id: string;
+  };
+}
+
+export async function GET(request: Request, { params }: RouteParams) {
   try {
+    const { id } = params;
+    
     // Fetch sitemap XML from CMS and transform URLs
-    const xmlContent = await cmsService.getSitemapXML('/api/v1/sitemaps/sitemap.xml');
+    const xmlContent = await cmsService.getSitemapXML(`/api/v1/sitemaps/sitemap-post-${id}.xml`);
 
     if (!xmlContent) {
-      return new NextResponse('Error fetching sitemap from CMS', { status: 500 });
+      return new NextResponse('Sitemap not found', { status: 404 });
     }
 
     return new Response(xmlContent, {
@@ -19,7 +27,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('Error proxying main sitemap:', error);
-    return new NextResponse('Error proxying main sitemap', { status: 500 });
+    console.error('Error proxying post sitemap chunk:', error);
+    return new NextResponse('Error proxying post sitemap chunk', { status: 500 });
   }
 }

@@ -815,6 +815,49 @@ export class CMSService {
       return [];
     }
   }
+
+  // Sitemap methods
+  async getSitemaps() {
+    await this.ensureInitialized();
+    
+    try {
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/sitemaps`);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching sitemaps:', error);
+      return { success: false, data: { sitemaps: [] } };
+    }
+  }
+
+  async getSitemapXML(sitemapPath: string): Promise<string | null> {
+    await this.ensureInitialized();
+    
+    try {
+      // Fetch the sitemap XML from CMS
+      const response = await this.fetchWithTimeout(`${this.baseUrl}${sitemapPath}`);
+      let xmlContent = await response.text();
+      
+      // Transform URLs from CMS domain to site domain
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nexjob.tech';
+      
+      // Replace CMS API URLs with site URLs in the XML
+      // Pattern 1: https://cms.nexjob.tech/api/v1/sitemaps/sitemap-*.xml -> siteUrl/sitemap-*.xml
+      xmlContent = xmlContent.replace(
+        /https:\/\/cms\.nexjob\.tech\/api\/v1\/sitemaps\//g,
+        `${siteUrl}/`
+      );
+      
+      // Pattern 2: Job URLs (already correct, no change needed)
+      // Pattern 3: Post/Article URLs (already correct, no change needed)
+      // Pattern 4: Page URLs (already correct, no change needed)
+      
+      return xmlContent;
+    } catch (error) {
+      console.error('Error fetching sitemap XML:', error);
+      return null;
+    }
+  }
 }
 
 // Export singleton instance

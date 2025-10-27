@@ -1,20 +1,25 @@
 import { NextResponse } from 'next/server';
-import { sitemapService } from '@/lib/utils/sitemap';
+import { cmsService } from '@/lib/cms/service';
 
 export const revalidate = 3600; // Revalidate every hour
 
 export async function GET() {
   try {
-    const sitemap = await sitemapService.generatePagesSitemap();
+    // Fetch sitemap XML from CMS and transform URLs
+    const xmlContent = await cmsService.getSitemapXML('/api/v1/sitemaps/sitemap-pages.xml');
 
-    return new Response(sitemap, {
+    if (!xmlContent) {
+      return new NextResponse('Error fetching pages sitemap from CMS', { status: 500 });
+    }
+
+    return new Response(xmlContent, {
       headers: {
         'Content-Type': 'application/xml',
         'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
       },
     });
   } catch (error) {
-    console.error('Error generating pages sitemap:', error);
-    return new NextResponse('Error generating pages sitemap', { status: 500 });
+    console.error('Error proxying pages sitemap:', error);
+    return new NextResponse('Error proxying pages sitemap', { status: 500 });
   }
 }
