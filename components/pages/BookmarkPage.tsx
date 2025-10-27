@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Bookmark, AlertCircle, Loader2 } from 'lucide-react';
 import { Job } from '@/types/job';
-import { cmsService } from '@/lib/cms/service';
 import { bookmarkService } from '@/lib/utils/bookmarks';
 import JobCard from '@/components/JobCard';
 import Breadcrumbs from '@/components/Breadcrumbs';
@@ -31,10 +30,22 @@ const BookmarkPage: React.FC = () => {
         return;
       }
 
-      // Fetch all jobs and filter by bookmarked IDs
-      const allJobsResponse = await cmsService.getJobs({}, 1, 100);
-      const bookmarked = allJobsResponse.jobs.filter(job => bookmarkIds.includes(job.id));
-      setBookmarkedJobs(bookmarked);
+      // Fetch jobs by IDs from API route
+      const response = await fetch('/api/job-posts/by-ids', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ jobIds: bookmarkIds }),
+      });
+      
+      const result = await response.json();
+      
+      if (result.success && result.data) {
+        setBookmarkedJobs(result.data);
+      } else {
+        setBookmarkedJobs([]);
+      }
     } catch (err) {
       setError('Gagal memuat lowongan yang disimpan. Silakan coba lagi.');
     } finally {

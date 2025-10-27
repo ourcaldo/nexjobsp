@@ -13,7 +13,6 @@ import { useToast } from '@/components/ui/ToastProvider';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobCard from '@/components/JobCard';
-import { cmsService } from '@/lib/cms/service';
 import { Job } from '@/types/job';
 
 interface ProfilePageProps {
@@ -127,8 +126,21 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ settings }) => {
       const jobIds = bookmarks.map(bookmark => bookmark.job_id);
       
       if (jobIds.length > 0) {
-        const jobs = await cmsService.getJobsByIds(jobIds);
-        setBookmarkedJobs(jobs);
+        const response = await fetch('/api/job-posts/by-ids', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ jobIds }),
+        });
+        
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+          setBookmarkedJobs(result.data);
+        } else {
+          setBookmarkedJobs([]);
+        }
       } else {
         setBookmarkedJobs([]);
       }

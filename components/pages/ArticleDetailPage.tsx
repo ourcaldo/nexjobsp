@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, User, ArrowRight, Loader2, AlertCircle, Tag, Folder } from 'lucide-react';
-import { cmsService } from '@/lib/cms/service';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import SchemaMarkup from '@/components/SEO/SchemaMarkup';
@@ -83,19 +82,25 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
     setError(null);
 
     try {
-      const articleData = await cmsService.getArticleBySlug(slug);
+      const articleResponse = await fetch(`/api/articles/slug/${slug}`);
+      const articleResult = await articleResponse.json();
 
-      if (!articleData) {
+      if (!articleResult.success || !articleResult.data) {
         setError('Artikel tidak ditemukan');
         return;
       }
 
+      const articleData = articleResult.data;
       setArticle(articleData);
       currentSlugRef.current = slug;
 
       // Load related articles
-      const relatedData = await cmsService.getRelatedArticles(articleData.id.toString(), 3);
-      setRelatedArticles(relatedData);
+      const relatedResponse = await fetch(`/api/articles/${articleData.id}/related?limit=3`);
+      const relatedResult = await relatedResponse.json();
+      
+      if (relatedResult.success && relatedResult.data) {
+        setRelatedArticles(relatedResult.data);
+      }
 
       // Track page view and article read
       const category = articleData.categories_info?.[0]?.name || '';

@@ -14,7 +14,6 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { supabaseAdminService } from '@/lib/supabase/admin';
-import { cmsService } from '@/lib/cms/service';
 
 interface DashboardStats {
   totalUsers: number;
@@ -55,11 +54,11 @@ const Dashboard: React.FC = () => {
       // Load settings to get last sitemap update
       const settings = await supabaseAdminService.getSettings();
       
-      // Test WordPress connection
-      const wpTest = await cmsService.testConnection();
+      // Test CMS connection via API route
+      const cmsResponse = await fetch('/api/cms/test-connection');
+      const cmsResult = await cmsResponse.json();
       
-      // Test filters API
-      const filtersTest = await cmsService.testFiltersConnection();
+      const cmsConnected = cmsResult.success && cmsResult.data.connection && cmsResult.data.filters;
       
       // Get basic stats (mock data for now - you can implement real queries)
       const mockStats = {
@@ -74,7 +73,7 @@ const Dashboard: React.FC = () => {
           { type: 'system_update', message: 'Sitemap updated successfully', time: '2 hours ago' },
         ],
         systemStatus: {
-          wordpress: wpTest.success && filtersTest.success,
+          wordpress: cmsConnected,
           supabase: true,
           lastSitemapUpdate: settings?.last_sitemap_update || new Date().toISOString()
         }
