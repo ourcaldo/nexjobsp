@@ -320,10 +320,10 @@ export class CMSService {
 
     // Category filter
     if (filters.category) {
-      params.set('job_category', filters.category);
+      params.set('job_categories', filters.category);
     }
     if (filters.categories && filters.categories.length > 0) {
-      params.set('job_category', filters.categories[0]);
+      params.set('job_categories', filters.categories[0]);
     }
 
     return `${this.baseUrl}/api/v1/job-posts?${params.toString()}`;
