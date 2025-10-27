@@ -94,17 +94,16 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
     // If province is selected, return cities for that province
     if (selectedProvince) {
       const provinceCities = filterData.regencies
-        .filter(r => {
-          const province = filterData.provinces.find(p => p.id === r.province_id);
-          return province?.name === selectedProvince;
-        })
-        .map(r => r.name)
-        .sort();
+        .filter(r => r.province_id === selectedProvince)
+        .map(r => ({ id: r.id, name: r.name }))
+        .sort((a, b) => a.name.localeCompare(b.name));
       return provinceCities;
     }
     
     // Otherwise, return all cities from all regencies
-    return filterData.regencies.map(r => r.name).sort();
+    return filterData.regencies
+      .map(r => ({ id: r.id, name: r.name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   };
 
   const renderSortSection = () => {

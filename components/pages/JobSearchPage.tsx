@@ -469,7 +469,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   const getProvinceOptions = useMemo(() => {
     if (!filterData) return [];
     return filterData.provinces.map(province => ({
-      value: province.name,
+      value: province.id,
       label: province.name
     }));
   }, [filterData]);
