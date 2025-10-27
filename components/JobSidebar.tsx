@@ -174,10 +174,13 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
     title: string,
     icon: React.ReactNode,
     filterKey: string,
-    options: string[]
+    options: string[] | Array<{id: string; name: string}>
   ) => {
     const isExpanded = expandedSections[filterKey];
     const hasScrollbar = options.length > 15;
+
+    // Determine if options are objects with id and name or just strings
+    const isObjectOptions = options.length > 0 && typeof options[0] === 'object' && 'id' in options[0];
 
     return (
       <div className="border-b border-gray-100 pb-6 last:border-b-0">
@@ -200,20 +203,25 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
         
         {isExpanded && (
           <div className={`space-y-2 ${hasScrollbar ? 'max-h-60 overflow-y-auto' : ''}`}>
-            {options.map((option) => (
-              <label key={option} className="flex items-center cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={filters[filterKey as keyof typeof filters]?.includes(option) || false}
-                  onChange={(e) => handleFilterChange(filterKey, option, e.target.checked)}
-                  disabled={isLoading}
-                  className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 focus:ring-2 disabled:opacity-50"
-                />
-                <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 disabled:opacity-50">
-                  {option}
-                </span>
-              </label>
-            ))}
+            {options.map((option) => {
+              const value = isObjectOptions ? (option as {id: string; name: string}).id : (option as string);
+              const label = isObjectOptions ? (option as {id: string; name: string}).name : (option as string);
+              
+              return (
+                <label key={value} className="flex items-center cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={filters[filterKey as keyof typeof filters]?.includes(value) || false}
+                    onChange={(e) => handleFilterChange(filterKey, value, e.target.checked)}
+                    disabled={isLoading}
+                    className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 focus:ring-2 disabled:opacity-50"
+                  />
+                  <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 disabled:opacity-50">
+                    {label}
+                  </span>
+                </label>
+              );
+            })}
           </div>
         )}
       </div>
@@ -269,7 +277,7 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
             'Kategori Pekerjaan',
             <Briefcase className="h-4 w-4 text-gray-400" />,
             'categories',
-            filterData.categories.map(c => c.name)
+            filterData.categories.map(c => ({ id: c.id, name: c.name }))
           )
         )}
 
@@ -279,7 +287,7 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
             'Tipe Pekerjaan',
             <Briefcase className="h-4 w-4 text-gray-400" />,
             'jobTypes',
-            filterData.employment_types.map(et => et.name)
+            filterData.employment_types.map(et => ({ id: et.id, name: et.name }))
           )
         )}
 
@@ -289,7 +297,7 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
             'Pengalaman',
             <Clock className="h-4 w-4 text-gray-400" />,
             'experiences',
-            filterData.experience_levels.map(el => el.name)
+            filterData.experience_levels.map(el => ({ id: el.id, name: el.name }))
           )
         )}
       </div>
