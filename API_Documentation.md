@@ -124,18 +124,18 @@ async function fetchPaginatedPosts(page = 1, limit = 20) {
       headers: { 'Authorization': 'Bearer your-api-token' }
     }
   );
-
+  
   const { success, data } = await response.json();
-
+  
   if (success) {
     const { posts, pagination } = data;
-
+    
     console.log(`Showing page ${pagination.page} of ${pagination.totalPages}`);
     console.log(`Total posts: ${pagination.total}`);
-
+    
     // Render posts
     posts.forEach(post => console.log(post.title));
-
+    
     // Navigation helpers
     if (pagination.hasNextPage) {
       console.log('Next page available');
@@ -143,7 +143,7 @@ async function fetchPaginatedPosts(page = 1, limit = 20) {
     if (pagination.hasPrevPage) {
       console.log('Previous page available');
     }
-
+    
     return { posts, pagination };
   }
 }
@@ -587,17 +587,17 @@ let hasMore = true;
 
 async function loadMorePosts() {
   if (!hasMore) return;
-
+  
   const response = await fetch(
     `https://your-domain.com/api/v1/posts?page=${currentPage}&limit=${limit}`,
     { headers: { 'Authorization': 'Bearer your-api-token' } }
   );
-
+  
   const { data } = await response.json();
-
+  
   // Append posts to UI
   displayPosts(data.posts);
-
+  
   // Update pagination state
   hasMore = data.pagination.hasNextPage;
   if (hasMore) currentPage++;
@@ -608,23 +608,23 @@ async function loadMorePosts() {
 ```javascript
 async function buildPaginationControls(currentPage, totalPages) {
   const controls = [];
-
+  
   // Previous button
   if (currentPage > 1) {
     controls.push(`<button onclick="goToPage(${currentPage - 1})">Previous</button>`);
   }
-
+  
   // Page numbers
   for (let i = 1; i <= totalPages; i++) {
     const active = i === currentPage ? 'active' : '';
     controls.push(`<button class="${active}" onclick="goToPage(${i})">${i}</button>`);
   }
-
+  
   // Next button
   if (currentPage < totalPages) {
     controls.push(`<button onclick="goToPage(${currentPage + 1})">Next</button>`);
   }
-
+  
   return controls.join('');
 }
 ```
@@ -731,10 +731,18 @@ Retrieve a paginated list of job posts with optional filtering.
 | `page` | integer | 1 | Page number for pagination |
 | `limit` | integer | 20 | Number of posts per page |
 | `search` | string | - | Search by job title |
-| `status` | string | - | Filter by status (draft, published, scheduled) |
+| `status` | string | published | Filter by status (draft, published, scheduled) |
 | `employment_type` | string | - | Filter by employment type name |
 | `experience_level` | string | - | Filter by experience level name |
-| `job_category` | string | - | Filter by category ID |
+| `job_category` | string | - | Filter by category ID or slug |
+| `job_tag` | string | - | Filter by tag ID or slug |
+| `salary_min` | integer | - | Minimum salary (jobs with max >= this value) |
+| `salary_max` | integer | - | Maximum salary (jobs with min <= this value) |
+| `province_id` | string | - | Filter by province ID |
+| `regency_id` | string | - | Filter by regency/city ID |
+| `is_remote` | boolean | - | Filter remote jobs (true/false) |
+| `is_hybrid` | boolean | - | Filter hybrid jobs (true/false) |
+| `skill` | string | - | Filter by specific skill name |
 
 **Example Request**:
 ```bash
@@ -801,7 +809,15 @@ curl -X GET "https://your-domain.com/api/v1/job-posts?page=1&limit=10&status=pub
       "status": "published",
       "employment_type": null,
       "experience_level": null,
-      "job_category": null
+      "job_category": null,
+      "job_tag": null,
+      "salary_min": null,
+      "salary_max": null,
+      "province_id": null,
+      "regency_id": null,
+      "is_remote": null,
+      "is_hybrid": null,
+      "skill": null
     }
   },
   "cached": false
@@ -858,6 +874,45 @@ Create a new job posting via external API.
 | `job_responsibilities` | string | No | Job responsibilities (HTML) |
 | `job_categories` | string or array | No | Categories (names, IDs, or comma-separated) |
 | `job_tags` | string or array | No | Tags (names, IDs, or comma-separated) |
+
+#### Location Auto-Mapping
+
+The API automatically resolves location hierarchies. You can provide ONLY the smallest location unit, and the system will automatically fill in the parent locations:
+
+- **Provide only `job_village_id`** → System auto-fills `job_district_id`, `job_regency_id`, `job_province_id`
+- **Provide only `job_district_id`** → System auto-fills `job_regency_id`, `job_province_id`
+- **Provide only `job_regency_id`** → System auto-fills `job_province_id`
+- **Provide all location IDs** → System validates they form a valid hierarchy
+
+This makes it easier to specify job locations without needing to look up all parent location IDs.
+
+**Validation**: If you provide both a smaller unit (e.g., village) and a parent unit (e.g., regency), the API validates that they match the canonical hierarchy. If they don't match (e.g., village belongs to a different regency), the API returns a validation error with a clear message.
+
+**Location Auto-Mapping Example**:
+```json
+{
+  "title": "Backend Developer",
+  "slug": "backend-developer-jakarta",
+  "content": "<p>Job description...</p>",
+  "status": "published",
+  "job_village_id": "3173041001"
+}
+```
+
+The system will automatically look up:
+- Village "3173041001" → belongs to District "317304"
+- District "317304" → belongs to Regency "3173"
+- Regency "3173" → belongs to Province "31"
+
+Final result:
+```json
+{
+  "job_province_id": "31",
+  "job_regency_id": "3173",
+  "job_district_id": "317304",
+  "job_village_id": "3173041001"
+}
+```
 
 **Example Request (with comma-separated values)**:
 ```bash
@@ -1058,6 +1113,129 @@ HTTP 204 No Content
 
 ---
 
+### Get Job Post Filter Data
+
+Retrieve all available filter options including categories, tags, employment types, experience levels, salary ranges, locations, and skills.
+
+**Endpoint**: `GET /api/v1/job-posts/filters`
+
+**Authentication**: Required (Bearer token)
+
+**Query Parameters**: None
+
+**Example Request**:
+```bash
+curl -X GET "https://your-domain.com/api/v1/job-posts/filters" \
+  -H "Authorization: Bearer your-api-token"
+```
+
+**Example Response**:
+```json
+{
+  "success": true,
+  "data": {
+    "categories": [
+      {
+        "id": "uuid",
+        "name": "Software Development",
+        "slug": "software-development",
+        "description": "Software engineering and development roles",
+        "post_count": 25
+      }
+    ],
+    "tags": [
+      {
+        "id": "uuid",
+        "name": "Remote Friendly",
+        "slug": "remote-friendly",
+        "post_count": 15
+      }
+    ],
+    "employment_types": [
+      {
+        "id": "uuid",
+        "name": "Full Time",
+        "slug": "full-time",
+        "post_count": 40
+      },
+      {
+        "id": "uuid",
+        "name": "Part Time",
+        "slug": "part-time",
+        "post_count": 10
+      }
+    ],
+    "experience_levels": [
+      {
+        "id": "uuid",
+        "name": "Entry Level",
+        "slug": "entry-level",
+        "years_min": 0,
+        "years_max": 2,
+        "post_count": 12
+      },
+      {
+        "id": "uuid",
+        "name": "Senior",
+        "slug": "senior",
+        "years_min": 5,
+        "years_max": null,
+        "post_count": 18
+      }
+    ],
+    "salary_range": {
+      "min": 5000000,
+      "max": 150000000,
+      "currencies": ["IDR", "USD"]
+    },
+    "provinces": [
+      {
+        "id": "31",
+        "name": "DKI Jakarta",
+        "post_count": 30
+      }
+    ],
+    "regencies": [
+      {
+        "id": "3173",
+        "name": "Jakarta Selatan",
+        "province_id": "31",
+        "post_count": 15
+      }
+    ],
+    "skills": [
+      {
+        "name": "JavaScript",
+        "post_count": 35
+      },
+      {
+        "name": "React",
+        "post_count": 28
+      }
+    ]
+  },
+  "cached": false
+}
+```
+
+**Response Fields**:
+- `categories`: All job categories with post counts
+- `tags`: All job tags with post counts
+- `employment_types`: Employment types (Full Time, Part Time, etc.)
+- `experience_levels`: Experience levels with years range
+- `salary_range`: Min/max salary across all job posts and available currencies
+- `provinces`: Provinces that have job posts
+- `regencies`: Regencies/cities that have job posts
+- `skills`: All unique skills across job posts sorted by frequency
+
+**Use Cases**:
+- Build dynamic filter dropdowns in your job board UI
+- Show available options before user searches
+- Display counts to help users find relevant jobs
+- Populate autocomplete inputs for better UX
+
+---
+
 ## Common Use Cases
 
 ### 1. Create Job with Auto-Created Categories and Tags
@@ -1096,6 +1274,36 @@ curl -X GET "https://your-domain.com/api/v1/job-posts?employment_type=Full Time&
 ### 4. Search Jobs by Title
 ```bash
 curl -X GET "https://your-domain.com/api/v1/job-posts?search=developer&page=1" \
+  -H "Authorization: Bearer your-api-token"
+```
+
+### 5. Filter Remote Jobs by Salary Range
+```bash
+curl -X GET "https://your-domain.com/api/v1/job-posts?is_remote=true&salary_min=10000000&salary_max=20000000" \
+  -H "Authorization: Bearer your-api-token"
+```
+
+### 6. Filter Jobs by Province and Experience Level
+```bash
+curl -X GET "https://your-domain.com/api/v1/job-posts?province_id=31&experience_level=Senior&page=1" \
+  -H "Authorization: Bearer your-api-token"
+```
+
+### 7. Combined Filters - Remote Senior Developer Jobs in Jakarta
+```bash
+curl -X GET "https://your-domain.com/api/v1/job-posts?search=developer&is_remote=true&experience_level=Senior&province_id=31&status=published" \
+  -H "Authorization: Bearer your-api-token"
+```
+
+### 8. Filter by Category, Tag, and Skill
+```bash
+curl -X GET "https://your-domain.com/api/v1/job-posts?job_category=uuid&job_tag=uuid&skill=React" \
+  -H "Authorization: Bearer your-api-token"
+```
+
+### 9. Get Filter Data to Build UI
+```bash
+curl -X GET "https://your-domain.com/api/v1/job-posts/filters" \
   -H "Authorization: Bearer your-api-token"
 ```
 
