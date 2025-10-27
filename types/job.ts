@@ -14,6 +14,7 @@ export interface Job {
   gender: string;
   gaji: string;
   kebijakan_kerja: string;
+  industry: string;
   link: string;
   sumber_lowongan: string;
   created_at?: string;

@@ -310,6 +310,31 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
             filterData.education_levels.map(edu => ({ id: edu.id, name: edu.name }))
           )
         )}
+
+        {/* Work Policy / Kebijakan Kerja */}
+        {renderCheckboxGroup(
+          'Kebijakan Kerja',
+          <Users className="h-4 w-4 text-gray-400" />,
+          'workPolicies',
+          [
+            { id: 'onsite', name: 'Kerja di Kantor (Onsite)' },
+            { id: 'remote', name: 'Kerja di Rumah (Remote)' },
+            { id: 'hybrid', name: 'Kerja di Kantor/Rumah (Hybrid)' }
+          ]
+        )}
+
+        {/* Salary Range */}
+        {renderCheckboxGroup(
+          'Rentang Gaji',
+          <DollarSign className="h-4 w-4 text-gray-400" />,
+          'salaries',
+          [
+            { id: '1-3', name: '1-3 Juta' },
+            { id: '4-6', name: '4-6 Juta' },
+            { id: '7-9', name: '7-9 Juta' },
+            { id: '10+', name: '10+ Juta' }
+          ]
+        )}
       </div>
 
       {/* Clear Filters */}

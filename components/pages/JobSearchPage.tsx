@@ -149,7 +149,9 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
         ...(filters.categories && filters.categories.length > 0 && { job_category: filters.categories[0] }),
         ...(filters.jobTypes && filters.jobTypes.length > 0 && { employment_type: filters.jobTypes[0] }),
         ...(filters.experiences && filters.experiences.length > 0 && { experience_level: filters.experiences[0] }),
-        ...(filters.educations && filters.educations.length > 0 && { education_level: filters.educations[0] })
+        ...(filters.educations && filters.educations.length > 0 && { education_level: filters.educations[0] }),
+        ...(filters.workPolicies && filters.workPolicies.length > 0 && { work_policy: filters.workPolicies[0] }),
+        ...(filters.salaries && filters.salaries.length > 0 && { salary_range: filters.salaries[0] })
       });
       
       const jobsResponse = await fetch(`/api/job-posts?${params.toString()}`);
@@ -210,7 +212,9 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
         ...(filters.categories && filters.categories.length > 0 && { job_category: filters.categories[0] }),
         ...(filters.jobTypes && filters.jobTypes.length > 0 && { employment_type: filters.jobTypes[0] }),
         ...(filters.experiences && filters.experiences.length > 0 && { experience_level: filters.experiences[0] }),
-        ...(filters.educations && filters.educations.length > 0 && { education_level: filters.educations[0] })
+        ...(filters.educations && filters.educations.length > 0 && { education_level: filters.educations[0] }),
+        ...(filters.workPolicies && filters.workPolicies.length > 0 && { work_policy: filters.workPolicies[0] }),
+        ...(filters.salaries && filters.salaries.length > 0 && { salary_range: filters.salaries[0] })
       });
       
       const jobsResponse = await fetch(`/api/job-posts?${params.toString()}`);
@@ -279,7 +283,9 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
         ...(filters.categories && filters.categories.length > 0 && { job_category: filters.categories[0] }),
         ...(filters.jobTypes && filters.jobTypes.length > 0 && { employment_type: filters.jobTypes[0] }),
         ...(filters.experiences && filters.experiences.length > 0 && { experience_level: filters.experiences[0] }),
-        ...(filters.educations && filters.educations.length > 0 && { education_level: filters.educations[0] })
+        ...(filters.educations && filters.educations.length > 0 && { education_level: filters.educations[0] }),
+        ...(filters.workPolicies && filters.workPolicies.length > 0 && { work_policy: filters.workPolicies[0] }),
+        ...(filters.salaries && filters.salaries.length > 0 && { salary_range: filters.salaries[0] })
       });
       
       const jobsResponse = await fetch(`/api/job-posts?${params.toString()}`);

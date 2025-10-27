@@ -155,6 +155,96 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-27 14:25 - Job Filter Enhancements: Work Policy, Salary Range, and Category Display **[COMPLETED]**
+- **Time**: 14:25 WIB
+- **Features Added**:
+  1. Kebijakan Kerja (Work Policy) filter with 3 options (Onsite, Remote, Hybrid)
+  2. Salary range filter with 4 preset ranges (1-3 Juta, 4-6 Juta, 7-9 Juta, 10+ Juta)
+  3. Updated job card and detail page to display category instead of empty industry field
+  4. Changed job card location display to show only Province name
+
+- **Implementation Details**:
+  
+  **Files Modified**:
+  - `lib/cms/service.ts` - Enhanced job transformation and filtering:
+    - **transformCMSJobToJob()**: Added `industry` field populated with first category name from `job_categories[0]?.name`
+    - **buildJobsUrl()**: Added Work Policy filter support
+      - Maps `workPolicies: ['remote']` → `job_is_remote=true`
+      - Maps `workPolicies: ['hybrid']` → `job_is_hybrid=true`
+      - Maps `workPolicies: ['onsite']` → `job_is_remote=false&job_is_hybrid=false`
+    - **buildJobsUrl()**: Added Salary Range filter support
+      - Maps `salaries: ['1-3']` → `job_salary_min=1000000&job_salary_max=3000000`
+      - Maps `salaries: ['4-6']` → `job_salary_min=4000000&job_salary_max=6000000`
+      - Maps `salaries: ['7-9']` → `job_salary_min=7000000&job_salary_max=9000000`
+      - Maps `salaries: ['10+']` → `job_salary_min=10000000`
+  
+  - `app/api/job-posts/route.ts` - Added new filter parameters:
+    - Accepts `work_policy` query parameter (values: 'onsite', 'remote', 'hybrid')
+    - Accepts `salary_range` query parameter (values: '1-3', '4-6', '7-9', '10+')
+    - Passes these filters to CMS service for API processing
+  
+  - `components/JobSidebar.tsx` - Added two new filter sections:
+    - **Kebijakan Kerja** filter with 3 checkboxes:
+      - Kerja di Kantor (Onsite) - filters jobs with both job_is_remote and job_is_hybrid as false
+      - Kerja di Rumah (Remote) - filters jobs with job_is_remote as true
+      - Kerja di Kantor/Rumah (Hybrid) - filters jobs with job_is_hybrid as true
+    - **Rentang Gaji** (Salary Range) filter with 4 checkboxes:
+      - 1-3 Juta (1,000,000 - 3,000,000 IDR)
+      - 4-6 Juta (4,000,000 - 6,000,000 IDR)
+      - 7-9 Juta (7,000,000 - 9,000,000 IDR)
+      - 10+ Juta (10,000,000+ IDR)
+  
+  - `components/pages/JobSearchPage.tsx` - Updated API request builders:
+    - Updated `loadInitialData()`: Added workPolicies and salaries to URLSearchParams
+    - Updated `searchWithFilters()`: Added workPolicies and salaries to URLSearchParams
+    - Updated `loadMoreJobs()`: Added workPolicies and salaries to URLSearchParams
+    - All three methods now pass `work_policy` and `salary_range` parameters to API
+  
+  - `components/JobCard.tsx` - Updated display fields:
+    - Changed location display from `{job.lokasi_kota}, {job.lokasi_provinsi}` to `{job.lokasi_provinsi}` only
+    - Industry field (line 275) now displays category name from `job.industry` (populated from job_categories)
+    - Replaced colored emoji icon (🏢) with grayscale Layers icon from lucide-react for consistency
+    - Maintains all other card functionality (tags, employment type, education, experience, etc.)
+
+  **Filter Data Flow**:
+  1. User selects filter in JobSidebar (e.g., "Kerja di Rumah (Remote)")
+  2. JobSidebar calls `onFiltersChange()` with updated workPolicies array: `['remote']`
+  3. JobSearchPage debounces and calls `/api/job-posts?work_policy=remote`
+  4. API route extracts `work_policy` param and passes to CMS service as `filters.workPolicies = ['remote']`
+  5. CMS service's `buildJobsUrl()` converts to `job_is_remote=true` in CMS API URL
+  6. TugasCMS returns filtered jobs based on remote work parameter
+  7. Results displayed with updated category information in industry field
+
+  **Salary Filter Logic**:
+  - Filters work on job posts' `job_salary_min` and `job_salary_max` fields
+  - Range filters create both minimum and maximum bounds
+  - "10+ Juta" filter only sets minimum (no maximum cap)
+  - CMS API handles the actual filtering based on these parameters
+
+  **Category Display Update**:
+  - Previously: Industry field was empty in job cards and detail pages
+  - Now: Industry field populated with first category from `job_categories` array
+  - Ensures job cards show complete information to users
+  - Single job posts show category in "Industri" field on detail page
+
+  **Location Display Simplification**:
+  - Previously: Job cards showed "KOTA ADM. JAKARTA BARAT, DKI JAKARTA" (city + province)
+  - Now: Job cards show "DKI JAKARTA" (province only)
+  - Reduces visual clutter and improves card readability
+  - Full location still available on job detail page
+
+  **Verification**:
+  - ✅ Work Policy filter appears in sidebar with 3 options
+  - ✅ Salary Range filter appears in sidebar with 4 options
+  - ✅ Filters correctly send parameters to API
+  - ✅ Category name displays in job card industry field
+  - ✅ Category name displays in job detail page industry field
+  - ✅ Location displays only province name in job cards
+  - ✅ All existing filters continue to work (category, employment type, education, experience)
+  - ✅ Zero breaking changes to existing functionality
+
+  **Impact**: Users can now filter jobs by work location policy (onsite/remote/hybrid) and salary ranges, making job search more efficient and targeted. Job cards now display complete information with categories shown in the industry field. Simplified location display improves card readability while maintaining full information on detail pages.
+
 ### 2025-10-27 06:20 - Critical Fixes: Job Field Rendering and Related Jobs API **[COMPLETED]**
 - **Time**: 06:20 WIB
 - **Issues Addressed**:

@@ -32,6 +32,16 @@ export async function GET(request: NextRequest) {
       filters.location = searchParams.get('location');
     }
     
+    // Work policy filters
+    if (searchParams.get('work_policy')) {
+      filters.workPolicies = [searchParams.get('work_policy')];
+    }
+    
+    // Salary range filters
+    if (searchParams.get('salary_range')) {
+      filters.salaries = [searchParams.get('salary_range')];
+    }
+    
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '24');
     

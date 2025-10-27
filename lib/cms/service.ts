@@ -266,6 +266,7 @@ export class CMSService {
         cmsJob.job_salary_period
       ),
       kebijakan_kerja: cmsJob.job_is_remote ? 'Remote Working' : cmsJob.job_is_hybrid ? 'Hybrid Working' : 'On-site',
+      industry: cmsJob.job_categories?.[0]?.name || '',
       link: cmsJob.job_application_url || cmsJob.job_application_email ? 
         (cmsJob.job_application_url || `mailto:${cmsJob.job_application_email}`) : 
         `https://nexjob.tech/lowongan/${cmsJob.slug}`,
@@ -323,6 +324,36 @@ export class CMSService {
     }
     if (filters.categories && filters.categories.length > 0) {
       params.set('job_categories', filters.categories[0]);
+    }
+
+    // Work policy filter (workPolicies)
+    if (filters.workPolicies && filters.workPolicies.length > 0) {
+      const workPolicy = filters.workPolicies[0];
+      if (workPolicy === 'remote') {
+        params.set('job_is_remote', 'true');
+      } else if (workPolicy === 'hybrid') {
+        params.set('job_is_hybrid', 'true');
+      } else if (workPolicy === 'onsite') {
+        params.set('job_is_remote', 'false');
+        params.set('job_is_hybrid', 'false');
+      }
+    }
+
+    // Salary filter (salaries)
+    if (filters.salaries && filters.salaries.length > 0) {
+      const salaryRange = filters.salaries[0];
+      if (salaryRange === '1-3') {
+        params.set('job_salary_min', '1000000');
+        params.set('job_salary_max', '3000000');
+      } else if (salaryRange === '4-6') {
+        params.set('job_salary_min', '4000000');
+        params.set('job_salary_max', '6000000');
+      } else if (salaryRange === '7-9') {
+        params.set('job_salary_min', '7000000');
+        params.set('job_salary_max', '9000000');
+      } else if (salaryRange === '10+') {
+        params.set('job_salary_min', '10000000');
+      }
     }
 
     return `${this.baseUrl}/api/v1/job-posts?${params.toString()}`;

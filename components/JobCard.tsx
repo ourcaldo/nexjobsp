@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { MapPin, Clock, Briefcase, GraduationCap, ExternalLink, Building, Bookmark, EyeOff, Flame } from 'lucide-react';
+import { MapPin, Clock, Briefcase, GraduationCap, ExternalLink, Building, Bookmark, EyeOff, Flame, Layers } from 'lucide-react';
 import { Job } from '@/types/job';
 import { supabase } from '@/lib/supabase';
 import { userBookmarkService } from '@/lib/api/user-bookmarks';
@@ -213,7 +213,7 @@ const JobCard: React.FC<JobCardProps> = ({
             </div>
             <div className="flex items-center text-gray-500 text-sm">
               <MapPin className="h-4 w-4 mr-1" />
-              {job.lokasi_kota}, {job.lokasi_provinsi}
+              {job.lokasi_provinsi}
             </div>
           </div>
           <div className="text-right">
@@ -271,7 +271,7 @@ const JobCard: React.FC<JobCardProps> = ({
             {job.pengalaman}
           </div>
           <div className="flex items-center">
-            <span className="w-4 h-4 mr-2 text-gray-400 text-xs">🏢</span>
+            <Layers className="h-4 w-4 mr-2 text-gray-400" />
             {job.industry}
           </div>
         </div>
