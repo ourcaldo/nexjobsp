@@ -294,6 +294,17 @@ export class CMSService {
       params.set('search', filters.search.trim());
     }
 
+    // Location filters
+    // Province filter - use 'province' parameter as per API documentation
+    if (filters.location) {
+      params.set('province', filters.location);
+    }
+    
+    // City/Regency filter - use 'city' parameter as per API documentation
+    if (filters.cities && filters.cities.length > 0) {
+      params.set('city', filters.cities[0]);
+    }
+
     // Employment type filter
     if (filters.jobType) {
       params.set('employment_type', filters.jobType);

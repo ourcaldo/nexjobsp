@@ -12,6 +12,15 @@ export async function GET(request: NextRequest) {
       filters.search = searchParams.get('search');
     }
     
+    // Location filters
+    if (searchParams.get('location')) {
+      filters.location = searchParams.get('location');
+    }
+    
+    if (searchParams.get('city')) {
+      filters.cities = [searchParams.get('city')];
+    }
+    
     if (searchParams.get('employment_type')) {
       filters.jobTypes = [searchParams.get('employment_type')];
     }
@@ -26,10 +35,6 @@ export async function GET(request: NextRequest) {
     
     if (searchParams.get('job_category')) {
       filters.categories = [searchParams.get('job_category')];
-    }
-    
-    if (searchParams.get('location')) {
-      filters.location = searchParams.get('location');
     }
     
     // Work policy filters
