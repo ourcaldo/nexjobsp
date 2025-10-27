@@ -39,18 +39,22 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
       loadFilterData();
     } else {
       // Extract job categories from filter data
-      if (filterData.job_categories) {
-        setJobCategories(filterData.job_categories.map(c => c.name).slice(0, 9));
+      if (filterData.categories) {
+        setJobCategories(filterData.categories.map(c => c.name).slice(0, 9));
       }
     }
   }, [filterData]);
 
   const loadFilterData = async () => {
     try {
-      const data = await cmsService.getFiltersData();
-      setFilterData(data);
-      if (data.job_categories) {
-        setJobCategories(data.job_categories.map(c => c.name).slice(0, 9));
+      const response = await fetch('/api/job-posts/filters');
+      const result = await response.json();
+      
+      if (result.success) {
+        setFilterData(result.data);
+        if (result.data.categories) {
+          setJobCategories(result.data.categories.map((c: any) => c.name).slice(0, 9));
+        }
       }
     } catch (error) {
       console.error('Error loading filter data:', error);
@@ -75,9 +79,9 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
 
   const getProvinceOptions = () => {
     if (!filterData) return [];
-    return Object.keys(filterData.locations).map(province => ({
-      value: province,
-      label: province
+    return filterData.provinces.map(province => ({
+      value: province.name,
+      label: province.name
     }));
   };
 

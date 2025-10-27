@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Briefcase, Clock, GraduationCap, Building, Users, Filter, MapPin, ChevronDown, ChevronUp, Star, Zap, DollarSign } from 'lucide-react';
-import { cmsService, FilterData } from '@/lib/cms/service';
+import { FilterData } from '@/lib/cms/service';
 
 interface JobSidebarProps {
   filters: {
@@ -50,8 +50,12 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
 
   const loadFilterData = async () => {
     try {
-      const data = await cmsService.getFiltersData();
-      setFilterData(data);
+      const response = await fetch('/api/job-posts/filters');
+      const result = await response.json();
+      
+      if (result.success) {
+        setFilterData(result.data);
+      }
     } catch (error) {
       console.error('Failed to load filter data:', error);
     } finally {
@@ -88,18 +92,19 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
     if (!filterData) return [];
     
     // If province is selected, return cities for that province
-    if (selectedProvince && filterData.locations[selectedProvince]) {
-      return filterData.locations[selectedProvince];
+    if (selectedProvince) {
+      const provinceCities = filterData.regencies
+        .filter(r => {
+          const province = filterData.provinces.find(p => p.id === r.province_id);
+          return province?.name === selectedProvince;
+        })
+        .map(r => r.name)
+        .sort();
+      return provinceCities;
     }
     
-    // Otherwise, return all cities from all provinces
-    const allCities: string[] = [];
-    Object.values(filterData.locations).forEach(cities => {
-      allCities.push(...cities);
-    });
-    
-    // Remove duplicates and sort
-    return [...new Set(allCities)].sort();
+    // Otherwise, return all cities from all regencies
+    return filterData.regencies.map(r => r.name).sort();
   };
 
   const renderSortSection = () => {
@@ -259,52 +264,32 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
         )}
 
         {/* Job Categories */}
-        {filterData?.job_categories && (
+        {filterData?.categories && filterData.categories.length > 0 && (
           renderCheckboxGroup(
             'Kategori Pekerjaan',
             <Briefcase className="h-4 w-4 text-gray-400" />,
             'categories',
-            filterData.job_categories.map(c => c.name)
+            filterData.categories.map(c => c.name)
           )
         )}
 
         {/* Job Types */}
-        {filterData?.employment_types && (
+        {filterData?.employment_types && filterData.employment_types.length > 0 && (
           renderCheckboxGroup(
             'Tipe Pekerjaan',
             <Briefcase className="h-4 w-4 text-gray-400" />,
             'jobTypes',
-            filterData.employment_types
-          )
-        )}
-
-        {/* Salary Filter */}
-        {filterData?.salary_ranges && (
-          renderCheckboxGroup(
-            'Gaji',
-            <DollarSign className="h-4 w-4 text-gray-400" />,
-            'salaries',
-            filterData.salary_ranges
+            filterData.employment_types.map(et => et.name)
           )
         )}
 
         {/* Experience */}
-        {filterData?.experience_levels && (
+        {filterData?.experience_levels && filterData.experience_levels.length > 0 && (
           renderCheckboxGroup(
             'Pengalaman',
             <Clock className="h-4 w-4 text-gray-400" />,
             'experiences',
-            filterData.experience_levels
-          )
-        )}
-
-        {/* Industries */}
-        {filterData?.industries && (
-          renderCheckboxGroup(
-            'Industri',
-            <Building className="h-4 w-4 text-gray-400" />,
-            'industries',
-            filterData.industries
+            filterData.experience_levels.map(el => el.name)
           )
         )}
       </div>

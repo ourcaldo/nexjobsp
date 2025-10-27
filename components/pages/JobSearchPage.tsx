@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, Filter, X, Loader2, AlertCircle } from 'lucide-react';
 import { Job } from '@/types/job';
-import { cmsService, FilterData } from '@/lib/cms/service';
+import { FilterData } from '@/lib/cms/service';
 import { userBookmarkService } from '@/lib/api/user-bookmarks';
 import { supabase } from '@/lib/supabase';
 import { useAnalytics } from '@/hooks/useAnalytics';
@@ -27,6 +27,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   locationType = 'province'
 }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { trackPageView, trackSearch, trackFilterUsage } = useAnalytics();
 
   // Refs to prevent infinite loops
@@ -93,28 +94,34 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     setError(null);
 
     try {
-      // Load filter data
-      const filterDataResult = await cmsService.getFiltersData();
-      setFilterData(filterDataResult);
+      // Load filter data from API route
+      const response = await fetch('/api/job-posts/filters');
+      const result = await response.json();
+      
+      if (result.success) {
+        setFilterData(result.data);
+      }
 
       // Initialize filters from URL params
-      const { search, location, category } = router.query;
+      const search = searchParams?.get('search');
+      const location = searchParams?.get('location');
+      const category = searchParams?.get('category');
 
       let initialKeyword = '';
       let initialProvince = selectedProvince;
       let initialSidebarFilters = { ...sidebarFilters };
 
-      if (search && typeof search === 'string') {
+      if (search) {
         initialKeyword = search;
         setKeyword(search);
       }
 
-      if (location && typeof location === 'string' && !initialLocation) {
+      if (location && !initialLocation) {
         initialProvince = location;
         setSelectedProvince(location);
       }
 
-      if (category && typeof category === 'string' && !initialCategory) {
+      if (category && !initialCategory) {
         initialSidebarFilters = {
           ...initialSidebarFilters,
           categories: [category]
@@ -133,14 +140,28 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
       // Store current filters
       currentFiltersRef.current = filters;
 
-      // Load jobs
-      const jobsResult = await cmsService.getJobs(filters, 1, 24);
+      // Load jobs from API route
+      const params = new URLSearchParams({
+        page: '1',
+        limit: '24',
+        ...(filters.search && { search: filters.search }),
+        ...(filters.location && { location: filters.location }),
+        ...(filters.categories && filters.categories.length > 0 && { job_category: filters.categories[0] }),
+        ...(filters.jobTypes && filters.jobTypes.length > 0 && { employment_type: filters.jobTypes[0] }),
+        ...(filters.experiences && filters.experiences.length > 0 && { experience_level: filters.experiences[0] })
+      });
+      
+      const jobsResponse = await fetch(`/api/job-posts?${params.toString()}`);
+      const jobsResult = await jobsResponse.json();
 
-      setJobs(jobsResult.jobs);
-      setCurrentPage(jobsResult.currentPage);
-      setHasMore(jobsResult.hasMore);
-      setTotalJobs(jobsResult.totalJobs);
-      setDisplayedJobsCount(jobsResult.jobs.length); // Set initial displayed count
+      if (jobsResult.success) {
+        const data = jobsResult.data;
+        setJobs(data.jobs);
+        setCurrentPage(data.currentPage);
+        setHasMore(data.hasMore);
+        setTotalJobs(data.totalJobs);
+        setDisplayedJobsCount(data.jobs.length);
+      }
 
       initialDataLoadedRef.current = true;
     } catch (err) {
@@ -149,7 +170,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [router.query, selectedProvince, sidebarFilters, initialLocation, locationType, initialCategory]);
+  }, [searchParams, selectedProvince, sidebarFilters, initialLocation, locationType, initialCategory]);
 
   // Search with filters
   const searchWithFilters = useCallback(async (filters: any, isManualSearch = false) => {
@@ -177,15 +198,30 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
         if (filters.location && filters.location !== selectedProvince) params.set('location', filters.location);
 
         const newUrl = `/lowongan-kerja/${params.toString() ? '?' + params.toString() : ''}`;
-        router.replace(newUrl, undefined, { shallow: true });
+        router.replace(newUrl);
       }
 
-      const response = await cmsService.getJobs(filters, 1, 24);
-      setJobs(response.jobs);
-      setCurrentPage(response.currentPage);
-      setHasMore(response.hasMore);
-      setTotalJobs(response.totalJobs);
-      setDisplayedJobsCount(response.jobs.length); // Update displayed count with new results
+      const params = new URLSearchParams({
+        page: '1',
+        limit: '24',
+        ...(filters.search && { search: filters.search }),
+        ...(filters.location && { location: filters.location }),
+        ...(filters.categories && filters.categories.length > 0 && { job_category: filters.categories[0] }),
+        ...(filters.jobTypes && filters.jobTypes.length > 0 && { employment_type: filters.jobTypes[0] }),
+        ...(filters.experiences && filters.experiences.length > 0 && { experience_level: filters.experiences[0] })
+      });
+      
+      const jobsResponse = await fetch(`/api/job-posts?${params.toString()}`);
+      const result = await jobsResponse.json();
+
+      if (result.success) {
+        const data = result.data;
+        setJobs(data.jobs);
+        setCurrentPage(data.currentPage);
+        setHasMore(data.hasMore);
+        setTotalJobs(data.totalJobs);
+        setDisplayedJobsCount(data.jobs.length);
+      }
 
       // Update current filters ref
       currentFiltersRef.current = filters;
@@ -233,13 +269,24 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     setLoadingMore(true);
     try {
       const filters = getCurrentFilters();
-      const response = await cmsService.getJobs(filters, currentPage + 1, 24);
+      const params = new URLSearchParams({
+        page: (currentPage + 1).toString(),
+        limit: '24',
+        ...(filters.search && { search: filters.search }),
+        ...(filters.location && { location: filters.location }),
+        ...(filters.categories && filters.categories.length > 0 && { job_category: filters.categories[0] }),
+        ...(filters.jobTypes && filters.jobTypes.length > 0 && { employment_type: filters.jobTypes[0] }),
+        ...(filters.experiences && filters.experiences.length > 0 && { experience_level: filters.experiences[0] })
+      });
+      
+      const jobsResponse = await fetch(`/api/job-posts?${params.toString()}`);
+      const result = await jobsResponse.json();
 
-      if (response.jobs.length > 0) {
-        setJobs(prevJobs => [...prevJobs, ...response.jobs]);
-        setCurrentPage(response.currentPage);
-        setHasMore(response.hasMore);
-        setDisplayedJobsCount(prevCount => prevCount + response.jobs.length); // Update displayed count
+      if (result.success && result.data.jobs.length > 0) {
+        setJobs(prevJobs => [...prevJobs, ...result.data.jobs]);
+        setCurrentPage(result.data.currentPage);
+        setHasMore(result.data.hasMore);
+        setDisplayedJobsCount(prevCount => prevCount + result.data.jobs.length);
       } else {
         setHasMore(false);
       }
@@ -372,7 +419,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     setSortBy('newest');
 
     if (!initialCategory && !initialLocation) {
-      router.replace('/lowongan-kerja/', undefined, { shallow: true });
+      router.replace('/lowongan-kerja/');
     }
   }, [initialLocation, locationType, initialCategory, router]);
 
@@ -409,9 +456,9 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
 
   const getProvinceOptions = useMemo(() => {
     if (!filterData) return [];
-    return Object.keys(filterData.locations).map(province => ({
-      value: province,
-      label: province
+    return filterData.provinces.map(province => ({
+      value: province.name,
+      label: province.name
     }));
   }, [filterData]);
 

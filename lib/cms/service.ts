@@ -3,13 +3,14 @@ import { supabaseAdminService } from '@/lib/supabase/admin';
 import { env } from '@/lib/env';
 
 export interface FilterData {
-  employment_types: string[];
-  experience_levels: string[];
-  job_categories: Array<{ id: string; name: string; slug: string }>;
-  job_tags: Array<{ id: string; name: string; slug: string }>;
-  locations: Record<string, string[]>;
-  industries: string[];
-  salary_ranges: string[];
+  employment_types: Array<{ id: string; name: string; slug: string; post_count: number }>;
+  experience_levels: Array<{ id: string; name: string; slug: string; years_min: number; years_max: number | null; post_count: number }>;
+  categories: Array<{ id: string; name: string; slug: string; description: string | null; post_count: number }>;
+  tags: Array<{ id: string; name: string; slug: string; post_count: number }>;
+  salary_range: { min: string; max: string; currencies: string[] };
+  provinces: Array<{ id: string; name: string; post_count: number }>;
+  regencies: Array<{ id: string; name: string; province_id: string; post_count: number }>;
+  skills: Array<{ name: string; post_count: number }>;
 }
 
 interface JobsResponse {
@@ -30,28 +31,39 @@ interface CMSJobPost {
   publish_date: string;
   status: string;
   author_id: string;
-  post_type: string;
   seo_title: string | null;
   meta_description: string | null;
   focus_keyword: string | null;
   created_at: string;
   updated_at: string;
   job_company_name: string | null;
-  employment_type: string | null;
-  experience_level: string | null;
-  job_salary_min: number | null;
-  job_salary_max: number | null;
+  job_company_logo: string | null;
+  job_company_website: string | null;
+  employment_type: { id: string; name: string; slug: string } | null;
+  experience_level: { id: string; name: string; slug: string; years_min: number; years_max: number | null } | null;
+  job_salary_min: string | null;
+  job_salary_max: string | null;
   job_salary_currency: string | null;
   job_salary_period: string | null;
+  job_is_salary_negotiable: boolean | null;
   job_skills: string[] | null;
-  job_location_province: string | null;
-  job_location_city: string | null;
-  job_industry: string | null;
-  job_education: string | null;
-  job_gender: string | null;
-  job_work_policy: string | null;
-  job_application_link: string | null;
-  job_source: string | null;
+  job_benefits: string[] | null;
+  job_requirements: string | null;
+  job_responsibilities: string | null;
+  job_application_url: string | null;
+  job_application_email: string | null;
+  job_deadline: string | null;
+  job_province_id: string | null;
+  job_regency_id: string | null;
+  job_district_id: string | null;
+  job_village_id: string | null;
+  job_address_detail: string | null;
+  job_is_remote: boolean | null;
+  job_is_hybrid: boolean | null;
+  province: { id: string; name: string } | null;
+  regency: { id: string; name: string; province_id: string } | null;
+  district: { id: string; name: string; regency_id: string } | null;
+  village: { id: string; name: string; district_id: string } | null;
   job_categories: Array<{ id: string; name: string; slug: string }>;
   job_tags: Array<{ id: string; name: string; slug: string }>;
 }
@@ -194,8 +206,11 @@ export class CMSService {
 
   private transformCMSJobToJob(cmsJob: CMSJobPost): Job {
     // Format salary display
-    const formatSalary = (min: number | null, max: number | null, currency: string | null, period: string | null): string => {
-      if (!min && !max) return 'Negosiasi';
+    const formatSalary = (min: string | null, max: string | null, currency: string | null, period: string | null): string => {
+      const minNum = min ? parseInt(min) : null;
+      const maxNum = max ? parseInt(max) : null;
+      
+      if (!minNum && !maxNum) return 'Negosiasi';
       
       const currencySymbol = currency === 'IDR' ? 'Rp ' : currency === 'USD' ? '$' : '';
       const formatNumber = (num: number) => {
@@ -205,16 +220,24 @@ export class CMSService {
         return num.toLocaleString('id-ID');
       };
 
-      if (min && max) {
-        return `${currencySymbol}${formatNumber(min)} - ${formatNumber(max)}${period ? '/' + period : ''}`;
-      } else if (min) {
-        return `${currencySymbol}${formatNumber(min)}+${period ? '/' + period : ''}`;
-      } else if (max) {
-        return `Up to ${currencySymbol}${formatNumber(max)}${period ? '/' + period : ''}`;
+      if (minNum && maxNum) {
+        return `${currencySymbol}${formatNumber(minNum)} - ${formatNumber(maxNum)}${period ? '/' + period : ''}`;
+      } else if (minNum) {
+        return `${currencySymbol}${formatNumber(minNum)}+${period ? '/' + period : ''}`;
+      } else if (maxNum) {
+        return `Up to ${currencySymbol}${formatNumber(maxNum)}${period ? '/' + period : ''}`;
       }
       
       return 'Negosiasi';
     };
+
+    // Build location string
+    const locationParts: string[] = [];
+    if (cmsJob.regency?.name) locationParts.push(cmsJob.regency.name);
+    if (cmsJob.province?.name && !locationParts.includes(cmsJob.province.name)) {
+      locationParts.push(cmsJob.province.name);
+    }
+    const locationString = locationParts.join(', ') || '';
 
     return {
       id: cmsJob.id,
@@ -223,23 +246,25 @@ export class CMSService {
       content: cmsJob.content || '',
       company_name: cmsJob.job_company_name || 'Perusahaan',
       kategori_pekerjaan: cmsJob.job_categories?.[0]?.name || '',
-      lokasi_provinsi: cmsJob.job_location_province || '',
-      lokasi_kota: cmsJob.job_location_city || '',
-      tipe_pekerjaan: cmsJob.employment_type || 'Full Time',
-      pendidikan: cmsJob.job_education || '',
-      industry: cmsJob.job_industry || '',
-      pengalaman: cmsJob.experience_level || '',
+      lokasi_provinsi: cmsJob.province?.name || '',
+      lokasi_kota: cmsJob.regency?.name || '',
+      tipe_pekerjaan: cmsJob.employment_type?.name || 'Full Time',
+      pendidikan: '',
+      industry: '',
+      pengalaman: cmsJob.experience_level?.name || '',
       tag: cmsJob.job_tags?.[0]?.name || '',
-      gender: cmsJob.job_gender || '',
+      gender: '',
       gaji: formatSalary(
         cmsJob.job_salary_min,
         cmsJob.job_salary_max,
         cmsJob.job_salary_currency,
         cmsJob.job_salary_period
       ),
-      kebijakan_kerja: cmsJob.job_work_policy || '',
-      link: cmsJob.job_application_link || `https://nexjob.tech/lowongan/${cmsJob.slug}`,
-      sumber_lowongan: cmsJob.job_source || 'Nexjob',
+      kebijakan_kerja: cmsJob.job_is_remote ? 'Remote' : cmsJob.job_is_hybrid ? 'Hybrid' : '',
+      link: cmsJob.job_application_url || cmsJob.job_application_email ? 
+        (cmsJob.job_application_url || `mailto:${cmsJob.job_application_email}`) : 
+        `https://nexjob.tech/lowongan/${cmsJob.slug}`,
+      sumber_lowongan: 'Nexjob',
       created_at: cmsJob.created_at,
       seo_title: cmsJob.seo_title || cmsJob.title,
       seo_description: cmsJob.meta_description || cmsJob.excerpt || '',
@@ -306,42 +331,24 @@ export class CMSService {
         return this.filterDataCache.data;
       }
 
-      // Fetch categories and tags in parallel
-      const [categoriesResponse, tagsResponse] = await Promise.all([
-        this.fetchWithTimeout(`${this.baseUrl}/api/v1/categories?limit=100`),
-        this.fetchWithTimeout(`${this.baseUrl}/api/v1/tags?limit=100`)
-      ]);
+      // Fetch filter data from the new job-posts/filters endpoint
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/job-posts/filters`);
+      const data: CMSResponse<FilterData> = await response.json();
 
-      const categoriesData: CMSResponse<{ categories: Array<{ id: string; name: string; slug: string }> }> = 
-        await categoriesResponse.json();
-      const tagsData: CMSResponse<{ tags: Array<{ id: string; name: string; slug: string }> }> = 
-        await tagsResponse.json();
-
-      // Build filter data structure
-      const filterData: FilterData = {
-        employment_types: ['Full Time', 'Part Time', 'Contract', 'Freelance', 'Internship'],
-        experience_levels: ['Fresh Graduate', '1-2 Years', '2-3 Years', '3-5 Years', '5+ Years'],
-        job_categories: categoriesData.success ? categoriesData.data.categories : [],
-        job_tags: tagsData.success ? tagsData.data.tags : [],
-        locations: this.getFallbackLocations(),
-        industries: this.getFallbackIndustries(),
-        salary_ranges: ['Below 5 Million', '5-10 Million', '10-15 Million', '15-20 Million', 'Above 20 Million']
-      };
+      if (!data.success) {
+        throw new Error('Failed to fetch filter data from CMS');
+      }
 
       // Update cache
       this.filterDataCache = {
-        data: filterData,
+        data: data.data,
         timestamp: Date.now()
       };
 
-      console.log('Filter data cached for 1 hour');
-      return filterData;
+      return data.data;
     } catch (error) {
-      console.error('Error fetching filters data:', error);
-
       // Return cached data if available, otherwise fallback
       if (this.filterDataCache) {
-        console.log('Returning cached filter data due to error');
         return this.filterDataCache.data;
       }
 
@@ -354,43 +361,16 @@ export class CMSService {
     console.log('Filter cache cleared');
   }
 
-  private getFallbackLocations(): Record<string, string[]> {
-    return {
-      'DKI Jakarta': ['Jakarta Pusat', 'Jakarta Selatan', 'Jakarta Barat', 'Jakarta Utara', 'Jakarta Timur'],
-      'Jawa Barat': ['Bandung', 'Bekasi', 'Bogor', 'Depok', 'Tangerang'],
-      'Jawa Timur': ['Surabaya', 'Malang', 'Kediri', 'Sidoarjo'],
-      'Jawa Tengah': ['Semarang', 'Solo', 'Yogyakarta'],
-      'Bali': ['Denpasar', 'Ubud', 'Sanur'],
-      'Sumatera Utara': ['Medan', 'Binjai']
-    };
-  }
-
-  private getFallbackIndustries(): string[] {
-    return [
-      'Teknologi Informasi',
-      'Perbankan',
-      'Healthcare',
-      'Pendidikan',
-      'E-commerce',
-      'Otomotif',
-      'Digital Marketing',
-      'Human Resources',
-      'Customer Service',
-      'Sales',
-      'Logistik',
-      'Akuntansi'
-    ];
-  }
-
   private getFallbackFiltersData(): FilterData {
     return {
-      employment_types: ['Full Time', 'Part Time', 'Contract', 'Freelance', 'Internship'],
-      experience_levels: ['Fresh Graduate', '1-2 Years', '2-3 Years', '3-5 Years', '5+ Years'],
-      job_categories: [],
-      job_tags: [],
-      locations: this.getFallbackLocations(),
-      industries: this.getFallbackIndustries(),
-      salary_ranges: ['Below 5 Million', '5-10 Million', '10-15 Million', '15-20 Million', 'Above 20 Million']
+      employment_types: [],
+      experience_levels: [],
+      categories: [],
+      tags: [],
+      salary_range: { min: '0', max: '0', currencies: ['IDR'] },
+      provinces: [],
+      regencies: [],
+      skills: []
     };
   }
 
@@ -524,7 +504,11 @@ export class CMSService {
     await this.ensureInitialized();
     
     try {
-      const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/job-posts/${slug}`);
+      const params = new URLSearchParams({
+        status: 'published'
+      });
+      
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/job-posts/${slug}?${params.toString()}`);
       const data: CMSResponse<CMSJobPost> = await response.json();
 
       if (!data.success) {
@@ -542,7 +526,11 @@ export class CMSService {
     await this.ensureInitialized();
     
     try {
-      const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/job-posts/${id}`);
+      const params = new URLSearchParams({
+        status: 'published'
+      });
+      
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/job-posts/${id}?${params.toString()}`);
       const data: CMSResponse<CMSJobPost> = await response.json();
 
       if (!data.success) {
