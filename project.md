@@ -155,6 +155,75 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-27 02:24 - Pages Migration to External CMS **[COMPLETED]**
+- **Time**: 02:24 WIB
+- **Reason**: Complete migration of pages system from database to external TugasCMS API to unify content management
+- **Implementation Details**:
+
+  **What Changed**:
+  - Pages now fetched from external TugasCMS API (`/api/v1/pages`)
+  - All page routes (`app/[slug]/page.tsx`) now use external CMS
+  - Sitemap generation updated to fetch pages from external API
+  - Consistent architecture with articles and job posts (all from external CMS)
+  - Database-based pages (lib/cms/pages.ts) now deprecated but kept for reference
+
+  **Files Modified**:
+  - `lib/cms/service.ts` - Added pages methods with schema transformation:
+    - `transformCMSPageToPage(cmsPage)` - Transform snake_case CMS response to camelCase
+    - `getPages(page, limit, category, tag, search)` - Fetch paginated pages with automatic transformation
+    - `getPageBySlug(slug)` - Get single page by slug with automatic transformation
+    - `getAllPagesForSitemap()` - Fetch all pages with proper error handling and transformation
+    - Handles both snake_case (featured_image) and camelCase (featuredImage) for compatibility
+    - Properly stops iteration when API requests fail
+  
+  - `app/api/pages/route.ts` - **NEW** Server-side API proxy:
+    - Accepts query parameters: page, limit, category, tag, search
+    - Calls `cmsService.getPages()` server-side with cms_token
+    - Returns formatted response to client
+    - Follows same security pattern as articles API
+  
+  - `app/[slug]/page.tsx` - Updated dynamic page routing:
+    - Removed dependency on `cmsPageService` (database)
+    - Now uses `cmsService.getPageBySlug()` for external API
+    - Updated `generateStaticParams()` to use `cmsService.getAllPagesForSitemap()`
+    - Updated metadata generation to use external CMS page structure
+    - Changed field names to match external API (featuredImage, publishDate, etc.)
+  
+  - `lib/utils/sitemap.ts` - Updated sitemap generation:
+    - `getCmsPages()` now uses `cmsService.getAllPagesForSitemap()`
+    - Removed database import for pages
+    - Fixed deprecated WordPress API field references
+    - Removed manual CMS configuration (auto-initializes from database)
+  
+  **API Structure**:
+  - Pages API endpoint: `/api/v1/pages`
+  - Authentication: Bearer token (from admin_settings.cms_token)
+  - Response format matches posts/articles structure
+  - Fields: id, title, content, excerpt, slug, featuredImage, publishDate, seo, categories, tags
+  
+  **Security**:
+  - ✅ Server-side API proxy pattern for secure token handling
+  - ✅ cms_token never exposed to client/browser
+  - ✅ All external CMS calls happen server-side only
+  - ✅ Auto-initialization from database settings
+  
+  **Verification**:
+  - ✅ Zero LSP errors after migration
+  - ✅ Application compiles successfully
+  - ✅ Workflow running without errors
+  - ✅ generateStaticParams() uses external CMS for page slugs
+  - ✅ generateMetadata() properly extracts SEO from external API
+  - ✅ Sitemap generation includes external CMS pages
+  
+  **Architecture Benefits**:
+  - **Unified Content Source**: All content (jobs, articles, pages) now from TugasCMS
+  - **Simplified Codebase**: No need to maintain dual content systems
+  - **Consistent Patterns**: Server-side proxies for all content types
+  - **Better Separation**: Content management fully external, Next.js purely presentational
+  - **Easier Scaling**: External CMS can be optimized/scaled independently
+  
+  **Impact**: Pages system is now fully migrated to external TugasCMS API, matching the architecture of articles and job posts. The application now has a unified content management approach with all content coming from the external CMS. Database-based page functionality (lib/cms/pages.ts) remains in codebase for reference but is no longer used in active routes.
+
 ### 2025-10-26 15:22 - Article Filtering Security Fix **[COMPLETED]**
 - **Issue**: Article category filtering failed with 401 Unauthorized error
 - **Root Cause**: Client-side component (`ArticleListPage`) was directly calling external CMS API, which requires `cms_token` authentication. The token couldn't be loaded client-side for security reasons.

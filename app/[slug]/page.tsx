@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { cmsPageService } from '@/lib/cms/pages';
-import { NxdbPage } from '@/lib/supabase';
+import { cmsService } from '@/lib/cms/service';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import SchemaMarkup from '@/components/SEO/SchemaMarkup';
@@ -16,11 +15,40 @@ interface PageProps {
   };
 }
 
+interface CMSPage {
+  id: string;
+  title: string;
+  content: string;
+  excerpt: string;
+  slug: string;
+  featuredImage: string | null;
+  publishDate: string;
+  status: string;
+  authorId: string;
+  createdAt: string;
+  updatedAt: string;
+  seo: {
+    title: string | null;
+    metaDescription: string | null;
+    focusKeyword: string | null;
+    slug: string;
+  };
+  categories: Array<{ id: string; name: string; slug: string; description?: string }>;
+  tags: Array<{ id: string; name: string; slug: string }>;
+  template?: string;
+  parentPageId?: string | null;
+  menuOrder?: number;
+}
+
 export async function generateStaticParams() {
   try {
-    const pages = await cmsPageService.getPages({ status: 'published' });
+    const response = await cmsService.getAllPagesForSitemap();
     
-    return pages.map((page) => ({
+    if (!response || response.length === 0) {
+      return [];
+    }
+    
+    return response.map((page: CMSPage) => ({
       slug: page.slug,
     }));
   } catch (error) {
@@ -30,19 +58,20 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const page = await cmsPageService.getPageBySlug(params.slug);
+  const response = await cmsService.getPageBySlug(params.slug);
   
-  if (!page) {
+  if (!response.success || !response.data) {
     return {
       title: 'Page Not Found',
     };
   }
 
+  const page: CMSPage = response.data;
   const currentUrl = getCurrentDomain();
-  const pageTitle = page.seo_title || page.title;
-  const pageDescription = page.meta_description || page.excerpt;
+  const pageTitle = page.seo?.title || page.title;
+  const pageDescription = page.seo?.metaDescription || page.excerpt;
   const canonicalUrl = `${currentUrl}/${page.slug}/`;
-  const ogImage = page.featured_image || `${currentUrl}/og-page-default.jpg`;
+  const ogImage = page.featuredImage || `${currentUrl}/og-page-default.jpg`;
 
   return {
     title: pageTitle,
@@ -69,11 +98,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export const revalidate = 86400; // ISR: Revalidate every 24 hours
 
 export default async function DynamicPage({ params }: PageProps) {
-  const page = await cmsPageService.getPageBySlug(params.slug);
+  const response = await cmsService.getPageBySlug(params.slug);
 
-  if (!page) {
+  if (!response.success || !response.data) {
     notFound();
   }
+
+  const page: CMSPage = response.data;
 
   const breadcrumbItems = [
     { label: page.title }
@@ -89,10 +120,10 @@ export default async function DynamicPage({ params }: PageProps) {
       <main className="min-h-screen bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Featured Image */}
-          {page.featured_image && (
+          {page.featuredImage && (
             <div className="mb-8">
               <Image
-                src={page.featured_image}
+                src={page.featuredImage}
                 alt={page.title}
                 width={800}
                 height={256}
@@ -116,18 +147,12 @@ export default async function DynamicPage({ params }: PageProps) {
             {/* Meta Information */}
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 border-t border-gray-200 pt-4">
               <div className="flex items-center">
-                <span>Published: {new Date(page.post_date).toLocaleDateString('en-US', {
+                <span>Published: {new Date(page.publishDate).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric'
                 })}</span>
               </div>
-
-              {page.author && (
-                <div className="flex items-center">
-                  <span>By: {page.author.full_name || page.author.email}</span>
-                </div>
-              )}
 
               {page.categories && page.categories.length > 0 && (
                 <div className="flex items-center">

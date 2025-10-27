@@ -683,6 +683,138 @@ export class CMSService {
       return [];
     }
   }
+
+  // Transform CMS page data from snake_case to camelCase
+  private transformCMSPageToPage(cmsPage: any): any {
+    return {
+      id: cmsPage.id,
+      title: cmsPage.title,
+      content: cmsPage.content,
+      excerpt: cmsPage.excerpt,
+      slug: cmsPage.slug,
+      featuredImage: cmsPage.featured_image || cmsPage.featuredImage,
+      publishDate: cmsPage.publish_date || cmsPage.publishDate,
+      status: cmsPage.status,
+      authorId: cmsPage.author_id || cmsPage.authorId,
+      createdAt: cmsPage.created_at || cmsPage.createdAt,
+      updatedAt: cmsPage.updated_at || cmsPage.updatedAt,
+      seo: {
+        title: cmsPage.seo_title || cmsPage.seo?.title,
+        metaDescription: cmsPage.meta_description || cmsPage.seo?.metaDescription,
+        focusKeyword: cmsPage.focus_keyword || cmsPage.seo?.focusKeyword,
+        slug: cmsPage.slug
+      },
+      categories: cmsPage.categories || [],
+      tags: cmsPage.tags || [],
+      template: cmsPage.template,
+      parentPageId: cmsPage.parent_page_id || cmsPage.parentPageId,
+      menuOrder: cmsPage.menu_order || cmsPage.menuOrder
+    };
+  }
+
+  // Pages methods
+  async getPages(page: number = 1, limit: number = 20, category?: string, tag?: string, search?: string) {
+    await this.ensureInitialized();
+    
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        status: 'published'
+      });
+
+      if (category) params.set('category', category);
+      if (tag) params.set('tag', tag);
+      if (search) params.set('search', search);
+
+      const response = await this.fetchWithTimeout(
+        `${this.baseUrl}/api/v1/pages?${params.toString()}`
+      );
+      const data = await response.json();
+
+      if (!data.success) {
+        return { success: false, data: { pages: [], pagination: {} } };
+      }
+
+      // Transform pages to camelCase
+      const transformedPages = data.data.pages.map((page: any) => this.transformCMSPageToPage(page));
+
+      return {
+        success: true,
+        data: {
+          pages: transformedPages,
+          pagination: data.data.pagination
+        },
+        cached: data.cached
+      };
+    } catch (error) {
+      console.error('Error fetching pages:', error);
+      return { success: false, data: { pages: [], pagination: {} } };
+    }
+  }
+
+  async getPageBySlug(slug: string) {
+    await this.ensureInitialized();
+    
+    try {
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/pages/${slug}`);
+      const data = await response.json();
+
+      if (!data.success || !data.data) {
+        return { success: false, data: null };
+      }
+
+      // Transform page to camelCase
+      const transformedPage = this.transformCMSPageToPage(data.data);
+
+      return {
+        success: true,
+        data: transformedPage,
+        cached: data.cached
+      };
+    } catch (error) {
+      console.error('Error fetching page by slug:', error);
+      return { success: false, data: null };
+    }
+  }
+
+  async getAllPagesForSitemap() {
+    await this.ensureInitialized();
+    
+    try {
+      const allPages: any[] = [];
+      let page = 1;
+      let hasMore = true;
+
+      while (hasMore) {
+        try {
+          const response = await this.getPages(page, 100);
+
+          // Stop immediately if request failed
+          if (!response.success) {
+            console.error('Failed to fetch pages for sitemap');
+            break;
+          }
+
+          if (!response.data.pages || response.data.pages.length === 0) {
+            hasMore = false;
+          } else {
+            allPages.push(...response.data.pages);
+            hasMore = response.data.pagination?.hasNextPage || false;
+            page++;
+          }
+        } catch (error) {
+          console.error(`Error fetching pages page ${page}:`, error);
+          break;
+        }
+      }
+
+      return allPages;
+    } catch (error) {
+      console.error('Error fetching all pages for sitemap:', error);
+      return [];
+    }
+  }
 }
 
 // Export singleton instance

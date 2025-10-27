@@ -454,24 +454,8 @@ class SitemapService {
       // If no cache or cache expired, fetch fresh data
       console.log('Fetching fresh sitemap data (cache expired or not found)...');
 
-      // Initialize cmsService with current admin settings
-      const settings = await supabaseAdminService.getSettings();
-
-      // Check if settings is defined before accessing its properties
-      if (!settings) {
-        console.warn('Settings not available for sitemap data, using fallback configuration');
-        // Return empty data as fallback
-        return {
-          jobs: [],
-          articles: [],
-          jobPages: 1,
-          articlePages: 1
-        };
-      }
-
-      cmsService.setBaseUrl(settings.api_url);
-      cmsService.setFiltersApiUrl(settings.filters_api_url);
-      cmsService.setAuthToken(settings.auth_token || '');
+      // CMS service auto-initializes from database settings via ensureInitialized()
+      // No need to manually set configuration here
 
       // Fetch data with better error handling and retries
       const [jobsResult, articlesResult] = await Promise.allSettled([
@@ -668,17 +652,20 @@ class SitemapService {
   // Get CMS pages for sitemap
   async getCmsPages(): Promise<{ pages: any[] }> {
     try {
-      const { cmsPageService } = await import('@/lib/cms/pages');
-      const pages = await cmsPageService.getPages({ status: 'published' });
+      const pagesResponse = await cmsService.getAllPagesForSitemap();
+
+      if (!pagesResponse || pagesResponse.length === 0) {
+        return { pages: [] };
+      }
 
       return {
-        pages: pages.map((page: any) => ({
+        pages: pagesResponse.map((page: any) => ({
           slug: page.slug,
           title: page.title,
           excerpt: page.excerpt,
-          post_date: page.post_date,
-          updated_at: page.updated_at,
-          published_at: page.published_at
+          post_date: page.publishDate,
+          updated_at: page.updatedAt,
+          published_at: page.publishDate
         }))
       };
     } catch (error) {
