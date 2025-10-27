@@ -126,7 +126,6 @@ export const generateJobPostingSchema = (job: Job) => {
     "baseSalary": extractSalaryInfo(job.gaji),
     "qualifications": job.pendidikan,
     "experienceRequirements": job.pengalaman,
-    "industry": job.industry,
     "workHours": job.kebijakan_kerja,
     "url": `${baseUrl}/lowongan-kerja/${job.slug}/`,
     "applicationContact": {

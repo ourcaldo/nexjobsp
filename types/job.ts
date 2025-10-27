@@ -9,7 +9,6 @@ export interface Job {
   lokasi_kota: string;
   tipe_pekerjaan: string;
   pendidikan: string;
-  industry: string;
   pengalaman: string;
   tag: string;
   gender: string;

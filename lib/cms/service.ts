@@ -256,7 +256,6 @@ export class CMSService {
       lokasi_kota: cmsJob.regency?.name || '',
       tipe_pekerjaan: cmsJob.employment_type?.name || 'Full Time',
       pendidikan: cmsJob.education_level?.name || '',
-      industry: '',
       pengalaman: cmsJob.experience_level?.name || '',
       tag: cmsJob.job_tags?.[0]?.name || '',
       gender: '',
