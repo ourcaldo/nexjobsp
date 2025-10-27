@@ -838,19 +838,21 @@ export class CMSService {
       const response = await this.fetchWithTimeout(`${this.baseUrl}${sitemapPath}`);
       let xmlContent = await response.text();
       
-      // Transform URLs from CMS domain to site domain
+      // Transform URLs from CMS API structure to site structure
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nexjob.tech';
       
-      // Replace CMS API URLs with site URLs in the XML
-      // Pattern 1: https://cms.nexjob.tech/api/v1/sitemaps/sitemap-*.xml -> siteUrl/sitemap-*.xml
+      // Remove /api/v1/sitemaps/ from all URLs in the XML
+      // Pattern: https://nexjob.tech/api/v1/sitemaps/sitemap-*.xml -> https://nexjob.tech/sitemap-*.xml
       xmlContent = xmlContent.replace(
-        /https:\/\/cms\.nexjob\.tech\/api\/v1\/sitemaps\//g,
-        `${siteUrl}/`
+        /\/api\/v1\/sitemaps\//g,
+        '/'
       );
       
-      // Pattern 2: Job URLs (already correct, no change needed)
-      // Pattern 3: Post/Article URLs (already correct, no change needed)
-      // Pattern 4: Page URLs (already correct, no change needed)
+      // Also ensure the domain is correct (in case CMS returns cms.nexjob.tech)
+      xmlContent = xmlContent.replace(
+        /https?:\/\/cms\.nexjob\.tech\//g,
+        `${siteUrl}/`
+      );
       
       return xmlContent;
     } catch (error) {

@@ -53,15 +53,6 @@ const nextConfig = {
         source: '/admin/',
         destination: '/backend/admin/',
       },
-      // Dynamic sitemap rewrites - Maps /sitemap-loker-1.xml → /sitemap-loker/1
-      {
-        source: '/sitemap-loker-:page(\\d+).xml',
-        destination: '/sitemap-loker/:page',
-      },
-      {
-        source: '/sitemap-artikel-:page(\\d+).xml',
-        destination: '/sitemap-artikel/:page',
-      },
     ];
   },
   async redirects() {

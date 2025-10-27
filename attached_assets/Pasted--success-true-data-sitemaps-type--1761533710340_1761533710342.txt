@@ -1,0 +1,43 @@
+{
+    "success": true,
+    "data": {
+        "sitemaps": [
+            {
+                "type": "root",
+                "url": "https://cms.nexjob.tech/api/v1/sitemaps/sitemap.xml"
+            },
+            {
+                "type": "pages",
+                "url": "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-pages.xml"
+            },
+            {
+                "type": "blog",
+                "url": "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-post.xml",
+                "index": "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-post.xml",
+                "references": [
+                    "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-post-1.xml",
+                    "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-post-2.xml",
+                    "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-post-3.xml",
+                    "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-post-4.xml",
+                    "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-post-5.xml",
+                    "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-post-6.xml",
+                    "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-post-7.xml",
+                    "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-post-8.xml",
+                    "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-post-9.xml",
+                    "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-post-10.xml",
+                    "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-post-11.xml",
+                    "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-post-12.xml"
+                ]
+            },
+            {
+                "type": "job",
+                "url": "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-job.xml",
+                "index": "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-job.xml",
+                "references": [
+                    "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-job-1.xml"
+                ]
+            }
+        ]
+    },
+    "cached": false
+}

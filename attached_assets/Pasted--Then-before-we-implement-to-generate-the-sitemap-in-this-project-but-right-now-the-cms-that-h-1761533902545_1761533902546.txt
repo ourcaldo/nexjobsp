@@ -1,0 +1,22 @@
+```
+Then, before we implement to generate the sitemap in this project, but right now the cms that handle it, so we request the sitemap to the API https://cms.nexjob.tech/api/v1/sitemaps read the documentation again, the API will give response like this (pasted).
+
+Then you need to do this:
+
+Make sure we served the sitemap from cms, not generate by ourself, just use proxy or similar approach that can served the sitemap from cms
+Before we served, we need to change the host of sitemap. So, the sitemap will use loc like this "<loc>https://cms.nexjob.tech/api/v1/sitemaps/sitemap-pages.xml</loc>" I need you to change the host into the domain of NEXT_PUBLIC_SITE_URLand the sitemap format is NEXT_PUBLIC_SITE_URL/sitemap.xml (for the root), NEXT_PUBLIC_SITE_URL/sitemap-pages (for the pages), NEXT_PUBLIC_SITE_URL/sitemap-post (for the post), and NEXT_PUBLIC_SITE_URL/sitemap-job (for the job) and for the chunked version of blog and job is almost same, just add index references like /sitemap-post-12.xml.
+Related to chunck version, if the sitemap response add a references like this:
+{
+"type": "job",
+"url": "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-job.xml",
+"index": "https://cms.nexjob.tech/api/v1/sitemaps/sitemap-job.xml",
+"references": [
+"https://cms.nexjob.tech/api/v1/sitemaps/sitemap-job-1.xml"
+]
+}
+That's mean the sitemap is chuncked version that placed under the index, so index > references. And inside the references sitemap is something like this "https://nexjob.tech/api/v1/sitemaps/sitemap-job-1.xml" you need to change the structure to "https://nexjob.tech/sitemaps/sitemap-job-1.xml" and the inside it will be have the job listing sitemap (chuncked) https://nexjob.tech/jobs/category-1/demo-job/ (this is already set like this, so this correct already)
+
+So, basicly for the sitemap you didn't need to generate again, just need to get, change the structure and served.
+
+Please deep dive into what i said, the api documentation and start to implement it
+'''
