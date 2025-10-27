@@ -484,11 +484,11 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
                   className="bg-gray-50 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 group block"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
-                  {article.featured_media_url && (
+                  {article.featuredImage && (
                     <div className="aspect-video overflow-hidden relative">
                       <Image
-                        src={article.featured_media_url}
-                        alt={article.title.rendered}
+                        src={article.featuredImage}
+                        alt={article.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -497,11 +497,11 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
                   )}
                   <div className="p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-primary-600 transition-colors line-clamp-2">
-                      {article.title.rendered}
+                      {article.title}
                     </h3>
                     <div
                       className="text-gray-600 mb-4 line-clamp-3"
-                      dangerouslySetInnerHTML={{ __html: article.excerpt.rendered }}
+                      dangerouslySetInnerHTML={{ __html: article.excerpt }}
                     />
                     <div className="flex items-center text-primary-600 font-medium group-hover:text-primary-700">
                       Baca Selengkapnya

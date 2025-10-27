@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ChevronRight, Home } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 
 interface BreadcrumbItem {
   label: string;
@@ -16,9 +16,8 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
     <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
       <Link 
         href="/" 
-        className="flex items-center hover:text-primary-600 transition-colors"
+        className="hover:text-primary-600 transition-colors"
       >
-        <Home className="h-4 w-4 mr-1" />
         Home
       </Link>
       

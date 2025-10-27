@@ -155,6 +155,93 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-27 15:22 - Article Enhancements and Job Filter API Alignment **[COMPLETED]**
+- **Time**: 15:22 WIB
+- **Features Added**:
+  1. Cleaned up breadcrumbs UI by removing redundant Home icon
+  2. Added Table of Contents component for article detail pages
+  3. Enhanced article images with full-width responsive display
+  4. Implemented category-based related articles filtering
+  5. Updated job filter API parameters to match TugasCMS API v1 specification
+  6. Fixed TypeScript type safety issue in homepage timeout handling
+
+- **Implementation Details**:
+  
+  **Files Modified**:
+  - `components/Breadcrumbs.tsx` - UI Cleanup:
+    - Removed Home icon from each breadcrumb item for cleaner, less cluttered UI
+    - Breadcrumbs now show only text labels without icons
+    - Maintains breadcrumb navigation functionality unchanged
+  
+  - `components/ArticleTableOfContents.tsx` - New Component:
+    - Created new Table of Contents component that parses article HTML content
+    - Extracts h2 and h3 headings with unique IDs for navigation
+    - Displays hierarchical structure with indentation for h3 elements
+    - Implements smooth scrolling to sections when clicking ToC links
+    - Highlights currently visible section based on scroll position
+    - Responsive design with sticky positioning on larger screens
+  
+  - `components/pages/ArticleDetailPage.tsx` - Article Display Enhancements:
+    - Changed featured image from cropped `aspect-video` to full-width responsive display
+    - Integrated ArticleTableOfContents component below article metadata
+    - ToC positioned after title/description and before content for logical flow
+    - Maintains all existing functionality (tags, social share, related articles)
+  
+  - `lib/cms/service.ts` - Multiple API Improvements:
+    - **getRelatedArticles()**: Complete rewrite to filter by category:
+      - Fetches current article from API to get category data
+      - Extracts category slug from `categories[0].slug`
+      - Fetches articles from same category using `getArticles(page, limit, categorySlug)`
+      - Falls back to latest articles if no category exists
+      - Filters out current article from results
+    
+    - **buildJobsUrl()**: Updated job filter parameters to match API spec:
+      - Changed `job_categories` to `job_category` (singular) for category filter
+      - Changed work policy filter from `job_is_remote`/`job_is_hybrid` booleans to single `work_policy` parameter with values: "onsite", "remote", "hybrid"
+      - Changed salary filters from `job_salary_min`/`job_salary_max` to `salary_min`/`salary_max` aliases
+      - Aligns with TugasCMS API v1 documentation specification
+  
+  - `app/page.tsx` - Type Safety Fix:
+    - Fixed TypeScript error in CMS timeout handling
+    - Added proper type checking for `settings.cms_timeout` (string or number)
+    - Safely converts string to number using parseInt when needed
+    - Prevents type mismatch errors during server-side rendering
+
+  **Related Articles Filter Logic**:
+  1. User opens article detail page (e.g., "/articles/best-coding-practices")
+  2. ArticleDetailPage fetches article data and calls `/api/articles/{slug}/related?limit=3`
+  3. API route calls `cmsService.getRelatedArticles(articleSlug, 3)`
+  4. CMS service:
+     - Fetches article: `GET /api/v1/posts/best-coding-practices`
+     - Extracts category slug: `categories[0].slug` (e.g., "programming")
+     - Fetches related: `GET /api/v1/posts?category=programming&limit=8`
+     - Filters out current article from results
+     - Returns up to 3 related articles from same category
+  5. Related articles displayed at bottom of page with same category context
+
+  **Job Filter API Changes**:
+  - **Before**: `job_categories={id}` → **After**: `job_category={id}` (singular)
+  - **Before**: `job_is_remote=true&job_is_hybrid=false` → **After**: `work_policy=remote`
+  - **Before**: `job_salary_min=5000000&job_salary_max=8000000` → **After**: `salary_min=5000000&salary_max=8000000`
+  - All changes align with official TugasCMS API v1 documentation
+
+  **Verification**:
+  - ✅ Breadcrumbs display without Home icon (cleaner UI)
+  - ✅ Article images display full-width without cropping
+  - ✅ Table of Contents component parses and displays article headings
+  - ✅ ToC smooth scrolling works correctly
+  - ✅ Related articles filtered by same category (not just latest)
+  - ✅ Job filters use correct API parameter names
+  - ✅ Work policy filter uses single parameter instead of booleans
+  - ✅ Salary filter uses shorter aliases
+  - ✅ TypeScript compilation succeeds with no LSP errors
+  - ✅ Application runs successfully on port 5000
+
+  **Impact**: 
+  - **Articles**: Improved user experience with cleaner breadcrumbs, better image display, and navigation-friendly Table of Contents. Related articles now show contextually relevant content from the same category.
+  - **Jobs**: Filter API calls now align with official documentation, ensuring compatibility with current and future CMS API versions. Simplified parameter names improve code maintainability.
+  - **Code Quality**: Fixed type safety issues prevent runtime errors and improve developer experience.
+
 ### 2025-10-27 14:25 - Job Filter Enhancements: Work Policy, Salary Range, and Category Display **[COMPLETED]**
 - **Time**: 14:25 WIB
 - **Features Added**:

@@ -320,39 +320,32 @@ export class CMSService {
 
     // Category filter
     if (filters.category) {
-      params.set('job_categories', filters.category);
+      params.set('job_category', filters.category);
     }
     if (filters.categories && filters.categories.length > 0) {
-      params.set('job_categories', filters.categories[0]);
+      params.set('job_category', filters.categories[0]);
     }
 
-    // Work policy filter (workPolicies)
+    // Work policy filter (workPolicies) - using work_policy parameter
     if (filters.workPolicies && filters.workPolicies.length > 0) {
       const workPolicy = filters.workPolicies[0];
-      if (workPolicy === 'remote') {
-        params.set('job_is_remote', 'true');
-      } else if (workPolicy === 'hybrid') {
-        params.set('job_is_hybrid', 'true');
-      } else if (workPolicy === 'onsite') {
-        params.set('job_is_remote', 'false');
-        params.set('job_is_hybrid', 'false');
-      }
+      params.set('work_policy', workPolicy);
     }
 
-    // Salary filter (salaries)
+    // Salary filter (salaries) - using salary_min and salary_max aliases
     if (filters.salaries && filters.salaries.length > 0) {
       const salaryRange = filters.salaries[0];
       if (salaryRange === '1-3') {
-        params.set('job_salary_min', '1000000');
-        params.set('job_salary_max', '3000000');
+        params.set('salary_min', '1000000');
+        params.set('salary_max', '3000000');
       } else if (salaryRange === '4-6') {
-        params.set('job_salary_min', '4000000');
-        params.set('job_salary_max', '6000000');
+        params.set('salary_min', '4000000');
+        params.set('salary_max', '6000000');
       } else if (salaryRange === '7-9') {
-        params.set('job_salary_min', '7000000');
-        params.set('job_salary_max', '9000000');
+        params.set('salary_min', '7000000');
+        params.set('salary_max', '9000000');
       } else if (salaryRange === '10+') {
-        params.set('job_salary_min', '10000000');
+        params.set('salary_min', '10000000');
       }
     }
 
@@ -714,12 +707,30 @@ export class CMSService {
     await this.ensureInitialized();
     
     try {
-      // Fetch latest articles excluding current one
-      const response = await this.getArticles(1, limit + 5);
+      // Fetch the article directly from API to get category data
+      const articleResponse = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/posts/${articleSlug}`);
+      const articleData = await articleResponse.json();
       
-      if (!response.success) return [];
+      if (!articleData.success || !articleData.data.categories || articleData.data.categories.length === 0) {
+        // If no category, fetch latest articles instead
+        const response = await this.getArticles(1, limit + 5);
+        if (!response.success) return [];
+        
+        return response.data.posts
+          .filter((post: any) => post.slug !== articleSlug)
+          .slice(0, limit);
+      }
 
-      return response.data.posts
+      // Get the first category slug to filter related articles
+      const categorySlug = articleData.data.categories[0].slug;
+      
+      // Fetch articles from the same category
+      const relatedResponse = await this.getArticles(1, limit + 5, categorySlug);
+      
+      if (!relatedResponse.success) return [];
+
+      // Filter out current article and limit results
+      return relatedResponse.data.posts
         .filter((post: any) => post.slug !== articleSlug)
         .slice(0, limit);
     } catch (error) {

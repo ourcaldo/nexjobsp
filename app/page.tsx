@@ -17,7 +17,12 @@ async function getHomeData() {
     const currentCmsService = new CMSService();
     if (settings.cms_endpoint) currentCmsService.setBaseUrl(settings.cms_endpoint);
     if (settings.cms_token) currentCmsService.setAuthToken(settings.cms_token);
-    if (settings.cms_timeout) currentCmsService.setTimeout(parseInt(settings.cms_timeout));
+    if (settings.cms_timeout) {
+      const timeout = typeof settings.cms_timeout === 'string' 
+        ? parseInt(settings.cms_timeout) 
+        : settings.cms_timeout;
+      currentCmsService.setTimeout(timeout);
+    }
 
     // Fetch data
     const [articlesResponse, filterData] = await Promise.all([

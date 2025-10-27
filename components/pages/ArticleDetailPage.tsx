@@ -12,6 +12,7 @@ import { generateArticleSchema, generateBreadcrumbSchema, generateAuthorSchema }
 import ArticleSidebar from '@/components/ArticleSidebar';
 import AdDisplay from '@/components/Advertisement/AdDisplay';
 import { advertisementService } from '@/lib/utils/advertisements';
+import ArticleTableOfContents from '@/components/ArticleTableOfContents';
 
 interface ArticleDetailPageProps {
   slug: string;
@@ -38,7 +39,7 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
   const getPageTitle = () => {
     if (loading) return 'Memuat Artikel... - Nexjob';
     if (error) return 'Artikel Tidak Ditemukan - Nexjob';
-    if (article) return article.seo_title || `${article.title.rendered} - Nexjob`;
+    if (article) return article.seo_title || `${article.title} - Nexjob`;
     return 'Artikel - Nexjob';
   };
 
@@ -66,8 +67,8 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
   };
 
   const getOGImage = () => {
-    if (article?.featured_media_url) {
-      return article.featured_media_url;
+    if (article?.featuredImage) {
+      return article.featuredImage;
     }
     return settings.default_article_og_image || `${getCurrentUrl()}/og-article-default.jpg`;
   };
@@ -105,12 +106,12 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
       // Track page view and article read
       const category = articleData.categories_info?.[0]?.name || '';
       trackPageView({
-        page_title: articleData.title.rendered,
+        page_title: articleData.title,
         content_group1: 'article_detail',
         content_group2: category,
       });
 
-      trackArticleRead(articleData.title.rendered, articleData.id.toString(), category);
+      trackArticleRead(articleData.title, articleData.id.toString(), category);
 
       initialDataLoadedRef.current = true;
     } catch (err) {
@@ -165,9 +166,16 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
   };
 
   const parseContent = (content: string) => {
+    let headingIndex = 0;
     return content
-      .replace(/<h2>/g, '<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">')
-      .replace(/<h3>/g, '<h3 class="text-xl font-semibold text-gray-900 mt-6 mb-3">')
+      .replace(/<h2>/g, () => {
+        const id = `heading-${headingIndex++}`;
+        return `<h2 id="${id}" class="text-2xl font-bold text-gray-900 mt-8 mb-4">`;
+      })
+      .replace(/<h3>/g, () => {
+        const id = `heading-${headingIndex++}`;
+        return `<h3 id="${id}" class="text-xl font-semibold text-gray-900 mt-6 mb-3">`;
+      })
       .replace(/<p>/g, '<p class="text-gray-700 mb-4 leading-relaxed">')
       .replace(/<ol>/g, '<ol class="list-decimal list-inside space-y-2 mb-4 text-gray-700 ml-4">')
       .replace(/<ul>/g, '<ul class="list-disc list-inside space-y-2 mb-4 text-gray-700 ml-4">')
@@ -180,7 +188,7 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
 
   const breadcrumbItems = [
     { label: 'Tips Karir', href: '/artikel/' },
-    { label: loading ? 'Memuat...' : (article?.title.rendered || 'Artikel') }
+    { label: loading ? 'Memuat...' : (article?.title || 'Artikel') }
   ];
 
   return (
@@ -237,13 +245,14 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
               {/* Main Content */}
               <div className="lg:col-span-2">
                 <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-                  {article.featured_media_url && (
-                    <div className="aspect-video overflow-hidden relative">
+                  {article.featuredImage && (
+                    <div className="relative w-full">
                       <Image
-                        src={article.featured_media_url}
-                        alt={article.title.rendered}
-                        className="w-full h-full object-cover"
-                        fill
+                        src={article.featuredImage}
+                        alt={article.title}
+                        className="w-full h-auto"
+                        width={1200}
+                        height={800}
                         priority
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 800px"
                       />
@@ -279,7 +288,7 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
                     </div>
 
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
-                      {article.title.rendered}
+                      {article.title}
                     </h1>
 
                     {/* Article Description */}
@@ -290,6 +299,9 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
                         </p>
                       </div>
                     )}
+
+                    {/* Table of Contents */}
+                    <ArticleTableOfContents content={article.content} />
 
                      {/* Top Advertisement */}
                     <div className="mb-8">
@@ -336,11 +348,11 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
                           style={{ animationDelay: `${index * 0.1}s` }}
                         >
                           <article className="bg-gray-50 rounded-lg overflow-hidden hover:shadow-md transition-all duration-300">
-                            {relatedArticle.featured_media_url && (
+                            {relatedArticle.featuredImage && (
                               <div className="aspect-video overflow-hidden relative">
                                 <Image
-                                  src={relatedArticle.featured_media_url}
-                                  alt={relatedArticle.title.rendered}
+                                  src={relatedArticle.featuredImage}
+                                  alt={relatedArticle.title}
                                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                   fill
                                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
@@ -350,10 +362,10 @@ const ArticleDetailPage: React.FC<ArticleDetailPageProps> = ({ slug, settings })
                             <div className="p-4">
                               <div className="flex items-center text-xs text-gray-500 mb-2">
                                 <Calendar className="h-3 w-3 mr-1" />
-                                {formatDate(relatedArticle.date)}
+                                {formatDate(relatedArticle.publishDate || relatedArticle.date)}
                               </div>
                               <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
-                                {relatedArticle.title.rendered}
+                                {relatedArticle.title}
                               </h3>
                               <div className="flex items-center text-primary-600 text-sm font-medium group-hover:text-primary-700">
                                 Baca Selengkapnya
