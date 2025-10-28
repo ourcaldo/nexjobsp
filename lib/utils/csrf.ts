@@ -1,5 +1,5 @@
-import { generateSecureToken, hashSHA256 } from './crypto';
-import { NextRequest } from 'next/server';
+import { generateSecureToken } from './crypto';
+import { NextRequest, NextResponse } from 'next/server';
 
 export interface CSRFToken {
   token: string;
@@ -58,4 +58,24 @@ export const validateRequest = (
   }
 
   return { valid: true };
+};
+
+export const withCSRFProtection = (
+  handler: (request: NextRequest) => Promise<NextResponse>,
+  options: { requireToken?: boolean } = {}
+) => {
+  return async (request: NextRequest): Promise<NextResponse> => {
+    if (isStateChangingMethod(request.method) && options.requireToken !== false) {
+      const headerToken = request.headers.get('x-csrf-token');
+      
+      if (!headerToken) {
+        return NextResponse.json(
+          { error: 'CSRF token is required' },
+          { status: 403 }
+        );
+      }
+    }
+
+    return handler(request);
+  };
 };

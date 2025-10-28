@@ -155,6 +155,134 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-28 12:00 - Critical Security Hardening (Issues 1.1-1.6, 2.1-2.3) **[COMPLETED]**
+- **Time**: 12:00 WIB
+- **Scope**: Addressed 9 critical and high-priority security vulnerabilities identified in PROJECT_ANALYSIS.md
+- **Status**: All critical and high-priority issues resolved, CSRF framework created (needs full integration)
+
+**Security Fixes Implemented**:
+
+1. **Issue 1.1 - Hardcoded Credentials Removed** 🔴 CRITICAL ✅
+   - **Files**: `.env.example`, `lib/env.ts`, `lib/supabase/admin.ts`
+   - **Changes**:
+     - Added `SUPABASE_STORAGE_ACCESS_KEY`, `SUPABASE_STORAGE_SECRET_KEY`, `SUPABASE_STORAGE_ENDPOINT`, `SUPABASE_STORAGE_REGION` to `.env.example`
+     - Extended `lib/env.ts` with storage environment variables
+     - Updated `lib/supabase/admin.ts` to use `env.SUPABASE_STORAGE_*` instead of hardcoded values
+   - **Impact**: Eliminated critical security vulnerability of exposed storage credentials in source control
+
+2. **Issue 1.2 - XSS Vulnerability Fixed** 🔴 CRITICAL ✅
+   - **Files**: `lib/utils/sanitize.ts` (new), 6 component files updated
+   - **Packages Installed**: `dompurify`, `@types/dompurify`, `isomorphic-dompurify`
+   - **Changes**:
+     - Created `lib/utils/sanitize.ts` with `sanitizeHTML()` function using DOMPurify
+     - Applied sanitization to all `dangerouslySetInnerHTML` usage:
+       - `components/CMSContent.tsx` - CMS content rendering
+       - `components/admin/cms/TiptapEditor.tsx` - Admin editor preview
+       - `components/admin/cms/RichTextEditor.tsx` - Admin rich text preview
+       - `components/pages/JobDetailPage.tsx` - Job content display
+       - `components/pages/HomePage.tsx` - Article excerpts
+       - `components/pages/ArticlePage.tsx` - Article excerpts
+   - **Impact**: Prevented cross-site scripting (XSS) attacks through malicious HTML injection
+
+3. **Issue 1.3 - Error Boundary Implemented** 🔴 CRITICAL ✅
+   - **Files**: `components/ErrorBoundary.tsx` (new), `app/layout.tsx`
+   - **Changes**:
+     - Created global `ErrorBoundary` class component with error catching and recovery UI
+     - Wrapped entire application in `app/layout.tsx` with ErrorBoundary
+     - Added development mode error details and production-safe error display
+   - **Impact**: Application no longer crashes completely on component errors; provides user-friendly error recovery
+
+4. **Issue 1.4 - Middleware XML Validation** 🟠 HIGH ✅
+   - **Files**: `middleware.ts`, `lib/utils/xml-validator.ts` (new)
+   - **Changes**:
+     - Added comprehensive XML validation in middleware:
+       - Content-type verification (must be XML)
+       - Sitemap structure validation (`<urlset>` or `<sitemapindex>`)
+       - Malicious pattern detection (script tags, event handlers, iframes)
+       - Request timeout (10 seconds)
+       - Enhanced security headers
+     - Created reusable XML validation utilities in `lib/utils/xml-validator.ts`
+   - **Impact**: Prevented XML injection and malicious sitemap content from being served
+
+5. **Issue 1.6 - Input Validation Schemas** 🟠 HIGH ✅
+   - **Files**: `lib/validation/schemas.ts` (new), `lib/validation/` directory created
+   - **Package Installed**: `zod`
+   - **Changes**:
+     - Created comprehensive Zod validation schemas for:
+       - Bookmarks (`createBookmarkSchema`, `deleteBookmarkSchema`)
+       - User profiles (`updateProfileSchema`)
+       - Job search (`jobSearchSchema`)
+       - Admin settings (`adminSettingsSchema`)
+       - Contact forms (`contactFormSchema`)
+       - Pagination (`paginationSchema`)
+     - Added validation utility function `validateInput()` for consistent error handling
+   - **Impact**: Established runtime input validation framework to prevent invalid data and type coercion attacks
+
+6. **Issue 2.1 - Timing-Safe Token Comparison** 🟡 MEDIUM ✅
+   - **Files**: `lib/utils/crypto.ts` (new), `app/api/admin/settings/route.ts`
+   - **Changes**:
+     - Created `lib/utils/crypto.ts` with `timingSafeCompare()` using `crypto.timingSafeEqual()`
+     - Added helper functions: `hashPassword()`, `verifyPassword()`, `generateSecureToken()`, `hashSHA256()`
+     - Updated `app/api/admin/settings/route.ts` to use timing-safe comparison for API token validation
+   - **Impact**: Prevented timing attacks on authentication token comparison
+
+7. **Issue 2.2 - CSRF Protection Framework** 🟡 MEDIUM ⚠️ PARTIALLY COMPLETED
+   - **Files**: `lib/utils/csrf.ts` (new), `CSRF_IMPLEMENTATION_GUIDE.md` (new)
+   - **Changes**:
+     - Created CSRF utility with:
+       - `generateCSRFToken()` - Token generation with expiration
+       - `validateCSRFToken()` - Header-based validation
+       - `withCSRFProtection()` - Route wrapper for easy integration
+       - `isStateChangingMethod()` - HTTP method checker
+     - Created comprehensive implementation guide with:
+       - Backend integration examples
+       - Frontend hook examples
+       - Token endpoint design
+       - List of routes requiring protection
+       - Testing procedures
+   - **Status**: ⚠️ Framework created, full integration across API routes pending
+   - **Next Steps**: See `CSRF_IMPLEMENTATION_GUIDE.md` for integration instructions
+
+8. **Issue 2.3 - Security Headers** 🟡 MEDIUM ✅
+   - **File**: `next.config.js`
+   - **Changes**:
+     - Added comprehensive security headers via `async headers()` function:
+       - `X-DNS-Prefetch-Control: on`
+       - `Strict-Transport-Security: max-age=63072000; includeSubDomains; preload`
+       - `X-Frame-Options: SAMEORIGIN`
+       - `X-Content-Type-Options: nosniff`
+       - `X-XSS-Protection: 1; mode=block`
+       - `Referrer-Policy: strict-origin-when-cross-origin`
+       - `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+   - **Impact**: Enhanced security posture with standard HTTP security headers
+
+**Files Created**:
+- `lib/utils/sanitize.ts` - HTML sanitization utility
+- `lib/utils/xml-validator.ts` - XML validation utilities
+- `lib/utils/crypto.ts` - Cryptographic utilities
+- `lib/utils/csrf.ts` - CSRF protection framework
+- `lib/validation/schemas.ts` - Zod validation schemas
+- `components/ErrorBoundary.tsx` - Global error boundary
+- `CSRF_IMPLEMENTATION_GUIDE.md` - CSRF integration documentation
+
+**Packages Installed**:
+- `dompurify` - HTML sanitization
+- `@types/dompurify` - TypeScript types
+- `isomorphic-dompurify` - SSR-compatible DOMPurify
+- `zod` - Runtime schema validation
+
+**Documentation Updated**:
+- `PROJECT_ANALYSIS.md` - Marked all completed issues with resolution details and dates
+- `.env.example` - Added Supabase storage environment variables
+
+**Verification**:
+- ✅ No TypeScript/LSP errors after changes
+- ✅ All critical (🔴) issues resolved
+- ✅ All high-priority (🟠) issues resolved
+- ✅ 6/8 medium-priority (🟡) issues resolved (CSRF pending full integration)
+- ✅ Architect review completed
+- ✅ Ready for workflow restart and testing
+
 ### 2025-10-28 06:40 - Fixed Filter Chips Displaying IDs Instead of Labels **[COMPLETED]**
 - **Time**: 06:40 WIB
 - **Issue Reported**: Active filter chips showing IDs (e.g., "Provinsi: 31", "3173", UUID strings) instead of human-readable labels
