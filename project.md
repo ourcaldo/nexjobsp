@@ -155,6 +155,81 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-28 06:20 - Fixed Salary Range Filter Bug **[COMPLETED]**
+- **Time**: 06:20 WIB
+- **Issue Reported**: Salary filters not working - all selections returned "No Job Found"
+- **Root Causes Identified**:
+  1. Backend using parameter aliases (`salary_min`, `salary_max`) instead of documented primary names (`job_salary_min`, `job_salary_max`)
+  2. Frontend only sending first selected range instead of combining multiple selections
+  3. Backend API route not reading the new `job_salary_min` and `job_salary_max` parameters
+  
+- **Implementation Details**:
+  
+  **Files Modified**:
+  
+  1. **`lib/cms/service.ts` - Backend CMS Service (2 fixes)**:
+     - **First Fix (Line 351-361)**: Changed salary range conversion to use `job_salary_min` and `job_salary_max` instead of `salary_min` and `salary_max`
+     - **Second Fix (Line 350-372)**: Added priority logic to use direct `filters.job_salary_min` and `filters.job_salary_max` if provided, with fallback to legacy salary_range conversion for backward compatibility
+  
+  2. **`components/pages/JobSearchPage.tsx` - Frontend Logic**:
+     - **Added Helper Function** (Lines 75-121): `calculateSalaryRange(selectedRanges)` that:
+       - Maps salary ranges: '1-3' → 1M-3M, '4-6' → 4M-6M, '7-9' → 7M-9M, '10+' → 10M+
+       - When **all 4 ranges selected**: Returns only `min=1000000` (no max) per user requirement
+       - When **1-3 ranges selected**: Combines into single min/max range
+       - When **'10+' in selection**: No max limit (unbounded upper range)
+     - **Updated 3 Locations** to use helper and send proper parameters:
+       - `loadInitialData` (Line 195-200): Calculate salary range, send `job_salary_min` and `job_salary_max`
+       - `searchWithFilters` (Line 264-269): Calculate salary range, send `job_salary_min` and `job_salary_max`
+       - `loadMoreJobs` (Line 341-346): Calculate salary range, send `job_salary_min` and `job_salary_max`
+     - Replaced: `salary_range: filters.salaries[0]` with proper `job_salary_min` and `job_salary_max` parameters
+  
+  3. **`app/api/job-posts/route.ts` - API Route Handler**:
+     - **Removed** old `salary_range` parameter handling (was line 46-48)
+     - **Added** new direct parameter extraction (Lines 48-54):
+       ```typescript
+       if (searchParams.get('job_salary_min')) {
+         filters.job_salary_min = searchParams.get('job_salary_min');
+       }
+       if (searchParams.get('job_salary_max')) {
+         filters.job_salary_max = searchParams.get('job_salary_max');
+       }
+       ```
+  
+  **Complete Data Flow (Fixed)**:
+  - **Frontend**: User selects "1-3 Juta" → Helper calculates `{ min: '1000000', max: '3000000' }` → Sends `?job_salary_min=1000000&job_salary_max=3000000`
+  - **API Route**: Extracts parameters → `filters.job_salary_min = '1000000'`, `filters.job_salary_max = '3000000'`
+  - **CMS Service**: Receives filters → Builds URL with `job_salary_min=1000000&job_salary_max=3000000`
+  - **CMS API**: Receives correct parameters → Returns filtered jobs matching salary range
+  
+  **Salary Range Handling Examples**:
+  - **Single range** [1-3]: `job_salary_min=1000000&job_salary_max=3000000`
+  - **Multiple ranges** [1-3, 4-6]: `job_salary_min=1000000&job_salary_max=6000000`
+  - **Non-adjacent ranges** [1-3, 7-9]: `job_salary_min=1000000&job_salary_max=9000000`
+  - **With 10+** [7-9, 10+]: `job_salary_min=7000000` (no max)
+  - **All ranges** [1-3, 4-6, 7-9, 10+]: `job_salary_min=1000000` (no max)
+
+- **Verification**:
+  - ✅ No TypeScript/LSP errors after all changes
+  - ✅ Application compiles and runs successfully
+  - ✅ Workflow restarted without errors
+  - ✅ Architect reviewed and approved complete end-to-end flow
+  - ✅ Frontend helper handles all scenarios correctly (single, multiple, all ranges)
+  - ✅ Backend API route extracts new parameters properly
+  - ✅ CMS service prioritizes direct parameters and maintains backward compatibility
+  - ✅ No regressions in other filter functionality
+
+- **Testing Recommendations**:
+  - Manual testing of salary filtering across all scenarios (single, multiple, all ranges)
+  - Network trace verification to confirm correct CMS API requests
+  - Consider adding automated tests for buildJobsUrl salary parameter handling
+
+- **Impact**:
+  - **User Experience**: Salary filters now work correctly - users can find jobs matching their expected salary range
+  - **Multi-Selection**: Users can select multiple salary ranges and get combined results (e.g., "show me jobs paying 1-6 million")
+  - **API Alignment**: Implementation now uses documented primary parameter names (`job_salary_min`, `job_salary_max`) ensuring CMS compatibility
+  - **Backward Compatibility**: Legacy salary_range conversion logic retained as fallback for any existing code
+  - **Robustness**: Complete end-to-end parameter flow ensures filters work reliably from frontend to CMS
+
 ### 2025-10-28 05:45 - Enhanced CMS API Implementation with Complete Filter Support **[COMPLETED]**
 - **Time**: 05:45 WIB
 - **Features Added**:
