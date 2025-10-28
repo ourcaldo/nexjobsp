@@ -233,7 +233,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [searchParams, selectedProvince, sidebarFilters, initialLocation, locationType, initialCategory]);
+  }, [searchParams, selectedProvince, sidebarFilters, initialLocation, locationType, initialCategory, calculateSalaryRange]);
 
   // Search with filters
   const searchWithFilters = useCallback(async (filters: any, isManualSearch = false) => {
@@ -303,7 +303,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
       setSearching(false);
       isSearchingRef.current = false;
     }
-  }, [trackSearch, initialCategory, initialLocation, selectedProvince, router]);
+  }, [trackSearch, initialCategory, initialLocation, selectedProvince, router, calculateSalaryRange]);
 
   // Handle manual search (button click or enter key)
   const handleManualSearch = useCallback(async () => {
@@ -383,7 +383,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     } finally {
       setLoadingMore(false);
     }
-  }, [currentPage, hasMore, loadingMore, getCurrentFilters]);
+  }, [currentPage, hasMore, loadingMore, getCurrentFilters, calculateSalaryRange]);
 
   const loadUserBookmarks = useCallback(async (userId: string) => {
     try {

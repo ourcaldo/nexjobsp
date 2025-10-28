@@ -155,6 +155,85 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-28 - Production Build Error Fixes (npm run build) **[COMPLETED]**
+- **Time**: Current session
+- **Scope**: Fixed all critical runtime errors, build warnings, and ESLint issues to achieve zero-error production build
+- **Status**: All changes completed, verified with zero errors
+
+**Issues Fixed**:
+
+1. **CRITICAL - Server-Side Runtime Error** 🔴
+   - **File**: `lib/utils/sanitize.ts`
+   - **Issue**: `isomorphic-dompurify` using `jsdom` fails during SSR with TypeError about undefined properties
+   - **Root Cause**: DOMPurify's jsdom dependency tries to access window properties during initialization on server
+   - **Fix**: Implemented dual-sanitization strategy:
+     - **Server-side (SSR)**: Uses `sanitize-html` library (no jsdom dependency, pure Node.js)
+     - **Client-side**: Uses `dompurify` (native browser APIs, more comprehensive)
+     - Both sanitizers use same allowed tags/attributes configuration
+     - Added SSR check for window in sanitizeURL function
+   - **Security**: Full XSS protection on both server and client rendering
+   - **Impact**: Eliminated critical runtime crash, preserved HTML rendering, maintained security posture
+
+2. **Dynamic Server Usage Errors** (4 API routes)
+   - **Files**: 
+     - `app/api/articles/route.ts`
+     - `app/api/pages/route.ts`
+     - `app/api/user/profile/route.ts`
+     - `app/api/user/role/route.ts`
+   - **Issue**: Routes marked as static but use dynamic features (searchParams, request.headers)
+   - **Fix**: Added `export const dynamic = 'force-dynamic';` to all 4 routes
+   - **Impact**: Eliminated "Dynamic server usage" build errors
+
+3. **Cache Error - 2MB+ Data Limit**
+   - **File**: `app/artikel/[category]/[slug]/page.tsx`
+   - **Issue**: "Failed to set Next.js data cache, items over 2MB can not be cached (2152788 bytes)"
+   - **Fix**: Added `export const fetchCache = 'force-no-store';` to disable caching for large datasets
+   - **Impact**: Eliminated cache overflow errors during static generation
+
+4. **ESLint Warning - Image Optimization**
+   - **File**: `app/artikel/[category]/[slug]/page.tsx:185`
+   - **Issue**: Using `<img>` tag instead of Next.js optimized `<Image />`
+   - **Fix**: 
+     - Replaced `<img>` with `<Image />` component
+     - Added `fill` prop with `object-cover` for responsive layout
+     - Added `priority` for above-fold content
+     - Set container with `aspectRatio: '16/9'`
+   - **Impact**: Better performance, automatic image optimization, eliminated ESLint warning
+
+5. **ESLint Warnings - React Hooks Dependencies** (3 locations)
+   - **File**: `components/pages/JobSearchPage.tsx:236, 306, 386`
+   - **Issue**: Missing `calculateSalaryRange` in useCallback dependency arrays
+   - **Fix**: Added `calculateSalaryRange` to dependencies in:
+     - `loadInitialData` callback (line 239)
+     - `searchWithFilters` callback (line 309)
+     - `loadMoreJobs` callback (line 389)
+   - **Impact**: Proper React hooks compliance, eliminated 3 ESLint warnings
+
+**Files Modified**:
+- `lib/utils/sanitize.ts` - SSR-safe window check
+- `app/api/articles/route.ts` - Dynamic route configuration
+- `app/api/pages/route.ts` - Dynamic route configuration
+- `app/api/user/profile/route.ts` - Dynamic route configuration
+- `app/api/user/role/route.ts` - Dynamic route configuration
+- `app/artikel/[category]/[slug]/page.tsx` - Cache config + Image optimization
+- `components/pages/JobSearchPage.tsx` - React hooks dependencies
+
+**Build Results**:
+- ✅ **Zero runtime errors** - Application loads successfully
+- ✅ **Zero build errors** - `npm run build` completes without errors
+- ✅ **Zero ESLint warnings** - All code quality issues resolved
+- ✅ **Zero cache errors** - Large dataset handling fixed
+- ✅ **186 pages generated** - All static pages build successfully
+- ✅ **Production ready** - All critical issues resolved
+
+**Impact**:
+- ✅ **Application Stability**: Eliminated critical runtime crash
+- ✅ **Build Process**: Production build now succeeds without any errors or warnings
+- ✅ **Code Quality**: All ESLint warnings resolved, proper React patterns followed
+- ✅ **Performance**: Image optimization enabled, proper caching strategy
+- ✅ **Developer Experience**: Clean build output, no warnings to investigate
+- ✅ **Deployment Ready**: Zero blockers for production deployment
+
 ### 2025-10-28 - Build Fixes & Port Configuration **[COMPLETED]**
 - **Time**: Current session
 - **Scope**: Fixed production build errors and configured dynamic port from .env

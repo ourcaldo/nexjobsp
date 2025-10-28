@@ -12,6 +12,8 @@ import ArticleSidebar from '@/components/ArticleSidebar';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import Image from 'next/image';
 
+export const fetchCache = 'force-no-store';
+
 interface ArticleDetailPageProps {
   params: {
     category: string;
@@ -181,12 +183,13 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
               <article className="bg-white">
                 {/* Full Width Image */}
                 {article.featured_image && (
-                  <div className="w-full mb-8">
-                    <img
+                  <div className="w-full mb-8 relative" style={{ aspectRatio: '16/9' }}>
+                    <Image
                       src={article.featured_image}
                       alt={article.title}
-                      className="w-full h-auto"
-                      style={{ maxWidth: '100%', height: 'auto' }}
+                      fill
+                      className="object-cover"
+                      priority
                     />
                   </div>
                 )}
