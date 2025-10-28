@@ -35,18 +35,21 @@ export const env = {
 
 // Validate required environment variables
 export const validateEnv = () => {
-  const clientRequired = [
-    'NEXT_PUBLIC_SUPABASE_URL',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY'
-  ] as const;
+  const missing: string[] = [];
   
-  const missing: string[] = clientRequired.filter(key => !process.env[key]);
+  // Check client-side required variables using the env object (not process.env directly)
+  if (!env.SUPABASE_URL) {
+    missing.push('NEXT_PUBLIC_SUPABASE_URL');
+  }
+  if (!env.SUPABASE_ANON_KEY) {
+    missing.push('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  }
   
   // Check server-side only variables (only if on server)
   if (typeof window === 'undefined') {
-    const serverRequired = ['SUPABASE_SERVICE_ROLE_KEY'];
-    const missingServer = serverRequired.filter(key => !process.env[key]);
-    missing.push(...missingServer);
+    if (!env.SUPABASE_SERVICE_ROLE_KEY) {
+      missing.push('SUPABASE_SERVICE_ROLE_KEY');
+    }
   }
   
   if (missing.length > 0) {
@@ -59,8 +62,8 @@ export const validateEnv = () => {
     
     // In development, provide helpful guidance but don't crash
     console.warn(`Warning: ${errorMessage}`);
-    console.warn('Please check your .env.local file and ensure all required variables are set.');
-    console.warn('Copy .env.example to .env.local and fill in the required values.');
+    console.warn('Please check your .env file and ensure all required variables are set.');
+    console.warn('Copy .env.example to .env and fill in the required values.');
     return false;
   }
   
