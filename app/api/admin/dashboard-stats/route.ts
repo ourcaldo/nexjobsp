@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
       totalUsers: totalUsers || 0,
       totalBookmarks: totalBookmarks || 0,
       totalArticles: totalArticles || 0,
-      totalJobs: jobsResult?.total || 0
+      totalJobs: jobsResult?.totalJobs || 0
     };
 
     return apiSuccess(stats);

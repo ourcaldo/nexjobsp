@@ -86,21 +86,29 @@ const CmsPages: React.FC = () => {
     setLoading(true);
     try {
       if (activeContentType === 'pages') {
-        const [pagesData, stats] = await Promise.all([
-          cmsPageService.getPages(filters),
-          cmsPageService.getPageStats()
-        ]);
-        setPages(pagesData.pages);
+        const pagesData = await cmsPageService.getPages(filters);
+        setPages(pagesData);
+        setTotal(pagesData.length);
+        const stats = {
+          total: pagesData.length,
+          published: pagesData.filter((p: any) => p.status === 'published').length,
+          draft: pagesData.filter((p: any) => p.status === 'draft').length,
+          trash: pagesData.filter((p: any) => p.status === 'trash').length,
+          scheduled: pagesData.filter((p: any) => p.status === 'scheduled').length
+        };
         setPageStats(stats);
-        setTotal(pagesData.total);
       } else if (activeContentType === 'articles') {
-        const [articlesData, stats] = await Promise.all([
-          cmsArticleService.getArticles(filters),
-          cmsArticleService.getArticleStats()
-        ]);
-        setArticles(articlesData.articles);
+        const articlesData = await cmsArticleService.getArticles(filters);
+        setArticles(articlesData);
+        setTotal(articlesData.length);
+        const stats = {
+          total: articlesData.length,
+          published: articlesData.filter((a: any) => a.status === 'published').length,
+          draft: articlesData.filter((a: any) => a.status === 'draft').length,
+          trash: articlesData.filter((a: any) => a.status === 'trash').length,
+          scheduled: articlesData.filter((a: any) => a.status === 'scheduled').length
+        };
         setArticleStats(stats);
-        setTotal(articlesData.total);
       } else if (activeContentType === 'jobs') {
         // For now, just set empty data until jobs functionality is implemented
         setJobs([]);

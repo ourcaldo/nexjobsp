@@ -114,9 +114,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
             // Apply settings to cmsService
             const { cmsService } = await import('@/lib/cms/service');
-            cmsService.setBaseUrl(settings.api_url);
-            cmsService.setFiltersApiUrl(settings.filters_api_url);
-            cmsService.setAuthToken(settings.auth_token || '');
+            cmsService.setBaseUrl(settings.cms_endpoint);
+            cmsService.setAuthToken(settings.cms_token || '');
           } catch (error) {
             console.error('Error initializing settings:', error);
             // Continue with default settings if initialization fails

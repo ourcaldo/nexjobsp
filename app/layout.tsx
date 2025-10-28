@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { Suspense } from 'react';
 import { Providers } from './providers';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import GoogleAnalytics from '@/components/Analytics/GoogleAnalytics';
@@ -39,7 +40,9 @@ export default function RootLayout({
             <PopupAd />
           </Providers>
         </ErrorBoundary>
-        <GoogleAnalytics />
+        <Suspense fallback={null}>
+          <GoogleAnalytics />
+        </Suspense>
       </body>
     </html>
   );

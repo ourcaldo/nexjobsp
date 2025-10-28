@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { SupabaseAdminService } from '@/lib/supabase/admin';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
@@ -109,7 +110,9 @@ export default async function Jobs() {
         </div>
 
         {/* Job Search Content */}
-        <JobSearchPage settings={settings} />
+        <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-8">Loading...</div>}>
+          <JobSearchPage settings={settings} />
+        </Suspense>
       </main>
       <Footer />
     </>

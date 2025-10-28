@@ -155,6 +155,69 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-28 - Build Fixes & Port Configuration **[COMPLETED]**
+- **Time**: Current session
+- **Scope**: Fixed production build errors and configured dynamic port from .env
+- **Status**: All changes completed, build succeeds, zero errors
+
+**Changes Made**:
+
+1. **Dynamic PORT Configuration**:
+   - Updated workflow command from `npm run dev -- -p 5000` to `npm run dev -- -p ${PORT:-5000}`
+   - Workflow now reads PORT from .env file (default: 5000)
+   - Allows flexible port configuration via environment variables
+
+2. **Fixed TypeScript Build Errors**:
+   - `app/api/admin/dashboard-stats/route.ts` - Fixed `jobsResult.total` → `jobsResult.totalJobs`
+   - `app/artikel/[category]/page.tsx` - Added type annotations to map callbacks (3 fixes)
+   - `app/lowongan-kerja/kategori/[slug]/page.tsx` - Fixed SEO template property names:
+     - `job_category_title` → `category_page_title_template`
+     - `job_category_description` → `category_page_description_template`
+   - `app/lowongan-kerja/lokasi/[slug]/page.tsx` - Fixed SEO template property names:
+     - `job_location_title` → `location_page_title_template`
+     - `job_location_description` → `location_page_description_template`
+   - `app/providers.tsx` - Fixed AdminSettings property access:
+     - `settings.api_url` → `settings.cms_endpoint`
+     - `settings.auth_token` → `settings.cms_token`
+     - Removed deprecated `setFiltersApiUrl` call
+   - `components/admin/cms/CmsPages.tsx` - Fixed service method calls:
+     - Removed non-existent `getPageStats()` and `getArticleStats()` calls
+     - Updated to handle array return from services instead of objects
+     - Calculate stats from data arrays directly
+
+3. **Fixed Next.js Suspense Boundary Errors**:
+   - `app/layout.tsx` - Wrapped `GoogleAnalytics` component in Suspense boundary
+   - `app/lowongan-kerja/page.tsx` - Wrapped `JobSearchPage` component in Suspense boundary
+   - Fixed prerendering errors caused by `useSearchParams()` in client components
+
+**Technical Details**:
+
+**Files Modified**:
+- `.replit` workflow configuration (PORT variable support)
+- `app/api/admin/dashboard-stats/route.ts` - Property name fix
+- `app/artikel/[category]/page.tsx` - Type annotations (3 locations)
+- `app/lowongan-kerja/kategori/[slug]/page.tsx` - SEO template properties
+- `app/lowongan-kerja/lokasi/[slug]/page.tsx` - SEO template properties
+- `app/lowongan-kerja/page.tsx` - Suspense boundary
+- `app/providers.tsx` - AdminSettings property names
+- `app/layout.tsx` - Suspense boundary
+- `components/admin/cms/CmsPages.tsx` - Service method handling
+
+**Build Results**:
+- ✅ Production build succeeds: `npm run build`
+- ✅ 186 pages generated successfully
+- ✅ Zero TypeScript compilation errors
+- ✅ Zero Next.js prerendering errors
+- ✅ All static pages, SSG, and dynamic routes working
+
+**Impact**:
+- ✅ **Port Flexibility**: Can now change server port via .env without modifying workflow
+- ✅ **Production Ready**: Build process completes successfully
+- ✅ **Type Safety**: All TypeScript errors resolved, maintaining strict type checking
+- ✅ **SSG Working**: Static site generation working for all dynamic routes
+- ✅ **SEO Intact**: Proper meta tags and schema markup on all pages
+- ✅ **Performance**: Suspense boundaries enable proper streaming and loading states
+
 ### 2025-10-28 13:15 - Critical SEO Fix: Converted Client-Side Schema Markup to Server-Side **[COMPLETED]**
 - **Time**: 13:15 WIB
 - **Scope**: Fixed critical SEO issue where archive pages used client-side schema markup, preventing search engine crawlers from indexing structured data

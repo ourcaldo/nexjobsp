@@ -42,8 +42,8 @@ export async function generateMetadata({ params }: JobLocationPageProps): Promis
   };
 
   // Get SEO settings with template rendering
-  const pageTitle = renderTemplate(settings?.job_location_title || 'Lowongan Kerja di {{lokasi}} - {{site_title}}', templateVars);
-  const pageDescription = renderTemplate(settings?.job_location_description || 'Temukan lowongan kerja terbaru di {{lokasi}} dari berbagai perusahaan terpercaya. Dapatkan pekerjaan impian Anda di {{lokasi}}.', templateVars);
+  const pageTitle = renderTemplate(settings?.location_page_title_template || 'Lowongan Kerja di {{lokasi}} - {{site_title}}', templateVars);
+  const pageDescription = renderTemplate(settings?.location_page_description_template || 'Temukan lowongan kerja terbaru di {{lokasi}} dari berbagai perusahaan terpercaya. Dapatkan pekerjaan impian Anda di {{lokasi}}.', templateVars);
 
   return {
     title: pageTitle,
@@ -96,8 +96,8 @@ export default async function JobLocationPage({ params }: JobLocationPageProps) 
   };
 
   // Get SEO settings with template rendering
-  const pageTitle = renderTemplate(settings?.job_location_title || 'Lowongan Kerja di {{lokasi}} - {{site_title}}', templateVars);
-  const pageDescription = renderTemplate(settings?.job_location_description || 'Temukan lowongan kerja terbaru di {{lokasi}} dari berbagai perusahaan terpercaya. Dapatkan pekerjaan impian Anda di {{lokasi}}.', templateVars);
+  const pageTitle = renderTemplate(settings?.location_page_title_template || 'Lowongan Kerja di {{lokasi}} - {{site_title}}', templateVars);
+  const pageDescription = renderTemplate(settings?.location_page_description_template || 'Temukan lowongan kerja terbaru di {{lokasi}} dari berbagai perusahaan terpercaya. Dapatkan pekerjaan impian Anda di {{lokasi}}.', templateVars);
 
   return (
     <>

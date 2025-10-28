@@ -40,8 +40,8 @@ export async function generateMetadata({ params }: JobCategoryPageProps): Promis
   };
 
   // Get SEO settings with template rendering
-  const pageTitle = renderTemplate(settings?.job_category_title || 'Lowongan Kerja {{kategori}} - {{site_title}}', templateVars);
-  const pageDescription = renderTemplate(settings?.job_category_description || 'Temukan lowongan kerja {{kategori}} terbaru dari berbagai perusahaan terpercaya. Dapatkan pekerjaan impian Anda di bidang {{kategori}}.', templateVars);
+  const pageTitle = renderTemplate(settings?.category_page_title_template || 'Lowongan Kerja {{kategori}} - {{site_title}}', templateVars);
+  const pageDescription = renderTemplate(settings?.category_page_description_template || 'Temukan lowongan kerja {{kategori}} terbaru dari berbagai perusahaan terpercaya. Dapatkan pekerjaan impian Anda di bidang {{kategori}}.', templateVars);
 
   return {
     title: pageTitle,
@@ -94,8 +94,8 @@ export default async function JobCategoryPage({ params }: JobCategoryPageProps) 
   };
 
   // Get SEO settings with template rendering
-  const pageTitle = renderTemplate(settings?.job_category_title || 'Lowongan Kerja {{kategori}} - {{site_title}}', templateVars);
-  const pageDescription = renderTemplate(settings?.job_category_description || 'Temukan lowongan kerja {{kategori}} terbaru dari berbagai perusahaan terpercaya. Dapatkan pekerjaan impian Anda di bidang {{kategori}}.', templateVars);
+  const pageTitle = renderTemplate(settings?.category_page_title_template || 'Lowongan Kerja {{kategori}} - {{site_title}}', templateVars);
+  const pageDescription = renderTemplate(settings?.category_page_description_template || 'Temukan lowongan kerja {{kategori}} terbaru dari berbagai perusahaan terpercaya. Dapatkan pekerjaan impian Anda di bidang {{kategori}}.', templateVars);
 
   return (
     <>

@@ -148,7 +148,7 @@ export default async function ArticleCategoryPage({ params }: ArticleCategoryPag
   ];
 
   const articleListingSchema = generateArticleListingSchema(
-    articles.map(article => ({
+    articles.map((article: any) => ({
       title: { rendered: article.title },
       seo_description: article.excerpt,
       excerpt: { rendered: article.excerpt || '' },
@@ -227,7 +227,7 @@ export default async function ArticleCategoryPage({ params }: ArticleCategoryPag
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </li>
-                  {allCategories.filter(cat => cat.id !== category.id).map(cat => (
+                  {allCategories.filter((cat: any) => cat.id !== category.id).map((cat: any) => (
                     <li key={cat.id}>
                       <Link
                         href={`/artikel/${cat.slug}`}
@@ -257,7 +257,7 @@ export default async function ArticleCategoryPage({ params }: ArticleCategoryPag
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {articles.map(article => (
+                  {articles.map((article: any) => (
                     <article
                       key={article.id}
                       className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
