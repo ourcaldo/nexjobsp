@@ -155,6 +155,134 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-28 18:00 - Performance & Architecture Improvements (Issues 3.1-3.7, 4.1-4.5) **[COMPLETED]**
+- **Time**: 18:00 WIB
+- **Scope**: Implemented performance optimizations and architectural improvements from PROJECT_ANALYSIS.md sections 3 and 4
+- **Status**: All critical performance and architecture issues resolved (2 items skipped per user request)
+
+**Performance Optimizations Implemented**:
+
+1. **Issue 3.1 - Heavy HTML Regex Operations** 🟠 HIGH ✅
+   - **Files**: `lib/utils/advertisements.ts`
+   - **Changes**:
+     - Replaced regex-based HTML parsing with DOMParser API
+     - Used DOM methods: `querySelectorAll()`, `createElement()`, `insertBefore()`
+     - Added isomorphic approach with client/server compatibility
+     - Improved performance for large HTML content parsing
+   - **Impact**: Significantly faster ad insertion for large HTML content
+
+2. **Issue 3.2 - No Image Optimization** 🟠 HIGH ✅
+   - **Files**: Multiple component files (9 files updated)
+   - **Changes**:
+     - Replaced all `<img>` tags with Next.js `Image` component
+     - Implemented lazy loading for below-fold images
+     - Added proper width/height attributes for optimization
+     - Configured responsive image sizes for different viewports
+     - Automatic format optimization (WebP, AVIF) by Next.js
+   - **Impact**: Faster page loads, better Core Web Vitals scores, reduced bandwidth usage
+
+3. **Issue 3.3 - Client-Side Schema Rendering** 🟡 MEDIUM ✅
+   - **Files**: `utils/schemaUtils.ts` (new), `app/artikel/[category]/[slug]/page.tsx`
+   - **Changes**:
+     - Created schema generation utilities with `generateArticleSchema()` and `generateBreadcrumbSchema()`
+     - Moved schema markup to server-side `generateMetadata()` functions
+     - Schema now rendered in initial HTML (not client-side)
+     - Includes Article, Organization, and BreadcrumbList schemas
+   - **Impact**: Better SEO with immediate structured data availability for search engines
+
+4. **Issue 3.4 - No Response Caching** 🟡 MEDIUM ⏭️ **SKIPPED**
+   - **Reason**: Per user request - to be implemented separately as future enhancement
+
+5. **Issue 3.5 - Bundle Size Optimization** 🟡 MEDIUM ✅
+   - **Files**: 7 admin page files updated
+   - **Changes**:
+     - Implemented code splitting using `next/dynamic` for all admin components
+     - Added `ssr: false` to prevent server-side rendering of admin code
+     - Implemented loading states for better UX during code loading
+     - Admin components only loaded when accessing admin routes
+   - **Impact**: Reduced main bundle size significantly, faster initial page loads for non-admin users
+
+6. **Issue 3.6 - Database Query Optimization** 🟡 MEDIUM ⏭️ **SKIPPED**
+   - **Reason**: Per user request - current external CMS queries already optimized, local DB tables too small to require indexing at current scale
+
+7. **Issue 3.7 - Unnecessary Re-renders** 🔵 LOW ✅
+   - **Files**: Multiple component files (9 files updated)
+   - **Changes**:
+     - Wrapped `JobCard` component with `React.memo()`
+     - Used `useCallback()` for event handlers to prevent re-creation
+     - Applied `useMemo()` for expensive computations in HomePage, ArticlePage, JobSearchPage, ProfilePage
+     - Optimized admin editor components (TiptapEditor, RichTextEditor, UnifiedEditor)
+     - Proper dependency arrays for all hooks
+   - **Impact**: Reduced unnecessary re-renders, smoother user experience, better performance
+
+**Architecture Improvements Implemented**:
+
+1. **Issue 4.1 - Inconsistent API Response Format** 🟡 MEDIUM ✅
+   - **Files**: `lib/api/response.ts` (new)
+   - **Changes**:
+     - Created standardized `ApiResponse<T>` interface with generic typing
+     - Implemented helper functions: `successResponse()`, `errorResponse()`, `apiSuccess()`, `apiError()`
+     - Added optional metadata field for pagination information
+     - Comprehensive JSDoc documentation and examples
+   - **Impact**: Consistent API responses across all endpoints, better type safety, easier frontend consumption
+
+2. **Issue 4.2 - Mixed Server/Client Logic** 🟡 MEDIUM ✅
+   - **Files**: `app/actions/bookmarks.ts` (new), `app/actions/profile.ts` (new)
+   - **Changes**:
+     - Created server actions directory with `'use server'` directive
+     - Implemented bookmark server actions with authentication checks
+     - Implemented profile update server actions with validation
+     - Integrated with service layer for data access
+     - Used `revalidatePath()` for automatic cache invalidation
+   - **Impact**: Better separation of concerns, improved security, type-safe server actions
+
+3. **Issue 4.3 - No Service Layer Pattern** 🟡 MEDIUM ✅
+   - **Files**: `lib/services/JobService.ts` (new), `lib/services/BookmarkService.ts` (new)
+   - **Changes**:
+     - Created service layer directory structure
+     - Implemented `JobService` class with methods: `getJobs()`, `getJobById()`, `getJobBySlug()`, `getJobsByIds()`, `getRelatedJobs()`, `getFiltersData()`, `clearFilterCache()`
+     - Implemented `BookmarkService` class with methods: `getBookmarks()`, `createBookmark()`, `deleteBookmark()`, `checkBookmarkExists()`, `toggle()`
+     - Abstracted CMS API calls and database operations
+     - Exported singleton instances for easy consumption
+   - **Impact**: Single source of truth for data access, better testability, cleaner code organization
+
+4. **Issue 4.4 - Environment Configuration Issues** 🟡 MEDIUM ✅
+   - **Files**: `lib/env.ts`
+   - **Changes**:
+     - Enhanced `validateEnv()` to throw errors in production mode
+     - Added validation for both client and server-side variables
+     - Implemented Supabase URL format validation (must be HTTPS)
+     - Implemented Supabase key length validation
+     - Separate validation for client vs server-side variables
+     - Helpful warning messages in development mode
+     - Automatic validation on module load
+   - **Impact**: Fail-fast behavior in production prevents silent failures, better developer experience with clear error messages
+
+5. **Issue 4.5 - Tight Coupling to TugasCMS** 🟡 MEDIUM ✅
+   - **Files**: `lib/cms/interface.ts` (new), `lib/cms/factory.ts` (new), `lib/cms/providers/tugascms.ts` (new)
+   - **Changes**:
+     - Created `CMSProvider` interface defining contract for CMS implementations
+     - Implemented `TugasCMSProvider` class adhering to interface
+     - Created `getCMSProvider()` factory function for provider selection
+     - Environment-based provider selection via `CMS_PROVIDER` env var
+     - Lazy initialization with settings loaded from database
+   - **Impact**: Easy to swap CMS backends in future, better abstraction, improved maintainability
+
+**Summary Statistics**:
+- ✅ **Completed**: 10 out of 12 items (83%)
+- ⏭️ **Skipped**: 2 items per user request (3.4, 3.6)
+- **Files Created**: 7 new files (response.ts, schemaUtils.ts, server actions, services, CMS abstraction)
+- **Files Modified**: 25+ files across components, pages, and utilities
+- **Impact**: Significantly improved performance, better code organization, enhanced maintainability
+
+**Verification**:
+- ✅ Zero TypeScript/LSP errors after all changes
+- ✅ All components compile successfully
+- ✅ Workflow running without errors
+- ✅ Proper separation of concerns achieved
+- ✅ Performance optimizations in place
+- ✅ Architecture follows Next.js 14 best practices
+
 ### 2025-10-28 12:00 - Critical Security Hardening (Issues 1.1-1.6, 2.1-2.3) **[COMPLETED]**
 - **Time**: 12:00 WIB
 - **Scope**: Addressed 9 critical and high-priority security vulnerabilities identified in PROJECT_ANALYSIS.md

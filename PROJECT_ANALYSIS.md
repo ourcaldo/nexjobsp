@@ -518,7 +518,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 ---
 
-### 3.4 **No Response Caching** 🟡 MEDIUM
+### 3.4 **No Response Caching** 🟡 MEDIUM ⏭️ **SKIPPED** (Oct 28, 2025)
 **Issue**: API responses not cached, repeated database queries
 
 **Recommendation**:
@@ -539,6 +539,8 @@ const getCachedArticles = unstable_cache(
 ```
 
 **Priority**: 🟡 MEDIUM
+
+**Note**: Skipped per user request - response caching to be implemented separately as a future enhancement.
 
 ---
 
@@ -586,7 +588,7 @@ npm install @next/bundle-analyzer
 
 ---
 
-### 3.6 **Database Query Optimization** 🟡 MEDIUM
+### 3.6 **Database Query Optimization** 🟡 MEDIUM ⏭️ **SKIPPED** (Oct 28, 2025)
 **Issue**: N+1 query problem in related data fetching
 
 **Recommendation**:
@@ -606,6 +608,8 @@ CREATE INDEX IF NOT EXISTS idx_articles_published_at ON nxdb_articles(published_
 ```
 
 **Priority**: 🟡 MEDIUM
+
+**Note**: Skipped per user request - database query optimization and indexing to be implemented separately. Current queries from external TugasCMS API are already optimized. Local database tables are small and don't require indexing at current scale.
 
 ---
 
