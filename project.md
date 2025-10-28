@@ -155,6 +155,29 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-28 22:20 - Fixed React Hook Dependency Order in JobCard Component **[COMPLETED]**
+- **Time**: 22:20 WIB
+- **Scope**: Fixed critical runtime error causing "Cannot access 'handleBookmarkClick' before initialization" error in JobCard component
+- **Status**: Issue resolved, application compiling and running successfully
+
+**Bug Fix Details**:
+- **Files**: `components/JobCard.tsx`
+- **Issue**: 
+  - `handleBookmarkKeyDown` callback was referencing `handleBookmarkClick` in its dependency array before `handleBookmarkClick` was defined
+  - This caused a "Block-scoped variable used before its declaration" error
+  - Application would crash when rendering JobCard components
+- **Changes**:
+  - Reordered useCallback hooks so `handleBookmarkClick` is defined before `handleBookmarkKeyDown`
+  - Moved `handleBookmarkClick` from line 100-126 to line 96-122
+  - Moved `handleBookmarkKeyDown` from line 89-94 to line 124-129
+  - Proper dependency ordering now maintained: `isSalaryHidden` → `handleBookmarkClick` → `handleBookmarkKeyDown`
+- **Impact**: 
+  - JobCard component now renders without errors
+  - Bookmark functionality working correctly
+  - Keyboard accessibility (Enter/Space) for bookmark button working as expected
+  - Zero LSP/TypeScript errors
+  - Application compiling and running successfully
+
 ### 2025-10-28 20:00 - Code Quality & SEO/Accessibility Improvements (Issues 5.1-5.5, 7.1-7.5) **[COMPLETED]**
 - **Time**: 20:00 WIB
 - **Scope**: Implemented code quality improvements and SEO/accessibility enhancements from PROJECT_ANALYSIS.md sections 5 and 7

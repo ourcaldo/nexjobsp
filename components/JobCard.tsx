@@ -86,13 +86,6 @@ const JobCard: React.FC<JobCardProps> = React.memo(({
     }
   }, [initialIsBookmarked]);
 
-  const handleBookmarkKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleBookmarkClick(e as any);
-    }
-  }, [handleBookmarkClick]);
-
   const isSalaryHidden = useCallback((salary: string) => {
     return salary === 'Perusahaan Tidak Menampilkan Gaji';
   }, []);
@@ -124,6 +117,13 @@ const JobCard: React.FC<JobCardProps> = React.memo(({
       }
     });
   }, [job.id, onBookmarkChange, showToast]);
+
+  const handleBookmarkKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleBookmarkClick(e as any);
+    }
+  }, [handleBookmarkClick]);
 
   const handleCardClick = useCallback((e: React.MouseEvent) => {
     // Only open in new tab if clicking anywhere except the buttons
