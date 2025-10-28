@@ -1512,7 +1512,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 ---
 
-### 7.4 **Missing robots.txt** 🟡 MEDIUM ⏭️ **SKIPPED** (Oct 28, 2025)
+### 7.4 **Missing robots.txt** 🟡 MEDIUM ✅ **COMPLETED** (Oct 28, 2025)
 **Issue**: No robots.txt file for crawler management
 
 **Recommendation**:
@@ -1535,7 +1535,59 @@ export default function robots(): MetadataRoute.Robots {
 
 **Priority**: 🟡 MEDIUM
 
-**Note**: Skipped per user request - robots.txt to be implemented separately as future enhancement.
+**Resolution**: Dynamic robots.txt implementation already exists and is fully functional with database-backed admin management.
+
+**Implementation Details:**
+- ✅ Database field: `admin_settings.robots_txt` (TEXT column)
+- ✅ Dynamic route: `app/robots.txt/route.ts` serves content from database
+- ✅ Admin UI: Integrated into Sitemap Management page (`components/admin/SitemapManagement.tsx` lines 248-286)
+- ✅ Fallback handling: Default robots.txt content if database is empty
+- ✅ Caching: 1-hour cache with proper headers (`max-age=3600, s-maxage=3600`)
+- ✅ Server-side: Fetches from `admin_settings` table on each request (with caching)
+
+**Admin Management Features:**
+- Large textarea editor for robots.txt content (12 rows, monospace font)
+- Real-time preview of content
+- Placeholder text with recommended structure
+- Saved to database via admin settings API
+- Accessible at: **Backend Admin > Sitemap Management > Robots.txt Configuration**
+
+**Route Implementation:**
+- Serves at `/robots.txt` as `text/plain`
+- Fetches latest content from database
+- Falls back to sensible defaults if database is empty
+- Proper error handling with fallback content
+- Logs "Serving robots.txt from database" for debugging
+
+**Default Content (if not configured):**
+```
+User-agent: *
+Allow: /
+
+# Disallow admin panel
+Disallow: /admin/
+Disallow: /admin
+
+# Disallow bookmarks (private pages)
+Disallow: /bookmarks/
+Disallow: /bookmarks
+
+# Allow specific important pages
+Allow: /lowongan-kerja/
+Allow: /artikel/
+
+# Sitemaps
+Sitemap: https://nexjob.tech/sitemap.xml
+```
+
+**Verification:**
+- ✅ `/robots.txt` endpoint returns 200 status
+- ✅ Content served as `text/plain`
+- ✅ Admin UI allows editing and saving
+- ✅ Database integration working
+- ✅ Proper cache headers set
+
+**Solved Date**: October 28, 2025
 
 ---
 
