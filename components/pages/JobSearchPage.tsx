@@ -535,6 +535,68 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     }));
   }, [filterData]);
 
+  const getFilterLabel = useCallback((filterType: string, value: string): string => {
+    if (!filterData) return value;
+
+    switch (filterType) {
+      case 'cities':
+        const city = filterData.regencies.find(r => r.id === value);
+        return city ? city.name : value;
+      
+      case 'jobTypes':
+        const jobType = filterData.employment_types.find(t => t.id === value);
+        return jobType ? jobType.name : value;
+      
+      case 'experiences':
+        const experience = filterData.experience_levels.find(e => e.id === value);
+        return experience ? experience.name : value;
+      
+      case 'educations':
+        const education = filterData.education_levels.find(e => e.id === value);
+        return education ? education.name : value;
+      
+      case 'categories':
+        const category = filterData.categories.find(c => c.id === value);
+        return category ? category.name : value;
+      
+      case 'workPolicies':
+        const workPolicy = filterData.work_policy.find(w => w.value === value);
+        return workPolicy ? workPolicy.name : value;
+      
+      case 'salaries':
+        const salaryMapping: { [key: string]: string } = {
+          '1-3': '1-3 Juta',
+          '4-6': '4-6 Juta',
+          '7-9': '7-9 Juta',
+          '10+': '10+ Juta'
+        };
+        return salaryMapping[value] || value;
+      
+      default:
+        return value;
+    }
+  }, [filterData]);
+
+  const getProvinceName = useCallback((provinceId: string): string => {
+    if (!filterData) return provinceId;
+    const province = filterData.provinces.find(p => p.id === provinceId);
+    return province ? province.name : provinceId;
+  }, [filterData]);
+
+  const getFilterTypeLabel = (filterType: string): string => {
+    const labels: { [key: string]: string } = {
+      cities: 'Kota',
+      jobTypes: 'Tipe Pekerjaan',
+      experiences: 'Pengalaman',
+      educations: 'Pendidikan',
+      categories: 'Kategori',
+      workPolicies: 'Kebijakan Kerja',
+      salaries: 'Gaji',
+      industries: 'Industri'
+    };
+    return labels[filterType] || filterType;
+  };
+
   // Show loading state while initial data loads
   if (loading) {
     return (
@@ -731,7 +793,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
 
               {selectedProvince && selectedProvince !== (initialLocation && locationType === 'province' ? initialLocation : '') && (
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary-100 text-primary-800">
-                  Provinsi: {selectedProvince}
+                  Provinsi: {getProvinceName(selectedProvince)}
                   <button
                     onClick={() => removeFilter('province')}
                     className="ml-2 hover:text-primary-900"
@@ -751,7 +813,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
                   })
                   .map((value) => (
                     <span key={`${filterType}-${value}`} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary-100 text-primary-800">
-                      {value}
+                      {getFilterTypeLabel(filterType)}: {getFilterLabel(filterType, value)}
                       <button
                         onClick={() => removeFilter(filterType, value)}
                         className="ml-2 hover:text-primary-900"

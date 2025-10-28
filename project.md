@@ -155,6 +155,67 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-28 06:40 - Fixed Filter Chips Displaying IDs Instead of Labels **[COMPLETED]**
+- **Time**: 06:40 WIB
+- **Issue Reported**: Active filter chips showing IDs (e.g., "Provinsi: 31", "3173", UUID strings) instead of human-readable labels
+- **Root Cause**: Filter chip rendering logic directly displayed the state values (IDs) without mapping them to their corresponding names from filterData
+  
+- **Implementation Details**:
+  
+  **Files Modified**:
+  
+  1. **`components/pages/JobSearchPage.tsx` - Filter Display Logic**:
+     - **Added Helper Functions** (Lines 541-601):
+       - `getFilterLabel(filterType, value)`: Maps filter IDs to labels for all filter types
+         - `cities` → Looks up regency name from `filterData.regencies`
+         - `jobTypes` → Looks up employment type name from `filterData.employment_types`
+         - `experiences` → Looks up experience level name from `filterData.experience_levels`
+         - `educations` → Looks up education level name from `filterData.education_levels`
+         - `categories` → Looks up category name from `filterData.categories`
+         - `workPolicies` → Looks up work policy name from `filterData.work_policy`
+         - `salaries` → Maps to labels: "1-3 Juta", "4-6 Juta", "7-9 Juta", "10+ Juta"
+       
+       - `getProvinceName(provinceId)`: Maps province ID to province name from `filterData.provinces`
+       
+       - `getFilterTypeLabel(filterType)`: Maps filter type keys to Indonesian labels:
+         - `cities` → "Kota"
+         - `jobTypes` → "Tipe Pekerjaan"
+         - `experiences` → "Pengalaman"
+         - `educations` → "Pendidikan"
+         - `categories` → "Kategori"
+         - `workPolicies` → "Kebijakan Kerja"
+         - `salaries` → "Gaji"
+     
+     - **Updated Filter Chip Display**:
+       - **Province Chip** (Line 799): Changed from `{selectedProvince}` to `{getProvinceName(selectedProvince)}`
+       - **Sidebar Filter Chips** (Line 819): Changed from `{value}` to `{getFilterTypeLabel(filterType)}: {getFilterLabel(filterType, value)}`
+  
+  **Data Flow (Unchanged - Still Uses IDs)**:
+  - State still stores IDs (correct for API calls)
+  - API calls still send IDs (correct for CMS API)
+  - Only the display layer maps IDs to labels
+  
+  **Example Transformations**:
+  - Province: `31` → "DKI Jakarta"
+  - City: `3173` → "Jakarta Selatan"
+  - Category: `ab3f5273-bc4c-44f6-bba2-c3a60839aa5c` → "IT / Software Development"
+  - Employment Type: `full-time-id` → "Full Time"
+  - Salary: `7-9` → "Gaji: 7-9 Juta"
+
+- **Verification**:
+  - ✅ No TypeScript/LSP errors after changes
+  - ✅ Application compiles and runs successfully
+  - ✅ Workflow restarted without errors
+  - ✅ Filter state still stores IDs (API compatibility maintained)
+  - ✅ All filter types covered: province, city, job type, experience, education, category, work policy, salary
+
+- **Impact**:
+  - **User Experience**: Active filter chips now display human-readable labels instead of cryptic IDs
+  - **Clarity**: Users can clearly see which filters are applied (e.g., "Tipe Pekerjaan: Full Time" instead of "jobTypes: uuid-string")
+  - **Consistency**: Filter chip labels match the filter sidebar options
+  - **Maintainability**: Centralized mapping logic makes future filter additions easier
+  - **API Compatibility**: Backend still receives IDs as required by CMS API
+
 ### 2025-10-28 06:20 - Fixed Salary Range Filter Bug **[COMPLETED]**
 - **Time**: 06:20 WIB
 - **Issue Reported**: Salary filters not working - all selections returned "No Job Found"
