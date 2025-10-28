@@ -31,17 +31,23 @@ Sitemap: ${baseUrl}/sitemap.xml`;
       const settings = await SupabaseAdminService.getSettingsServerSide();
       robotsTxt = settings.robots_txt;
       
-      // Use fallback if database value is empty or null
+      console.log('DEBUG robots_txt from DB:', {
+        hasValue: !!robotsTxt,
+        length: robotsTxt?.length,
+        type: typeof robotsTxt,
+        preview: robotsTxt?.substring(0, 50)
+      });
+      
       if (!robotsTxt || robotsTxt.trim() === '') {
         robotsTxt = defaultRobotsTxt;
-        console.log('Using default robots.txt (database value empty)');
+        console.error('ERROR: Database robots_txt is empty! Using fallback');
       } else {
-        console.log('Serving robots.txt from database');
+        console.log('SUCCESS: Serving robots.txt from database');
       }
     } catch (dbError) {
       console.error('Error fetching robots.txt from database:', dbError);
       robotsTxt = defaultRobotsTxt;
-      console.log('Using fallback robots.txt content (database error)');
+      console.error('ERROR: Database fetch failed, using fallback');
     }
 
     return new Response(robotsTxt, {
