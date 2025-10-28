@@ -11,7 +11,11 @@ import { useAnalytics } from '@/hooks/useAnalytics';
 import JobCard from '@/components/JobCard';
 import JobSidebar from '@/components/JobSidebar';
 import SearchableSelect from '@/components/SearchableSelect';
+import JobCardSkeleton from '@/components/ui/JobCardSkeleton';
+import EmptyState from '@/components/ui/EmptyState';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { useSearchHistory } from '@/hooks/useSearchHistory';
+import { features } from '@/lib/features';
 
 interface JobSearchPageProps {
   settings: any;
@@ -29,6 +33,8 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   const router = useRouter();
   const searchParams = useSearchParams();
   const { trackPageView, trackSearch, trackFilterUsage } = useAnalytics();
+  const searchHistory = useSearchHistory();
+  const isSearchHistoryEnabled = features.searchHistory;
 
   // Refs to prevent infinite loops
   const initialDataLoadedRef = useRef(false);
@@ -49,6 +55,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   const [displayedJobsCount, setDisplayedJobsCount] = useState(0); // Track currently displayed jobs
   const [userBookmarks, setUserBookmarks] = useState<Set<string>>(new Set());
   const [user, setUser] = useState<any>(null);
+  const [showSearchHistory, setShowSearchHistory] = useState(false);
 
   // Main search filters
   const [keyword, setKeyword] = useState('');
@@ -303,8 +310,15 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     if (!initialDataLoadedRef.current) return;
 
     const filters = getCurrentFilters();
+    
+    // Save search keyword to history
+    if (isSearchHistoryEnabled && filters.search) {
+      searchHistory.addToHistory(filters.search);
+    }
+    
     await searchWithFilters(filters, true);
-  }, [searchWithFilters, getCurrentFilters]);
+    setShowSearchHistory(false);
+  }, [searchWithFilters, getCurrentFilters, isSearchHistoryEnabled, searchHistory]);
 
   // Debounced filter search
   const debouncedFilterSearch = useCallback(() => {
@@ -738,8 +752,42 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
                   onKeyPress={handleKeyPress}
+                  onFocus={() => isSearchHistoryEnabled && setShowSearchHistory(true)}
+                  onBlur={() => setTimeout(() => setShowSearchHistory(false), 200)}
                   className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-gray-900"
                 />
+                
+                {/* Search History Dropdown */}
+                {isSearchHistoryEnabled && showSearchHistory && searchHistory.history.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+                    <div className="p-2 border-b border-gray-100">
+                      <span className="text-xs text-gray-500 font-medium">Riwayat Pencarian</span>
+                    </div>
+                    {searchHistory.history.map((query, index) => (
+                      <div
+                        key={index}
+                        className="px-4 py-2 hover:bg-gray-50 flex items-center justify-between group cursor-pointer"
+                        onClick={() => {
+                          setKeyword(query);
+                          setShowSearchHistory(false);
+                        }}
+                      >
+                        <span className="text-gray-700">{query}</span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            searchHistory.removeFromHistory(query);
+                          }}
+                          className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-600 transition-opacity"
+                          aria-label="Hapus dari riwayat"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Province Select */}
@@ -902,12 +950,8 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
 
             {/* Job Grid */}
             {searching ? (
-              <div className="flex items-center justify-center py-16">
-                <div className="text-center">
-                  <Loader2 className="h-12 w-12 animate-spin text-primary-600 mx-auto mb-4" />
-                  <h2 className="text-xl font-semibold text-gray-900 mb-2">Memuat Data</h2>
-                  <p className="text-gray-600">Sedang mencari lowongan kerja...</p>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <JobCardSkeleton count={6} />
               </div>
             ) : jobs.length > 0 ? (
               <>
@@ -951,19 +995,19 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
                 )}
               </>
             ) : (
-              <div className="text-center py-16">
-                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <AlertCircle className="h-12 w-12 text-gray-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Tidak ada lowongan ditemukan</h3>
-                <p className="text-gray-600 mb-4">Coba ubah kriteria pencarian Anda</p>
-                <button
-                  onClick={clearAllFilters}
-                  className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
-                >
-                  Reset Filter
-                </button>
-              </div>
+              <EmptyState
+                icon={AlertCircle}
+                title="Tidak ada lowongan ditemukan"
+                description="Coba ubah kriteria pencarian Anda atau gunakan filter yang berbeda"
+                action={
+                  <button
+                    onClick={clearAllFilters}
+                    className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
+                  >
+                    Reset Filter
+                  </button>
+                }
+              />
             )}
           </div>
         </div>

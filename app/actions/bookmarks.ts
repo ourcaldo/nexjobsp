@@ -3,16 +3,20 @@
 import { createServerSupabaseClient } from '@/lib/supabase';
 import { bookmarkService } from '@/lib/services/BookmarkService';
 import { revalidatePath } from 'next/cache';
+import { logger } from '@/lib/logger';
 
 export async function toggleBookmark(jobId: string) {
   const supabase = createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   
   if (!user) {
+    logger.warn('Unauthorized bookmark toggle attempt', { jobId });
     throw new Error('Unauthorized');
   }
   
   const result = await bookmarkService.toggle(user.id, jobId);
+  
+  logger.info('Bookmark toggled', { userId: user.id, jobId, isBookmarked: result.isBookmarked });
   
   revalidatePath('/bookmarks');
   revalidatePath(`/lowongan-kerja/${jobId}`);

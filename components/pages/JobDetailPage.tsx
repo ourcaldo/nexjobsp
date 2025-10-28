@@ -27,6 +27,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import JobCard from '@/components/JobCard';
 import BookmarkLoginModal from '@/components/ui/BookmarkLoginModal';
 import { sanitizeHTML } from '@/lib/utils/sanitize';
+import ShareButton from '@/components/ui/ShareButton';
 
 interface JobDetailPageProps {
   job: Job;
@@ -233,12 +234,16 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, slug, settings }) =>
                         : 'text-gray-400 hover:text-gray-600 border-gray-200 hover:border-gray-300'
                     }`}
                     title={isBookmarked ? 'Hapus dari bookmark' : 'Simpan ke bookmark'}
+                    aria-label={isBookmarked ? 'Hapus dari bookmark' : 'Simpan ke bookmark'}
                   >
                     <Bookmark className={`h-5 w-5 ${isBookmarked ? 'fill-current' : ''}`} />
                   </button>
-                  <button className="p-2 text-gray-400 hover:text-gray-600 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
-                    <Share2 className="h-5 w-5" />
-                  </button>
+                  <ShareButton
+                    title={job.title}
+                    text={`${job.title} - ${job.company_name} | Nexjob`}
+                    url={typeof window !== 'undefined' ? window.location.href : ''}
+                    className="p-2"
+                  />
                 </div>
               </div>
 

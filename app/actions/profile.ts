@@ -3,12 +3,14 @@
 import { createServerSupabaseClient } from '@/lib/supabase';
 import { updateProfileSchema } from '@/lib/validation/schemas';
 import { revalidatePath } from 'next/cache';
+import { logger } from '@/lib/logger';
 
 export async function updateProfile(formData: FormData) {
   const supabase = createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   
   if (!user) {
+    logger.warn('Unauthorized profile update attempt');
     throw new Error('Unauthorized');
   }
   
@@ -20,6 +22,7 @@ export async function updateProfile(formData: FormData) {
   
   const validation = updateProfileSchema.safeParse(data);
   if (!validation.success) {
+    logger.error('Invalid profile data', { errors: validation.error.flatten() });
     throw new Error('Invalid profile data');
   }
   
@@ -28,7 +31,12 @@ export async function updateProfile(formData: FormData) {
     .update(validation.data)
     .eq('id', user.id);
   
-  if (error) throw error;
+  if (error) {
+    logger.error('Profile update failed', { userId: user.id, error: error.message });
+    throw error;
+  }
+  
+  logger.info('Profile updated successfully', { userId: user.id });
   
   revalidatePath('/profile');
   return { success: true };
