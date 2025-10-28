@@ -13,11 +13,11 @@ export class SupabaseAdminService {
     site_url: env.SITE_URL,
     ga_id: env.GA_ID || '',
     gtm_id: env.GTM_ID || '',
-    // Supabase Storage Configuration
-    supabase_storage_endpoint: 'https://uzlzyosmbxgghhmafidk.supabase.co/storage/v1/s3',
-    supabase_storage_region: 'ap-southeast-1',
-    supabase_storage_access_key: '642928fa32b65d648ce65ea04c64100e',
-    supabase_storage_secret_key: '082c3ce06c08ba1b347af99f16ff634fd12b4949a6cdda16df30dcc5741609dc',
+    // Supabase Storage Configuration - SECURITY: Now using environment variables
+    supabase_storage_endpoint: env.SUPABASE_STORAGE_ENDPOINT || 'https://uzlzyosmbxgghhmafidk.supabase.co/storage/v1/s3',
+    supabase_storage_region: env.SUPABASE_STORAGE_REGION || 'ap-southeast-1',
+    supabase_storage_access_key: env.SUPABASE_STORAGE_ACCESS_KEY || '',
+    supabase_storage_secret_key: env.SUPABASE_STORAGE_SECRET_KEY || '',
     // Dynamic SEO Templates
     location_page_title_template: 'Lowongan Kerja di {{lokasi}} - {{site_title}}',
     location_page_description_template: 'Temukan lowongan kerja terbaru di {{lokasi}}. Dapatkan pekerjaan impian Anda dengan gaji terbaik di {{site_title}}.',

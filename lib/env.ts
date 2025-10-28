@@ -13,6 +13,12 @@ export const env = {
   SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
   
+  // Supabase Storage S3-Compatible Configuration
+  SUPABASE_STORAGE_ACCESS_KEY: process.env.SUPABASE_STORAGE_ACCESS_KEY || '',
+  SUPABASE_STORAGE_SECRET_KEY: process.env.SUPABASE_STORAGE_SECRET_KEY || '',
+  SUPABASE_STORAGE_ENDPOINT: process.env.SUPABASE_STORAGE_ENDPOINT || '',
+  SUPABASE_STORAGE_REGION: process.env.SUPABASE_STORAGE_REGION || 'ap-southeast-1',
+  
   // SEO (now handled by database settings)
   SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME || '',
   SITE_DESCRIPTION: process.env.NEXT_PUBLIC_SITE_DESCRIPTION || '',
