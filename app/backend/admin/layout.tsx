@@ -1,54 +1,22 @@
-'use client';
+import { Metadata } from 'next';
+import AdminLayoutWrapper from './AdminLayoutWrapper';
 
-import { usePathname } from 'next/navigation';
-import AdminLayout from '@/components/admin/AdminLayout';
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+    },
+  },
+};
 
 export default function BackendAdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-  
-  const getCurrentPage = () => {
-    if (pathname === '/backend/admin' || pathname === '/backend/admin/') {
-      return 'dashboard';
-    }
-    
-    if (pathname.startsWith('/backend/admin/cms')) {
-      return 'cms';
-    }
-    
-    if (pathname.startsWith('/backend/admin/users')) {
-      return 'users';
-    }
-    
-    if (pathname.startsWith('/backend/admin/seo')) {
-      return 'seo';
-    }
-    
-    if (pathname.startsWith('/backend/admin/sitemap')) {
-      return 'sitemap';
-    }
-    
-    if (pathname.startsWith('/backend/admin/system')) {
-      return 'system';
-    }
-    
-    if (pathname.startsWith('/backend/admin/integration')) {
-      return 'integration';
-    }
-    
-    if (pathname.startsWith('/backend/admin/advertisement')) {
-      return 'advertisement';
-    }
-    
-    return 'dashboard';
-  };
-  
-  return (
-    <AdminLayout currentPage={getCurrentPage()}>
-      {children}
-    </AdminLayout>
-  );
+  return <AdminLayoutWrapper>{children}</AdminLayoutWrapper>;
 }

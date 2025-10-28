@@ -155,6 +155,182 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-28 - Backend Admin Revamp: Removed Internal CMS & Simplified Configuration **[COMPLETED]**
+- **Time**: 00:30 WIB
+- **Scope**: Complete backend admin panel revamp to remove internal CMS features and simplify configuration management
+- **Status**: All changes completed and tested successfully
+- **Reason**: Project now uses external TugasCMS API (https://cms.nexjob.tech) instead of internal CMS system
+
+**Changes Made**:
+
+1. **Removed CMS Menu from Admin Sidebar** (`components/admin/AdminLayout.tsx`):
+   - Removed CMS navigation item with submenu (Articles, Pages, Lowongan Kerja)
+   - Removed unused icon imports: `Edit3`, `ChevronDown`, `ChevronUp`, `Briefcase`
+   - Removed CMS state management: `cmsExpanded`, `isCmsOpen` variables
+   - Simplified navigation to flat structure (no more expandable menus)
+   - Renamed "Sitemap Management" to "Robots.txt" for clarity
+   - Updated navigation array to remove CMS-related routes
+   - Cleaned up mobile and desktop sidebar rendering logic
+
+2. **Simplified Sitemap Management Component** (`components/admin/SitemapManagement.tsx`):
+   - **Removed**: All sitemap generation features and UI sections
+   - **Removed**: Sitemap Status section with auto-generation toggle
+   - **Removed**: Sitemap Configuration section with update intervals
+   - **Removed**: Sitemap URLs section (now managed by external CMS)
+   - **Removed**: Force Regenerate Sitemap button and API call
+   - **Kept**: Only Robots.txt Configuration section
+   - Simplified state management to only `robotsTxt` string
+   - Updated API calls to only save `robots_txt` field
+   - Added note: "Sitemaps are managed by the external CMS system"
+   - Changed button text from "Save Sitemap Settings" to "Save Robots.txt"
+   - Updated loading message to "Loading robots.txt settings..."
+   - Increased textarea rows from 12 to 15 for better editing
+   - Component now focused solely on robots.txt management
+
+3. **Removed Database & Storage Configuration** (`components/admin/SystemSettings.tsx`):
+   - **Removed**: Database Configuration section (Supabase URL, Anon Key, Service Role Key)
+   - **Removed**: Storage Configuration section (Bucket Name, Endpoint, Region, Access Key, Secret Key)
+   - **Removed**: All related state fields from settings object
+   - **Removed**: Unused icon import: `Database`, `Settings`
+   - **Kept**: General System Settings (Site URL)
+   - **Kept**: Analytics Configuration (Google Analytics ID, Google Tag Manager ID)
+   - Added note: "Database and storage configurations are managed via environment variables (.env file)"
+   - Simplified loadSettings to only fetch site_url, ga_id, gtm_id
+   - Removed console.log/console.error statements for cleaner code
+   - Component now focused on public-facing settings only
+
+4. **Added noindex/nofollow Meta Tags** (`app/backend/admin/`):
+   - Created new server component layout.tsx with proper metadata export
+   - Moved existing client component to `AdminLayoutWrapper.tsx`
+   - Added metadata configuration:
+     - `robots.index = false`
+     - `robots.follow = false`
+     - `robots.nocache = true`
+     - `googleBot.index = false`
+     - `googleBot.follow = false`
+   - Prevents search engines from indexing admin panel pages
+   - Proper SEO protection for admin routes
+
+**Files Modified**:
+- `components/admin/AdminLayout.tsx` - Removed CMS menu and submenu logic
+- `components/admin/SitemapManagement.tsx` - Simplified to robots.txt only
+- `components/admin/SystemSettings.tsx` - Removed DB & storage config
+- `app/backend/admin/layout.tsx` - New server component with metadata
+- `app/backend/admin/AdminLayoutWrapper.tsx` - Renamed from layout.tsx
+
+**Technical Details**:
+
+**AdminLayout Navigation Before**:
+```typescript
+const navigation = [
+  { name: 'Dashboard', ... },
+  { name: 'CMS', hasSubmenu: true, submenu: [...] },  // ❌ Removed
+  { name: 'SEO Settings', ... },
+  { name: 'Sitemap Management', ... },  // ✏️ Renamed to "Robots.txt"
+  ...
+];
+```
+
+**AdminLayout Navigation After**:
+```typescript
+const navigation = [
+  { name: 'Dashboard', ... },
+  { name: 'SEO Settings', ... },
+  { name: 'Robots.txt', ... },  // ✅ Simplified
+  { name: 'Integration', ... },
+  { name: 'User Management', ... },
+  { name: 'System Settings', ... },
+];
+```
+
+**SitemapManagement State Before**:
+```typescript
+const [settings, setSettings] = useState({
+  sitemap_update_interval: 300,
+  auto_generate_sitemap: true,
+  last_sitemap_update: '',
+  robots_txt: ''
+});
+```
+
+**SitemapManagement State After**:
+```typescript
+const [robotsTxt, setRobotsTxt] = useState('');  // ✅ Simplified
+```
+
+**SystemSettings State Before**:
+```typescript
+const [settings, setSettings] = useState({
+  site_url: '',
+  ga_id: '',
+  gtm_id: '',
+  database_supabase_url: '',  // ❌ Removed
+  database_supabase_anon_key: '',  // ❌ Removed
+  database_supabase_service_role_key: '',  // ❌ Removed
+  storage_bucket_name: '',  // ❌ Removed
+  storage_endpoint: '',  // ❌ Removed
+  storage_region: '',  // ❌ Removed
+  storage_access_key: '',  // ❌ Removed
+  storage_secret_key: ''  // ❌ Removed
+});
+```
+
+**SystemSettings State After**:
+```typescript
+const [settings, setSettings] = useState({
+  site_url: '',
+  ga_id: '',
+  gtm_id: ''
+});  // ✅ Simplified
+```
+
+**Backend Admin Metadata (New)**:
+```typescript
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
+};
+```
+
+**Impact**:
+- ✅ Removed all internal CMS management features (now using external TugasCMS)
+- ✅ Simplified admin sidebar navigation (flat structure, no expandable menus)
+- ✅ Sitemap Management page now focuses solely on robots.txt configuration
+- ✅ System Settings page no longer exposes database/storage credentials
+- ✅ Database and storage config must be managed via .env files only (more secure)
+- ✅ Admin panel pages now have proper noindex/nofollow meta tags
+- ✅ Search engines will not index /backend/admin routes
+- ✅ Cleaner, more focused admin UI
+- ✅ Reduced complexity and potential security exposure
+- ✅ Better separation of concerns (CMS managed externally)
+- ✅ Zero TypeScript/LSP errors
+- ✅ Application compiles and runs successfully
+
+**Admin Panel Navigation Now**:
+1. Dashboard - Overview and statistics
+2. SEO Settings - Meta tags and SEO configuration
+3. Advertisement - Ad management
+4. Robots.txt - robots.txt file configuration only
+5. Integration - External service integrations
+6. User Management - User administration
+7. System Settings - Site URL and analytics (GA/GTM) only
+
+**Configuration Management**:
+- **Public Settings**: Site URL, GA ID, GTM ID → Managed via Admin Panel
+- **Private Settings**: Database credentials, storage keys → Managed via .env files
+- **CMS Content**: All articles, pages, jobs → Managed via TugasCMS at https://cms.nexjob.tech
+- **Sitemaps**: All sitemaps → Generated by TugasCMS, served via middleware proxy
+- **Robots.txt**: Content → Managed via Admin Panel, stored in database
+
+**Security Improvements**:
+- Database credentials no longer exposed in admin panel UI
+- Storage keys no longer exposed in admin panel UI
+- Admin routes properly excluded from search engine indexing
+- Sensitive configuration must be managed via secure .env files
+
 ### 2025-10-28 23:45 - Fixed Robots.txt Cache Issue & Removed Fallback **[COMPLETED]**
 - **Time**: 23:45 WIB
 - **Scope**: Fixed robots.txt caching issue preventing admin updates from being visible immediately

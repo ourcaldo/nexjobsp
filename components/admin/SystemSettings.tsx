@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Save, Loader2, Settings, Database, Globe, BarChart3 } from 'lucide-react';
+import { Save, Loader2, Globe, BarChart3 } from 'lucide-react';
 import { supabaseAdminService } from '@/lib/supabase/admin';
 import { useToast } from '@/components/ui/ToastProvider';
 
@@ -10,27 +10,10 @@ const SystemSettings: React.FC = () => {
   const [settings, setSettings] = useState({
     site_url: '',
     ga_id: '',
-    gtm_id: '',
-    // Supabase Storage Configuration
-    supabase_storage_endpoint: '',
-    supabase_storage_region: '',
-    supabase_storage_access_key: '',
-    supabase_storage_secret_key: '',
-    // Database Configuration
-    database_supabase_url: '',
-    database_supabase_anon_key: '',
-    database_supabase_service_role_key: '',
-    // Storage Configuration
-    storage_bucket_name: '',
-    storage_endpoint: '',
-    storage_region: '',
-    storage_access_key: '',
-    storage_secret_key: ''
+    gtm_id: ''
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
-  
 
   const loadSettings = useCallback(async () => {
     try {
@@ -40,23 +23,10 @@ const SystemSettings: React.FC = () => {
         setSettings({
           site_url: adminSettings.site_url || '',
           ga_id: adminSettings.ga_id || '',
-          gtm_id: adminSettings.gtm_id || '',
-          supabase_storage_endpoint: adminSettings.supabase_storage_endpoint || '',
-          supabase_storage_region: adminSettings.supabase_storage_region || '',
-          supabase_storage_access_key: adminSettings.supabase_storage_access_key || '',
-          supabase_storage_secret_key: adminSettings.supabase_storage_secret_key || '',
-          database_supabase_url: adminSettings.database_supabase_url || '',
-          database_supabase_anon_key: adminSettings.database_supabase_anon_key || '',
-          database_supabase_service_role_key: adminSettings.database_supabase_service_role_key || '',
-          storage_bucket_name: adminSettings.storage_bucket_name || '',
-          storage_endpoint: adminSettings.storage_endpoint || '',
-          storage_region: adminSettings.storage_region || '',
-          storage_access_key: adminSettings.storage_access_key || '',
-          storage_secret_key: adminSettings.storage_secret_key || ''
+          gtm_id: adminSettings.gtm_id || ''
         });
       }
     } catch (error) {
-      console.error('Error loading settings:', error);
       showToast('error', 'Failed to load system settings');
     } finally {
       setLoading(false);
@@ -86,7 +56,6 @@ const SystemSettings: React.FC = () => {
         showToast('error', result.error || 'Failed to save system settings');
       }
     } catch (error) {
-      console.error('Error saving settings:', error);
       showToast('error', 'Failed to save system settings');
     } finally {
       setSaving(false);
@@ -180,154 +149,9 @@ const SystemSettings: React.FC = () => {
               />
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Database Configuration */}
-      <div className="bg-white shadow-sm rounded-lg border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-            <Database className="h-6 w-6 mr-3 text-primary-600" />
-            Database Configuration
-          </h2>
-          <p className="mt-1 text-sm text-gray-600">
-            Configure Supabase database connection settings.
+          <p className="mt-2 text-xs text-gray-500">
+            Note: Database and storage configurations are managed via environment variables (.env file)
           </p>
-        </div>
-
-        <div className="p-6 space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Supabase URL
-            </label>
-            <input
-              type="url"
-              name="database_supabase_url"
-              value={settings.database_supabase_url}
-              onChange={handleInputChange}
-              placeholder="https://your-project.supabase.co"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Supabase Anon Key
-              </label>
-              <input
-                type="password"
-                name="database_supabase_anon_key"
-                value={settings.database_supabase_anon_key}
-                onChange={handleInputChange}
-                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Supabase Service Role Key
-              </label>
-              <input
-                type="password"
-                name="database_supabase_service_role_key"
-                value={settings.database_supabase_service_role_key}
-                onChange={handleInputChange}
-                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Storage Configuration */}
-      <div className="bg-white shadow-sm rounded-lg border border-gray-200">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-            <Settings className="h-6 w-6 mr-3 text-primary-600" />
-            Storage Configuration
-          </h2>
-          <p className="mt-1 text-sm text-gray-600">
-            Configure file storage settings for uploads.
-          </p>
-        </div>
-
-        <div className="p-6 space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Storage Bucket Name
-              </label>
-              <input
-                type="text"
-                name="storage_bucket_name"
-                value={settings.storage_bucket_name}
-                onChange={handleInputChange}
-                placeholder="nexjob"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Storage Region
-              </label>
-              <input
-                type="text"
-                name="storage_region"
-                value={settings.storage_region}
-                onChange={handleInputChange}
-                placeholder="ap-southeast-1"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Storage Endpoint
-            </label>
-            <input
-              type="url"
-              name="storage_endpoint"
-              value={settings.storage_endpoint}
-              onChange={handleInputChange}
-              placeholder="https://your-project.supabase.co/storage/v1/s3"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Storage Access Key
-              </label>
-              <input
-                type="password"
-                name="storage_access_key"
-                value={settings.storage_access_key}
-                onChange={handleInputChange}
-                placeholder="Access key for storage"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Storage Secret Key
-              </label>
-              <input
-                type="password"
-                name="storage_secret_key"
-                value={settings.storage_secret_key}
-                onChange={handleInputChange}
-                placeholder="Secret key for storage"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
-              />
-            </div>
-          </div>
         </div>
       </div>
 

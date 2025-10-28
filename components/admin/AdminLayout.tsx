@@ -17,12 +17,8 @@ import {
   Bell,
   User,
   Link2,
-  Edit3,
   ChevronLeft,
-  ChevronRight,
-  ChevronDown,
-  ChevronUp,
-  Briefcase
+  ChevronRight
 } from 'lucide-react';
 import { supabaseAdminService } from '@/lib/supabase/admin';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -37,10 +33,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
   const { showToast } = useToast();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
-  const [cmsExpanded, setCmsExpanded] = useState(false);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [isCmsOpen, setIsCmsOpen] = useState(currentPage === 'cms' || currentPage.startsWith('cms-'));
 
   const checkAuth = useCallback(async () => {
     try {
@@ -74,21 +68,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
 
   const navigation = [
     { name: 'Dashboard', href: '/backend/admin/', icon: LayoutDashboard, current: currentPage === 'dashboard' },
-    { 
-      name: 'CMS', 
-      href: '/backend/admin/cms', 
-      icon: Edit3, 
-      current: currentPage === 'cms',
-      hasSubmenu: true,
-      submenu: [
-        { name: 'Articles', href: '/backend/admin/cms?type=articles', icon: FileText },
-        { name: 'Pages', href: '/backend/admin/cms?type=pages', icon: FileText },
-        { name: 'Lowongan Kerja', href: '/backend/admin/cms?type=jobs', icon: Users }
-      ]
-    },
     { name: 'SEO Settings', href: '/backend/admin/seo', icon: FileText, current: currentPage === 'seo' },
     { name: 'Advertisement', href: '/backend/admin/advertisement', icon: Globe, current: currentPage === 'advertisement' },
-    { name: 'Sitemap Management', href: '/backend/admin/sitemap', icon: BarChart3, current: currentPage === 'sitemap' },
+    { name: 'Robots.txt', href: '/backend/admin/sitemap', icon: BarChart3, current: currentPage === 'sitemap' },
     { name: 'Integration', href: '/backend/admin/integration', icon: Link2, current: currentPage === 'integration' },
     { name: 'User Management', href: '/backend/admin/users', icon: Users, current: currentPage === 'users' },
     { name: 'System Settings', href: '/backend/admin/system', icon: Settings, current: currentPage === 'system' },
@@ -135,56 +117,18 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
             </div>
             <nav className="mt-5 px-2 space-y-1">
               {navigation.map((item) => (
-                <div key={item.name}>
-                  {item.hasSubmenu ? (
-                    <div>
-                      <button
-                        onClick={() => setCmsExpanded(!cmsExpanded)}
-                        className={`group w-full flex items-center justify-between px-2 py-2 text-base font-medium rounded-md ${
-                          item.current
-                            ? 'bg-primary-100 text-primary-900'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                        }`}
-                      >
-                        <div className="flex items-center">
-                          <item.icon className={`mr-4 h-6 w-6 ${item.current ? 'text-primary-500' : 'text-gray-400 group-hover:text-gray-500'}`} />
-                          {item.name}
-                        </div>
-                        {cmsExpanded ? (
-                          <ChevronUp className="h-4 w-4" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4" />
-                        )}
-                      </button>
-                      {cmsExpanded && (
-                        <div className="ml-8 mt-1 space-y-1">
-                          {item.submenu?.map((subItem) => (
-                            <Link
-                              key={subItem.name}
-                              href={subItem.href}
-                              className="group flex items-center px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900"
-                            >
-                              <subItem.icon className="mr-3 h-4 w-4 text-gray-400 group-hover:text-gray-500" />
-                              {subItem.name}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
-                        item.current
-                          ? 'bg-primary-100 text-primary-900'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      }`}
-                    >
-                      <item.icon className={`mr-4 h-6 w-6 ${item.current ? 'text-primary-500' : 'text-gray-400 group-hover:text-gray-500'}`} />
-                      {item.name}
-                    </Link>
-                  )}
-                </div>
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
+                    item.current
+                      ? 'bg-primary-100 text-primary-900'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
+                >
+                  <item.icon className={`mr-4 h-6 w-6 ${item.current ? 'text-primary-500' : 'text-gray-400 group-hover:text-gray-500'}`} />
+                  {item.name}
+                </Link>
               ))}
             </nav>
           </div>
@@ -210,67 +154,29 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, currentPage }) => {
 
             <nav className={`mt-8 flex-1 space-y-1 ${sidebarCollapsed ? 'px-2 overflow-x-hidden' : 'px-2'}`}>
               {navigation.map((item) => (
-                <div key={item.name}>
-                  {item.hasSubmenu && !sidebarCollapsed ? (
-                    <div>
-                      <button
-                        onClick={() => setCmsExpanded(!cmsExpanded)}
-                        className={`group w-full flex items-center justify-between py-2 px-2 text-sm font-medium rounded-md ${
-                          item.current
-                            ? 'bg-primary-100 text-primary-900'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                        }`}
-                      >
-                        <div className="flex items-center">
-                          <item.icon className={`h-5 w-5 mr-3 ${item.current ? 'text-primary-500' : 'text-gray-400 group-hover:text-gray-500'}`} />
-                          {item.name}
-                        </div>
-                        {cmsExpanded ? (
-                          <ChevronUp className="h-4 w-4" />
-                        ) : (
-                          <ChevronDown className="h-4 w-4" />
-                        )}
-                      </button>
-                      {cmsExpanded && (
-                        <div className="ml-8 mt-1 space-y-1">
-                          {item.submenu?.map((subItem) => (
-                            <Link
-                              key={subItem.name}
-                              href={subItem.href}
-                              className="group flex items-center px-2 py-2 text-sm font-medium text-gray-600 rounded-md hover:bg-gray-50 hover:text-gray-900"
-                            >
-                              <subItem.icon className="mr-3 h-4 w-4 text-gray-400 group-hover:text-gray-500" />
-                              {subItem.name}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      className={`group flex items-center py-2 text-sm font-medium rounded-md relative ${
-                        sidebarCollapsed ? 'px-2 justify-center w-12 mx-auto' : 'px-2'
-                      } ${
-                        item.current
-                          ? 'bg-primary-100 text-primary-900'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      } ${sidebarCollapsed ? 'select-none overflow-hidden' : ''}`}
-                      title={sidebarCollapsed ? item.name : ''}
-                      draggable={false}
-                    >
-                      <item.icon className={`h-5 w-5 ${sidebarCollapsed ? 'mr-0' : 'mr-3'} ${item.current ? 'text-primary-500' : 'text-gray-400 group-hover:text-gray-500'} ${sidebarCollapsed ? 'flex-shrink-0' : ''}`} />
-                      {!sidebarCollapsed && item.name}
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`group flex items-center py-2 text-sm font-medium rounded-md relative ${
+                    sidebarCollapsed ? 'px-2 justify-center w-12 mx-auto' : 'px-2'
+                  } ${
+                    item.current
+                      ? 'bg-primary-100 text-primary-900'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  } ${sidebarCollapsed ? 'select-none overflow-hidden' : ''}`}
+                  title={sidebarCollapsed ? item.name : ''}
+                  draggable={false}
+                >
+                  <item.icon className={`h-5 w-5 ${sidebarCollapsed ? 'mr-0' : 'mr-3'} ${item.current ? 'text-primary-500' : 'text-gray-400 group-hover:text-gray-500'} ${sidebarCollapsed ? 'flex-shrink-0' : ''}`} />
+                  {!sidebarCollapsed && item.name}
 
-                      {/* Tooltip for collapsed state */}
-                      {sidebarCollapsed && (
-                        <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">
-                          {item.name}
-                        </div>
-                      )}
-                    </Link>
+                  {/* Tooltip for collapsed state */}
+                  {sidebarCollapsed && (
+                    <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">
+                      {item.name}
+                    </div>
                   )}
-                </div>
+                </Link>
               ))}
             </nav>
 
