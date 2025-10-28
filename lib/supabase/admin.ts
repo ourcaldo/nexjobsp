@@ -83,6 +83,9 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
   private readonly MAX_AUTH_RETRIES = 3;
   private authTimeout: NodeJS.Timeout | null = null;
 
+  // Constructor to initialize the Supabase client
+  constructor(private client = supabase) {}
+
   // Get current user profile using API layer
   async getCurrentProfile(): Promise<Profile | null> {
     try {
@@ -155,7 +158,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
         }, 10000); // 10 second timeout
       });
 
-      const authPromise = supabase.auth.getUser();
+      const authPromise = this.client.auth.getUser();
 
       const { data: { user } } = await Promise.race([authPromise, timeoutPromise]);
 
@@ -166,7 +169,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
 
       if (!user) return null;
 
-      const { data, error } = await supabase
+      const { data, error } = await this.client
         .from('profiles')
         .select('*')
         .eq('id', user.id)
@@ -235,7 +238,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
   private async isSuperAdminServerSide(): Promise<boolean> {
     try {
       const supabaseServer = createServerSupabaseClient();
-      
+
       const { data: { user } } = await supabaseServer.auth.getUser();
       if (!user) return false;
 
@@ -259,7 +262,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
 
   private async getAuthToken(): Promise<string | null> {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await this.client.auth.getSession();
       return session?.access_token || null;
     } catch (error) {
       console.error('Error getting auth token:', error);
@@ -476,7 +479,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
       const isSuperAdmin = await this.isSuperAdmin();
       if (!isSuperAdmin) return;
 
-      const { data: existingSettings } = await supabase
+      const { data: existingSettings } = await this.client
         .from('admin_settings')
         .select('id')
         .order('created_at', { ascending: false })
@@ -484,7 +487,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
         .single();
 
       if (existingSettings?.id) {
-        await supabase
+        await this.client
           .from('admin_settings')
           .update({
             last_sitemap_update: new Date().toISOString(),
@@ -510,7 +513,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
         }, 15000);
       });
 
-      const signInPromise = supabase.auth.signInWithPassword({
+      const signInPromise = this.client.auth.signInWithPassword({
         email,
         password
       });
@@ -552,7 +555,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
         }, 10000);
       });
 
-      const magicLinkPromise = supabase.auth.signInWithOtp({
+      const magicLinkPromise = this.client.auth.signInWithOtp({
         email,
         options: {
           emailRedirectTo: `${window.location.origin}/admin`
@@ -574,7 +577,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
 
   async signOut(): Promise<void> {
     try {
-      await supabase.auth.signOut();
+      await this.client.auth.signOut();
       // Clear cache on logout
       this.clearSettingsCache();
       this.authRetryCount = 0; // Reset retry count
@@ -593,7 +596,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
         }, 8000);
       });
 
-      const authPromise = supabase.auth.getUser();
+      const authPromise = this.client.auth.getUser();
       const { data: { user } } = await Promise.race([authPromise, timeoutPromise]);
 
       return !!user;
@@ -604,9 +607,9 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
   }
 
   // Server-side methods for API routes with better error handling
-  static async getSettingsServerSide(): Promise<AdminSettings> {
+  static async getSettingsServerSide(context?: any): Promise<AdminSettings> {
     try {
-      const supabaseServer = createServerSupabaseClient();
+      const supabaseServer = createServerSupabaseClient(context);
 
       const { data, error } = await supabaseServer
         .from('admin_settings')
@@ -638,6 +641,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
             return SupabaseAdminService.getDefaultSettings();
           }
 
+          console.log('Settings fetched successfully via public access, robots_txt type:', typeof publicData.robots_txt);
           return publicData;
         } catch (publicErr) {
           console.error('Public retry failed:', publicErr);
@@ -650,6 +654,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
         return SupabaseAdminService.getDefaultSettings();
       }
 
+      console.log('Settings fetched successfully, robots_txt type:', typeof data.robots_txt);
       return data;
     } catch (error) {
       console.error('Error fetching admin settings server-side:', error);
@@ -734,7 +739,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
 
   static async getCurrentProfileServerSide(context: any): Promise<Profile | null> {
     try {
-      const supabaseServer = createServerSupabaseClient();
+      const supabaseServer = createServerSupabaseClient(context);
 
       // Get user from request cookies/headers
       const { req } = context;
@@ -771,9 +776,9 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
     }
   }
 
-  static async updateSettingsServerSide(settings: Partial<AdminSettings>): Promise<{ success: boolean; error?: string }> {
+  static async updateSettingsServerSide(settings: Partial<AdminSettings>, context?: any): Promise<{ success: boolean; error?: string }> {
     try {
-      const supabaseServer = createServerSupabaseClient();
+      const supabaseServer = createServerSupabaseClient(context);
 
       // Get existing settings
       const { data: existingSettings } = await supabaseServer
