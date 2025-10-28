@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createServerSupabaseClient } from '@/lib/supabase';
 import type { AdminSettings } from '@/lib/supabase';
 import { timingSafeCompare } from '@/lib/utils/crypto';
@@ -95,6 +96,14 @@ async function handleUpdate(request: NextRequest) {
     if (result.error) {
       console.error('Error saving admin settings:', result.error);
       return apiError('Failed to save settings', 500);
+    }
+
+    if (settings.robots_txt !== undefined) {
+      try {
+        revalidatePath('/robots.txt');
+      } catch (revalError) {
+        // Silent fail
+      }
     }
 
     return apiSuccess(result.data);

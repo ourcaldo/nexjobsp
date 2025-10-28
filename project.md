@@ -155,6 +155,90 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-28 23:45 - Fixed Robots.txt Cache Issue & Removed Fallback **[COMPLETED]**
+- **Time**: 23:45 WIB
+- **Scope**: Fixed robots.txt caching issue preventing admin updates from being visible immediately
+- **Status**: Fully resolved, purely database-driven with proper cache invalidation
+
+**Issue Identified**:
+- Robots.txt content was being saved correctly to database
+- However, aggressive caching (1 hour) prevented changes from being visible immediately
+- No cache invalidation when admin saved new robots.txt content
+- Fallback logic was serving default content instead of database content in some cases
+- Debug logs cluttering the console
+
+**Changes Made**:
+
+1. **Reduced Cache Duration** (`app/robots.txt/route.ts`):
+   - Changed `revalidate` from 3600 seconds (1 hour) to 300 seconds (5 minutes)
+   - Updated `Cache-Control` headers from `max-age=3600` to `max-age=300`
+   - Added `must-revalidate` directive for proper cache behavior
+   - Added `dynamic = 'force-dynamic'` for better cache control
+
+2. **Automatic Cache Revalidation** (`app/api/admin/settings/route.ts`):
+   - Added `revalidatePath('/robots.txt')` when `robots_txt` field is updated
+   - Cache is now immediately invalidated when admin saves new robots.txt
+   - Changes visible within seconds instead of waiting 1 hour
+
+3. **Removed Fallback Logic**:
+   - Deleted `defaultRobotsTxt` variable and all fallback content
+   - Route now serves only database content (or empty string if null)
+   - No more confusion about which content is being served
+   - Purely database-driven as intended
+
+4. **Removed Debug Logs**:
+   - Deleted all `console.log()` debug statements
+   - Deleted all `console.error()` debug statements
+   - Cleaner production logs
+   - Only error responses, no verbose logging
+
+**Technical Implementation**:
+```typescript
+// Before (with fallback and debug):
+const defaultRobotsTxt = `User-agent: *...`;
+try {
+  const settings = await SupabaseAdminService.getSettingsServerSide();
+  robotsTxt = settings.robots_txt;
+  console.log('DEBUG robots_txt from DB:', {...});
+  if (!robotsTxt || robotsTxt.trim() === '') {
+    robotsTxt = defaultRobotsTxt;
+    console.error('ERROR: Database robots_txt is empty! Using fallback');
+  }
+} catch (dbError) {
+  robotsTxt = defaultRobotsTxt;
+}
+
+// After (pure database, no debug):
+const settings = await SupabaseAdminService.getSettingsServerSide();
+const robotsTxt = settings.robots_txt || '';
+return new Response(robotsTxt, {...});
+```
+
+**Cache Revalidation on Save**:
+```typescript
+// Added to admin settings API:
+if (settings.robots_txt !== undefined) {
+  revalidatePath('/robots.txt');  // Immediate cache invalidation
+}
+```
+
+**Impact**:
+- ✅ Admin changes to robots.txt now visible immediately (within cache timeout)
+- ✅ No more confusing fallback behavior
+- ✅ Pure database-driven content
+- ✅ Proper cache invalidation on updates
+- ✅ Reduced cache time: 5 minutes instead of 1 hour
+- ✅ Clean logs without debug clutter
+- ✅ Better admin experience with instant feedback
+
+**How It Works Now**:
+1. Admin edits robots.txt in Backend Admin > Sitemap Management
+2. Clicks "Save Sitemap Settings"
+3. Content saved to `admin_settings.robots_txt` column
+4. `revalidatePath('/robots.txt')` invalidates cache immediately
+5. Next request to `/robots.txt` fetches fresh content from database
+6. New content served within seconds
+
 ### 2025-10-28 23:30 - Robots.txt Dynamic Management Verification **[VERIFIED]**
 - **Time**: 23:30 WIB
 - **Scope**: Verified and documented existing robots.txt management feature

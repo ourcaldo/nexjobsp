@@ -2,62 +2,21 @@ import { NextResponse } from 'next/server';
 import { SupabaseAdminService } from '@/lib/supabase/admin';
 import { getCurrentDomain } from '@/lib/env';
 
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    let robotsTxt = '';
-    const baseUrl = getCurrentDomain();
-    
-    const defaultRobotsTxt = `User-agent: *
-Allow: /
-
-# Disallow admin panel
-Disallow: /admin/
-Disallow: /backend/
-
-# Disallow private pages
-Disallow: /profile/
-Disallow: /bookmarks/
-
-# Allow specific important pages
-Allow: /lowongan-kerja/
-Allow: /artikel/
-
-# Sitemaps
-Sitemap: ${baseUrl}/sitemap.xml`;
-    
-    try {
-      const settings = await SupabaseAdminService.getSettingsServerSide();
-      robotsTxt = settings.robots_txt;
-      
-      console.log('DEBUG robots_txt from DB:', {
-        hasValue: !!robotsTxt,
-        length: robotsTxt?.length,
-        type: typeof robotsTxt,
-        preview: robotsTxt?.substring(0, 50)
-      });
-      
-      if (!robotsTxt || robotsTxt.trim() === '') {
-        robotsTxt = defaultRobotsTxt;
-        console.error('ERROR: Database robots_txt is empty! Using fallback');
-      } else {
-        console.log('SUCCESS: Serving robots.txt from database');
-      }
-    } catch (dbError) {
-      console.error('Error fetching robots.txt from database:', dbError);
-      robotsTxt = defaultRobotsTxt;
-      console.error('ERROR: Database fetch failed, using fallback');
-    }
+    const settings = await SupabaseAdminService.getSettingsServerSide();
+    const robotsTxt = settings.robots_txt || '';
 
     return new Response(robotsTxt, {
       headers: {
         'Content-Type': 'text/plain',
-        'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+        'Cache-Control': 'public, max-age=300, s-maxage=300, must-revalidate',
       },
     });
   } catch (error) {
-    console.error('Error generating robots.txt:', error);
     return new NextResponse('Error generating robots.txt', { status: 500 });
   }
 }
