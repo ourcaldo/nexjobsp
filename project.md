@@ -155,6 +155,49 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-28 - Environment Validation & ESLint Fixes **[COMPLETED]**
+- **Time**: 15:10 WIB
+- **Scope**: Fixed critical environment variable validation bug and ESLint errors for production deployment
+- **Status**: All changes completed, verified with zero errors
+
+**Issues Fixed**:
+
+1. **CRITICAL - Environment Variable Validation Bug** 🔴
+   - **File**: `lib/env.ts`
+   - **Issue**: Dynamic checking of `process.env[key]` fails on client-side in production builds
+   - **Root Cause**: Next.js replaces `process.env.NEXT_PUBLIC_*` with literal values at build time, so dynamic property access `process.env[key]` always returns undefined on the client
+   - **Fix**: Changed validation to check actual values from the `env` object directly:
+     - Before: `clientRequired.filter(key => !process.env[key])`
+     - After: Direct checks like `if (!env.SUPABASE_URL)` and `if (!env.SUPABASE_ANON_KEY)`
+   - **Impact**: Environment validation now works correctly in production builds, preventing false "Missing critical environment variables" errors
+
+2. **ESLint Error - TypeScript Rule Not Found** 
+   - **File**: `lib/utils/sanitize.ts:25`
+   - **Issue**: `@typescript-eslint/no-var-requires` rule error due to using `require()` statement
+   - **Root Cause**: Project uses minimal ESLint config (`next/core-web-vitals`) without TypeScript-specific rules, and `require()` is not recommended in TypeScript/ES modules
+   - **Fix**: Simplified sanitization to use `sanitize-html` for both server and client:
+     - Removed all DOMPurify dynamic imports
+     - Removed `require()` statement completely
+     - Uses consistent `sanitize-html` library across all environments
+     - Still maintains full XSS protection
+   - **Impact**: Zero ESLint errors, cleaner code, consistent sanitization behavior
+
+**Files Modified**:
+- `lib/env.ts` - Fixed environment validation logic
+- `lib/utils/sanitize.ts` - Removed require() and simplified to use sanitize-html only
+
+**Verification**:
+- ✅ `npm run lint` passes with zero errors
+- ✅ Environment variables properly detected in production mode
+- ✅ No false "Missing environment variables" errors
+- ✅ Sanitization works on both server and client
+
+**Impact**:
+- ✅ **Production Ready**: Environment validation works correctly for production deployments
+- ✅ **Code Quality**: Zero ESLint errors, TypeScript compliant
+- ✅ **Developer Experience**: No false error messages during deployment
+- ✅ **Security**: XSS protection maintained across all environments
+
 ### 2025-10-28 - Production Build Error Fixes (npm run build) **[COMPLETED]**
 - **Time**: Current session
 - **Scope**: Fixed all critical runtime errors, build warnings, and ESLint issues to achieve zero-error production build
