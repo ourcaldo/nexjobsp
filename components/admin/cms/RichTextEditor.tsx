@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { sanitizeHTML } from '@/lib/utils/sanitize';
 import { 
   Bold, 
   Italic, 
@@ -438,7 +439,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <div className="p-4 min-h-[400px] bg-white">
             <div 
               className="prose prose-lg max-w-none rich-text-content"
-              dangerouslySetInnerHTML={{ __html: value }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHTML(value) }}
             />
           </div>
         ) : (

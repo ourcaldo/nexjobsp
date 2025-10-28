@@ -26,6 +26,7 @@ import { useAnalytics } from '@/hooks/useAnalytics';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import JobCard from '@/components/JobCard';
 import BookmarkLoginModal from '@/components/ui/BookmarkLoginModal';
+import { sanitizeHTML } from '@/lib/utils/sanitize';
 
 interface JobDetailPageProps {
   job: Job;
@@ -379,7 +380,7 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, slug, settings }) =>
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Deskripsi Pekerjaan</h2>
               <div 
                 className="prose prose-gray max-w-none"
-                dangerouslySetInnerHTML={{ __html: parseJobContent(job.content) }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHTML(parseJobContent(job.content)) }}
               />
             </div>
 

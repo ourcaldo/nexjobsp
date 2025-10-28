@@ -14,6 +14,7 @@ import SchemaMarkup from '@/components/SEO/SchemaMarkup';
 import { generateWebsiteSchema, generateOrganizationSchema } from '@/utils/schemaUtils';
 import { Job } from '@/types/job';
 import JobCard from '@/components/JobCard';
+import { sanitizeHTML } from '@/lib/utils/sanitize';
 
 interface HomePageProps {
   initialArticles: any[];
@@ -501,7 +502,7 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
                     </h3>
                     <div
                       className="text-gray-600 mb-4 line-clamp-3"
-                      dangerouslySetInnerHTML={{ __html: article.excerpt }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHTML(article.excerpt) }}
                     />
                     <div className="flex items-center text-primary-600 font-medium group-hover:text-primary-700">
                       Baca Selengkapnya

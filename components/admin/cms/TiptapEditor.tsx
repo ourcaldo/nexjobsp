@@ -18,6 +18,7 @@ import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import TextAlign from '@tiptap/extension-text-align';
 import Paragraph from '@tiptap/extension-paragraph';
+import { sanitizeHTML } from '@/lib/utils/sanitize';
 import { 
   Bold as BoldIcon, 
   Italic as ItalicIcon, 
@@ -443,7 +444,7 @@ const TiptapEditor: React.FC<TiptapEditorProps> = ({
           <div className="p-4 min-h-[400px] bg-white">
             <div 
               className="cms-content prose prose-lg max-w-none"
-              dangerouslySetInnerHTML={{ __html: value }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHTML(value) }}
             />
           </div>
         ) : (

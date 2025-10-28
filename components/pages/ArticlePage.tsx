@@ -9,6 +9,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import SchemaMarkup from '@/components/SEO/SchemaMarkup';
 import { generateArticleListingSchema, generateBreadcrumbSchema } from '@/utils/schemaUtils';
 import ArticleSidebar from '@/components/ArticleSidebar';
+import { sanitizeHTML } from '@/lib/utils/sanitize';
 
 interface ArticlePageProps {
   settings: any;
@@ -143,7 +144,7 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ settings }) => {
                       </h2>
                       <div
                         className="text-gray-600 mb-4 line-clamp-3"
-                        dangerouslySetInnerHTML={{ __html: article.excerpt }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHTML(article.excerpt) }}
                       />
                       <div className="flex items-center text-primary-600 font-medium group-hover:text-primary-700">
                         Baca Selengkapnya
