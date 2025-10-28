@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase';
 import type { AdminSettings } from '@/lib/supabase';
+import { timingSafeCompare } from '@/lib/utils/crypto';
 
 export async function GET(request: NextRequest) {
   const supabase = createServerSupabaseClient();
@@ -111,7 +112,7 @@ async function checkAuthentication(request: NextRequest, supabase: any): Promise
   const apiToken = request.headers.get('authorization')?.replace('Bearer ', '') || request.headers.get('x-api-token');
   const validToken = process.env.API_TOKEN;
 
-  if (apiToken && validToken && apiToken === validToken) {
+  if (apiToken && validToken && timingSafeCompare(apiToken, validToken)) {
     return { success: true };
   }
 
