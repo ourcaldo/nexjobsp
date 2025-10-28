@@ -155,71 +155,66 @@ nexjob-portal/
 
 ## Recent Changes
 
-### 2025-10-28 22:30 - Fixed Sitemap 404 Issue with Local Route Handlers **[COMPLETED]**
-- **Time**: 22:30 WIB
-- **Scope**: Fixed 404 error on sitemap.xml by creating local Next.js route handlers as fallback when CMS backend fails
-- **Status**: All sitemaps working correctly with ISR-like caching
+### 2025-10-28 22:40 - Sitemap Configuration: Using CMS-Only via Middleware Proxy **[COMPLETED]**
+- **Time**: 22:40 WIB
+- **Scope**: Configured sitemap to use CMS backend exclusively through middleware proxy
+- **Status**: All sitemaps served from CMS with proper URL transformations
 
-**Issue Root Cause**:
-- **Problem**: Accessing `/sitemap.xml` returned 404 error
-- **Analysis**: 
-  - Middleware was properly configured to proxy sitemaps from CMS backend (`https://cms.nexjob.tech/api/v1/sitemaps/`)
-  - CMS backend was returning 500 Internal Server Error with "Failed to generate sitemap"
-  - When middleware fetch failed, it called `NextResponse.next()` to pass request to Next.js
-  - Next.js had no sitemap routes, resulting in 404
-- **CMS Backend Issue**: External CMS at `https://cms.nexjob.tech/api/v1/sitemaps/sitemap.xml` returning HTTP 500
+**Issue History**:
+- **Initial Problem**: Accessing `/sitemap.xml` returned 404 error
+- **Temporary CMS Outage**: CMS backend was returning 500 Internal Server Error (now fixed)
+- **Temporary Solution**: Created local Next.js routes as fallback (later removed)
+- **Final Decision**: Use CMS-only approach as originally intended
 
-**Solution Implemented**:
-- **Files Created**:
-  - `app/sitemap.xml/route.ts` - Main sitemap index handler
-  - `app/sitemap-pages.xml/route.ts` - Static pages sitemap handler
-  - `app/sitemap-loker.xml/route.ts` - Jobs sitemap directory handler
-  - `app/sitemap-artikel.xml/route.ts` - Articles sitemap directory handler
-  - `app/sitemap-loker-[page].xml/route.ts` - Dynamic paginated jobs sitemap handler
-  - `app/sitemap-artikel-[page].xml/route.ts` - Dynamic paginated articles sitemap handler
-
-**Implementation Details**:
-- All routes use existing `sitemapService` from `lib/utils/sitemap.ts`
-- Implemented ISR-like caching (3600s revalidation) for performance
-- Proper XML headers with security headers (`X-Content-Type-Options: nosniff`)
-- Cache-Control headers: `public, max-age=3600, stale-while-revalidate=86400`
-- Dynamic routes handle pagination with validation (404 for invalid pages)
-- Main sitemap index references: sitemap-pages.xml, sitemap-loker.xml, sitemap-artikel.xml
-- Fetches fresh settings from database for URL generation
-
-**Sitemap Structure**:
-```
-/sitemap.xml (main index)
-├── /sitemap-pages.xml (static pages: home, jobs, articles, etc.)
-├── /sitemap-loker.xml (job sitemap index)
-│   └── /sitemap-loker-1.xml, /sitemap-loker-2.xml, etc. (paginated jobs)
-└── /sitemap-artikel.xml (article sitemap index)
-    └── /sitemap-artikel-1.xml, /sitemap-artikel-2.xml, etc. (paginated articles)
-```
+**Current Implementation** (CMS-Only):
+- **Middleware Proxy**: `middleware.ts` intercepts all `*.xml` requests containing "sitemap"
+- **CMS Backend**: `https://cms.nexjob.tech/api/v1/sitemaps/`
+- **No Local Routes**: All sitemap routes deleted, middleware handles everything
 
 **Middleware Flow**:
 1. Request for `*.xml` with `sitemap` in path → middleware intercepts
-2. Middleware tries to fetch from CMS backend
-3. If CMS fails (500 error) → middleware calls `NextResponse.next()`
-4. Request passes to Next.js App Router → new route handlers serve sitemaps
-5. If CMS succeeds → middleware serves proxied sitemap with URL transformations
+2. Middleware fetches from CMS: `https://cms.nexjob.tech/api/v1/sitemaps/${sitemapFile}`
+3. Validation:
+   - ✓ Content-type must be XML
+   - ✓ Must contain `<urlset>` or `<sitemapindex>`
+   - ✓ Scans for malicious patterns (scripts, iframes, etc.)
+   - ✓ Timeout: 10 seconds
+4. URL Transformations:
+   - `https://cms.nexjob.tech/api/v1/sitemaps/` → `https://nexjob.tech/`
+   - `/api/v1/sitemaps/` → `/`
+   - `/jobs/` → `/lowongan-kerja/`
+   - `/blog/` → `/artikel/`
+5. Returns proxied sitemap with cache headers: `max-age=3600, stale-while-revalidate=86400`
+
+**CMS Sitemap Structure**:
+```
+/sitemap.xml (main index from CMS)
+├── /sitemap-pages.xml (static pages)
+├── /sitemap-post.xml (articles/blog posts)
+└── /sitemap-job.xml (job listings)
+```
+
+**Security Features**:
+- ✅ XML validation before serving
+- ✅ Malicious pattern detection (scripts, event handlers, iframes)
+- ✅ Request timeout protection (10s)
+- ✅ Content-type enforcement
+- ✅ Security headers: `X-Content-Type-Options: nosniff`
 
 **Impact**:
-- ✅ Sitemap.xml now accessible and returns HTTP 200
-- ✅ SEO-friendly URLs for all content (jobs, articles, pages)
-- ✅ Automatic caching with ISR-like behavior
-- ✅ Graceful fallback when external CMS is down
-- ✅ Paginated sitemaps for large datasets (100 items per sitemap)
-- ✅ Proper XML structure compliant with sitemap.org standards
-- ✅ Zero LSP/TypeScript errors
+- ✅ Single source of truth: CMS manages all sitemaps
+- ✅ Automatic URL transformations for proper routing
+- ✅ SEO-friendly URLs (nexjob.tech instead of cms.nexjob.tech)
+- ✅ Proper caching (1 hour max-age)
+- ✅ Security validated before serving
+- ✅ No duplicate sitemap logic
 
 **Verification**:
-- ✅ `/sitemap.xml` returns main sitemap index (HTTP 200)
-- ✅ `/sitemap-pages.xml` returns static pages (home, jobs, articles)
-- ✅ `/sitemap-loker.xml` returns jobs sitemap index
-- ✅ Cache working: "Using cached main sitemap index (ISR-like)" in logs
-- ✅ All routes compiled successfully
-- ✅ Workflow running without errors
+- ✅ `/sitemap.xml` returns CMS sitemap index (HTTP 200)
+- ✅ URLs correctly transformed to nexjob.tech domain
+- ✅ CMS structure preserved: `sitemap-pages.xml`, `sitemap-post.xml`, `sitemap-job.xml`
+- ✅ Middleware compiling successfully
+- ✅ No local sitemap routes in app directory
 
 ### 2025-10-28 22:20 - Fixed React Hook Dependency Order in JobCard Component **[COMPLETED]**
 - **Time**: 22:20 WIB
