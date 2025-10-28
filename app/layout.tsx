@@ -21,13 +21,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="id">
       <GoogleTagManager />
       <body className={inter.className}>
+        <a 
+          href="#main-content" 
+          className="skip-to-content"
+        >
+          Langsung ke konten utama
+        </a>
         <GoogleTagManagerNoScript />
         <ErrorBoundary>
           <Providers>
-            {children}
+            <div id="main-content">
+              {children}
+            </div>
             <PopupAd />
           </Providers>
         </ErrorBoundary>

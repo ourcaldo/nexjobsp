@@ -370,4 +370,67 @@ npm run type-check
    - Run command: `npm run start`
    - Port: 5000
 
+## 📋 Code Quality & Standards
+
+### Code Duplication Management
+
+**Date Formatting Utilities (Implemented: Oct 28, 2025)**
+Created shared utilities in `lib/utils/date.ts` to eliminate duplicate date formatting logic:
+- `formatRelativeDate()` - Converts dates to relative format (e.g., "2 jam lalu", "3 hari lalu")
+- `formatFullDate()` - Formats dates as full localized Indonesian format
+- `isHotJob()` - Checks if a job is within the "hot" time threshold (12 hours)
+- `getHoursAgo()` - Calculates hours since a given date
+
+**Components Using Shared Utilities:**
+- `components/JobCard.tsx` - Uses formatRelativeDate, isHotJob, getHoursAgo
+- `components/admin/Dashboard.tsx` - Uses formatFullDate
+
+**Remaining Duplication to Address:**
+- **Card Wrapper Patterns**: Common card styling and structure patterns exist across multiple components (JobCard, ArticleCard). Consider extracting if pattern becomes more widespread.
+- **API Error Handling**: Error handling patterns are similar across API routes. Could be abstracted into middleware or utility functions if more routes are added.
+- **Form Validation**: Some form validation logic is duplicated. Consider using a validation library like Zod more consistently across forms.
+
+### Naming Conventions
+
+**File & Folder Naming:**
+- **Components**: PascalCase for all component files (e.g., `JobCard.tsx`, `Header.tsx`)
+- **Folders**: lowercase with hyphens for routes (e.g., `lowongan-kerja`, `backend/admin`)
+- **API Routes**: lowercase with hyphens (e.g., `api/user/bookmarks`)
+- **Utilities**: camelCase for utility files (e.g., `date.ts`, `format.ts`)
+- **Types**: singular PascalCase (e.g., `job.ts`, `user.ts`)
+
+**Code Naming:**
+- **Variables**: camelCase (e.g., `jobData`, `isBookmarked`)
+- **Functions**: camelCase (e.g., `formatDate`, `handleClick`)
+- **Components**: PascalCase (e.g., `JobCard`, `BookmarkButton`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `API_URL`, `MAX_JOBS`)
+- **Types/Interfaces**: PascalCase (e.g., `Job`, `UserProfile`)
+
+**Consistency Notes:**
+- Component folders follow Next.js conventions (app router uses lowercase)
+- Some legacy files may use different conventions - prefer current standards for new files
+- Admin components are in `components/admin/` (PascalCase) while routes are in `app/backend/admin/` (lowercase)
+- This is intentional: components are code modules (PascalCase), routes are URLs (lowercase)
+
+### Accessibility Standards (Oct 28, 2025)
+
+**ARIA Labels & Semantic HTML:**
+- All interactive elements have proper aria-label attributes
+- Icon-only buttons include descriptive labels (e.g., "Simpan lowongan kerja", "Buka menu navigasi")
+- Keyboard navigation fully supported with Enter/Space key handling
+- Skip-to-content link implemented in main layout for keyboard users
+- Focus indicators enhanced with visible outlines and transitions
+
+**Components with Accessibility:**
+- `components/JobCard.tsx` - Full ARIA labels, keyboard navigation for bookmarks
+- `components/Layout/Header.tsx` - Navigation landmarks, mobile menu accessibility
+- `components/Layout/Footer.tsx` - Semantic navigation with proper landmarks
+- `app/layout.tsx` - Skip-to-content link for keyboard navigation
+
+**SEO & OpenGraph:**
+- Dynamic OpenGraph images for job pages (`app/lowongan-kerja/[slug]/opengraph-image.tsx`)
+- Generated using @vercel/og with proper dimensions (1200x630)
+- Shows job title, company, location, and salary information
+- Custom branding with Nexjob logo and gradient backgrounds
+
 This documentation provides comprehensive context for future Replit AI Agent interactions with the Nexjob project.

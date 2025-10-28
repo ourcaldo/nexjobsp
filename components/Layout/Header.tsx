@@ -6,23 +6,6 @@ import { useRouter, usePathname } from 'next/navigation';
 import { Search, User, Bookmark, Menu, X, LogOut, Settings } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/components/ui/ToastProvider';
-
-// Debug utility for development
-const debugAuth = async () => {
-  if (process.env.NODE_ENV !== 'development') return;
-
-  console.group('🔐 Header Auth Debug');
-  try {
-    const { data: { session }, error } = await supabase.auth.getSession();
-    console.log('Session:', session ? 'Active' : 'None');
-    console.log('User ID:', session?.user?.id || 'None');
-    if (error) console.error('Error:', error);
-  } catch (error) {
-    console.error('Debug error:', error);
-  }
-  console.groupEnd();
-};
-
 import { userBookmarkService } from '@/lib/api/user-bookmarks';
 import BookmarkLoginModal from '@/components/ui/BookmarkLoginModal';
 
@@ -92,14 +75,12 @@ const Header: React.FC = () => {
         setUser(null);
         setBookmarkCount(0);
       } else if (session?.user) {
-        console.log('Setting user from session:', session.user.id);
         setUser(session.user);
         // Only load bookmark count if we don't already have it or user changed
         if (!user || user.id !== session.user.id) {
           await loadBookmarkCount(session.user.id);
         }
       } else {
-        console.log('No session found, clearing user state');
         setUser(null);
         setBookmarkCount(0);
       }
@@ -128,7 +109,6 @@ const Header: React.FC = () => {
     // Listen for custom auth events from _app.tsx
     const handleAuthInitialized = (event: Event) => {
       if (!mounted) return;
-      console.log('Auth initialized event received');
       initializeAuth(true);
     };
 
@@ -136,7 +116,6 @@ const Header: React.FC = () => {
       if (!mounted) return;
       const customEvent = event as CustomEvent;
       const { event: authEvent, session } = customEvent.detail;
-      console.log('Auth state changed event received:', authEvent, session?.user?.id);
 
       if (authEvent === 'SIGNED_IN' && session?.user) {
         setUser(session.user);
@@ -155,7 +134,6 @@ const Header: React.FC = () => {
     // Listen for auth changes (backup)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
-      console.log('Direct auth state changed:', event, session?.user?.id);
 
       if (event === 'SIGNED_IN' && session?.user) {
         setUser(session.user);
@@ -279,9 +257,9 @@ const Header: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-2" aria-label="Nexjob - Beranda">
               <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
-                <Search className="h-5 w-5 text-white" />
+                <Search className="h-5 w-5 text-white" aria-hidden="true" />
               </div>
               <span className="text-xl font-bold text-gray-900">
                 Nex<span className="text-primary-600">job</span>
@@ -289,7 +267,7 @@ const Header: React.FC = () => {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
+            <nav className="hidden md:flex items-center space-x-8" aria-label="Navigasi utama">
               <Link 
                 href="/" 
                 className={`font-medium transition-colors ${
@@ -327,16 +305,17 @@ const Header: React.FC = () => {
               {/* Bookmarks - Always visible */}
               <button
                 onClick={handleBookmarkClick}
-                className={`relative p-2 rounded-lg transition-colors ${
+                className={`relative p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
                   user && isActive('/profile/')
                     ? 'text-primary-600 bg-primary-50'
                     : 'text-gray-600 hover:text-primary-600 hover:bg-primary-50'
                 }`}
+                aria-label={`Lowongan tersimpan${bookmarkCount > 0 ? `, ${bookmarkCount} lowongan` : ''}`}
                 title="Lowongan Tersimpan"
               >
-                <Bookmark className="h-5 w-5" />
+                <Bookmark className="h-5 w-5" aria-hidden="true" />
                 {bookmarkCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center" aria-hidden="true">
                     {bookmarkCount > 99 ? '99+' : bookmarkCount}
                   </span>
                 )}
@@ -353,10 +332,13 @@ const Header: React.FC = () => {
                 <div className="relative">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                    aria-label="Menu pengguna"
+                    aria-expanded={showUserMenu}
+                    aria-haspopup="true"
                   >
                     <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
-                      <User className="h-5 w-5 text-white" />
+                      <User className="h-5 w-5 text-white" aria-hidden="true" />
                     </div>
                     <span className="text-gray-700 font-medium">
                       {user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'}
@@ -364,20 +346,22 @@ const Header: React.FC = () => {
                   </button>
 
                   {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50" role="menu" aria-label="Menu pengguna">
                       <Link
                         href="/profile/"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors focus:outline-none focus:bg-gray-100"
                         onClick={() => setShowUserMenu(false)}
+                        role="menuitem"
                       >
-                        <User className="h-4 w-4 inline mr-2" />
+                        <User className="h-4 w-4 inline mr-2" aria-hidden="true" />
                         Profil Saya
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+                        className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors focus:outline-none focus:bg-gray-100"
+                        role="menuitem"
                       >
-                        <LogOut className="h-4 w-4 inline mr-2" />
+                        <LogOut className="h-4 w-4 inline mr-2" aria-hidden="true" />
                         Logout
                       </button>
                     </div>
@@ -407,16 +391,17 @@ const Header: React.FC = () => {
               {/* Mobile Bookmarks */}
               <button
                 onClick={handleBookmarkClick}
-                className={`relative p-2 rounded-lg transition-colors ${
+                className={`relative p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
                   user && isActive('/profile/')
                     ? 'text-primary-600 bg-primary-50'
                     : 'text-gray-600 hover:text-primary-600 hover:bg-primary-50'
                 }`}
+                aria-label={`Lowongan tersimpan${bookmarkCount > 0 ? `, ${bookmarkCount} lowongan` : ''}`}
                 title="Lowongan Tersimpan"
               >
-                <Bookmark className="h-5 w-5" />
+                <Bookmark className="h-5 w-5" aria-hidden="true" />
                 {bookmarkCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center" aria-hidden="true">
                     {bookmarkCount > 99 ? '99+' : bookmarkCount}
                   </span>
                 )}
@@ -425,12 +410,15 @@ const Header: React.FC = () => {
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setShowMobileMenu(!showMobileMenu)}
-                className="p-2 rounded-lg text-gray-600 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+                className="p-2 rounded-lg text-gray-600 hover:text-primary-600 hover:bg-primary-50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                aria-label={showMobileMenu ? 'Tutup menu' : 'Buka menu'}
+                aria-expanded={showMobileMenu}
+                aria-controls="mobile-menu"
               >
                 {showMobileMenu ? (
-                  <X className="h-6 w-6" />
+                  <X className="h-6 w-6" aria-hidden="true" />
                 ) : (
-                  <Menu className="h-6 w-6" />
+                  <Menu className="h-6 w-6" aria-hidden="true" />
                 )}
               </button>
             </div>
@@ -447,11 +435,16 @@ const Header: React.FC = () => {
       </header>
 
       {/* Mobile Off-Canvas Menu */}
-      <div className={`fixed inset-0 z-50 md:hidden transition-transform duration-300 ease-in-out ${showMobileMenu ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div 
+        id="mobile-menu"
+        className={`fixed inset-0 z-50 md:hidden transition-transform duration-300 ease-in-out ${showMobileMenu ? 'translate-x-0' : 'translate-x-full'}`}
+        aria-hidden={!showMobileMenu}
+      >
         {/* Overlay */}
         <div 
           className={`fixed inset-0 bg-black transition-opacity duration-300 ${showMobileMenu ? 'opacity-50' : 'opacity-0'}`}
           onClick={() => setShowMobileMenu(false)}
+          aria-hidden="true"
         />
 
         {/* Menu Panel */}
@@ -459,9 +452,9 @@ const Header: React.FC = () => {
           <div className="flex flex-col h-full">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <Link href="/" className="flex items-center space-x-2" onClick={handleMobileNavClick}>
+              <Link href="/" className="flex items-center space-x-2" onClick={handleMobileNavClick} aria-label="Nexjob - Beranda">
                 <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
-                  <Search className="h-5 w-5 text-white" />
+                  <Search className="h-5 w-5 text-white" aria-hidden="true" />
                 </div>
                 <span className="text-xl font-bold text-gray-900">
                   Nex<span className="text-primary-600">job</span>
@@ -469,14 +462,15 @@ const Header: React.FC = () => {
               </Link>
               <button
                 onClick={() => setShowMobileMenu(false)}
-                className="p-2 rounded-lg text-gray-600 hover:bg-gray-100"
+                className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                aria-label="Tutup menu"
               >
-                <X className="h-6 w-6" />
+                <X className="h-6 w-6" aria-hidden="true" />
               </button>
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 p-4">
+            <nav className="flex-1 p-4" aria-label="Navigasi mobile">
               <div className="space-y-2">
                 <Link
                   href="/"

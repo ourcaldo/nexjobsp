@@ -10,6 +10,7 @@ import { toggleBookmark as toggleBookmarkAction } from '@/app/actions/bookmarks'
 import { useToast } from '@/components/ui/ToastProvider';
 import BookmarkLoginModal from '@/components/ui/BookmarkLoginModal';
 import { useRouter } from 'next/navigation';
+import { formatRelativeDate, isHotJob, getHoursAgo } from '@/lib/utils/date';
 
 interface JobCardProps {
   job: Job;
@@ -85,42 +86,12 @@ const JobCard: React.FC<JobCardProps> = React.memo(({
     }
   }, [initialIsBookmarked]);
 
-  const formatDate = useCallback((dateStr?: string) => {
-    if (!dateStr) return 'Baru saja';
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffHours < 24) {
-      if (diffHours === 1) return '1 jam lalu';
-      return `${diffHours} jam lalu`;
+  const handleBookmarkKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleBookmarkClick(e as any);
     }
-
-    if (diffDays === 1) return '1 hari lalu';
-    if (diffDays < 7) return `${diffDays} hari lalu`;
-    if (diffDays < 30) return `${Math.ceil(diffDays / 7)} minggu lalu`;
-    return `${Math.ceil(diffDays / 30)} bulan lalu`;
-  }, []);
-
-  const isHotJob = useCallback((dateStr?: string) => {
-    if (!dateStr) return false;
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
-    return diffHours <= 12;
-  }, []);
-
-  const getHotJobText = useCallback((dateStr?: string) => {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
-    return `${diffHours} jam lalu`;
-  }, []);
+  }, [handleBookmarkClick]);
 
   const isSalaryHidden = useCallback((salary: string) => {
     return salary === 'Perusahaan Tidak Menampilkan Gaji';
@@ -192,10 +163,11 @@ const JobCard: React.FC<JobCardProps> = React.memo(({
 
   return (
     <>
-      <div 
+      <article 
         ref={cardRef}
         onClick={handleCardClick}
-        className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition-all duration-300 hover:border-primary-200 animate-fade-in cursor-pointer"
+        className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition-all duration-300 hover:border-primary-200 animate-fade-in cursor-pointer focus-within:ring-2 focus-within:ring-primary-500 focus-within:ring-offset-2"
+        aria-label={`Lowongan ${job.title} di ${job.company_name}, ${job.lokasi_provinsi}`}
       >
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
@@ -279,23 +251,25 @@ const JobCard: React.FC<JobCardProps> = React.memo(({
               <div className="flex items-center text-orange-600 text-sm font-medium">
                 <Flame className="h-4 w-4 mr-1" />
                 <span>HOT</span>
-                <span className="ml-1 text-gray-500">{getHotJobText(job.created_at)}</span>
+                <span className="ml-1 text-gray-500">{getHoursAgo(job.created_at)} jam lalu</span>
               </div>
             ) : (
               <span className="text-sm text-gray-500">
-                {formatDate(job.created_at)}
+                {formatRelativeDate(job.created_at)}
               </span>
             )}
           </div>
           <div className="flex items-center space-x-2">
             <button
               onClick={handleBookmarkClick}
+              onKeyDown={handleBookmarkKeyDown}
               disabled={isPending}
-              className={`p-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`p-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
                 isBookmarked 
                   ? 'text-primary-600 bg-primary-50 hover:bg-primary-100' 
                   : 'text-gray-400 hover:text-primary-600 hover:bg-primary-50'
               }`}
+              aria-label={isBookmarked ? 'Hapus dari bookmark' : 'Simpan ke bookmark'}
               title={isBookmarked ? 'Hapus dari bookmark' : 'Simpan ke bookmark'}
             >
               <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''} ${isPending ? 'animate-pulse' : ''}`} />
@@ -306,13 +280,14 @@ const JobCard: React.FC<JobCardProps> = React.memo(({
               rel="noopener noreferrer"
               className="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
               onClick={(e) => e.stopPropagation()}
+              aria-label={`Lihat detail lowongan ${job.title} di ${job.company_name}`}
             >
               Lihat Detail
-              <ExternalLink className="h-4 w-4 ml-2" />
+              <ExternalLink className="h-4 w-4 ml-2" aria-hidden="true" />
             </Link>
           </div>
         </div>
-      </div>
+      </article>
 
       {/* Login Modal */}
       <BookmarkLoginModal

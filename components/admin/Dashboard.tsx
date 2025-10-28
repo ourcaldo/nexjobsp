@@ -14,6 +14,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { supabaseAdminService } from '@/lib/supabase/admin';
+import { formatFullDate } from '@/lib/utils/date';
 
 interface DashboardStats {
   totalUsers: number;
@@ -60,26 +61,23 @@ const Dashboard: React.FC = () => {
       
       const cmsConnected = cmsResult.success && cmsResult.data.connection && cmsResult.data.filters;
       
-      // Get basic stats (mock data for now - you can implement real queries)
-      const mockStats = {
-        totalUsers: 1250,
-        totalJobs: 3420,
-        totalArticles: 156,
-        totalBookmarks: 892,
-        recentActivity: [
-          { type: 'user_signup', message: 'New user registered', time: '2 minutes ago' },
-          { type: 'job_posted', message: 'New job posted by PT. Tech Indonesia', time: '15 minutes ago' },
-          { type: 'article_published', message: 'New article: "Tips Interview Success"', time: '1 hour ago' },
-          { type: 'system_update', message: 'Sitemap updated successfully', time: '2 hours ago' },
-        ],
+      const statsResponse = await fetch('/api/admin/dashboard-stats');
+      const statsResult = await statsResponse.json();
+      
+      const realStats = {
+        totalUsers: statsResult.success ? statsResult.data.totalUsers : 0,
+        totalJobs: statsResult.success ? statsResult.data.totalJobs : 0,
+        totalArticles: statsResult.success ? statsResult.data.totalArticles : 0,
+        totalBookmarks: statsResult.success ? statsResult.data.totalBookmarks : 0,
+        recentActivity: [],
         systemStatus: {
           wordpress: cmsConnected,
-          supabase: true,
+          supabase: statsResponse.ok,
           lastSitemapUpdate: settings?.last_sitemap_update || new Date().toISOString()
         }
       };
       
-      setStats(mockStats);
+      setStats(realStats);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     } finally {
@@ -87,15 +85,6 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString('id-ID', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
 
   const StatCard = ({ title, value, icon: Icon, trend, color = 'blue' }: any) => (
     <div className="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
@@ -227,7 +216,7 @@ const Dashboard: React.FC = () => {
             <div className="pt-4 border-t border-gray-200">
               <div className="flex items-center text-sm text-gray-600">
                 <Clock className="h-4 w-4 mr-2" />
-                Last sitemap update: {formatDate(stats.systemStatus.lastSitemapUpdate)}
+                Last sitemap update: {formatFullDate(stats.systemStatus.lastSitemapUpdate)}
               </div>
             </div>
           </div>
@@ -242,19 +231,31 @@ const Dashboard: React.FC = () => {
             </h3>
           </div>
           <div className="p-6">
-            <div className="space-y-4">
-              {stats.recentActivity.map((activity, index) => (
-                <div key={index} className="flex items-start space-x-3">
-                  <div className="flex-shrink-0">
-                    <div className="w-2 h-2 bg-primary-500 rounded-full mt-2"></div>
+            {stats.recentActivity.length > 0 ? (
+              <div className="space-y-4">
+                {stats.recentActivity.map((activity, index) => (
+                  <div key={index} className="flex items-start space-x-3">
+                    <div className="flex-shrink-0">
+                      <div className="w-2 h-2 bg-primary-500 rounded-full mt-2"></div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-gray-900">{activity.message}</p>
+                      <p className="text-xs text-gray-500">{activity.time}</p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-900">{activity.message}</p>
-                    <p className="text-xs text-gray-500">{activity.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Activity className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-sm text-gray-500">
+                  Activity logging coming soon
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Future enhancement: Real-time activity feed will be added
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
