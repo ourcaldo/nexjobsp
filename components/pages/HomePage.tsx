@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -15,6 +15,7 @@ import { generateWebsiteSchema, generateOrganizationSchema } from '@/utils/schem
 import { Job } from '@/types/job';
 import JobCard from '@/components/JobCard';
 import { sanitizeHTML } from '@/lib/utils/sanitize';
+import { getBlurDataURL } from '@/lib/utils/image';
 
 interface HomePageProps {
   initialArticles: any[];
@@ -62,7 +63,7 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
     }
   };
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const params = new URLSearchParams();
     if (searchKeyword) params.set('search', searchKeyword);
     if (selectedLocation) params.set('location', selectedLocation);
@@ -70,23 +71,23 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
     // Navigate to jobs page in new tab
     const url = `/lowongan-kerja/?${params.toString()}`;
     window.open(url, '_blank');
-  };
+  }, [searchKeyword, selectedLocation]);
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
-  };
+  }, [handleSearch]);
 
-  const getProvinceOptions = () => {
+  const getProvinceOptions = useMemo(() => {
     if (!filterData) return [];
     return filterData.provinces.map(province => ({
       value: province.name,
       label: province.name
     }));
-  };
+  }, [filterData]);
 
-  const getCategoryUrl = (category: string) => {
+  const getCategoryUrl = useCallback((category: string) => {
     // Create URL-friendly slug by removing special characters and converting to lowercase
     const slug = category
       .toLowerCase()
@@ -97,11 +98,21 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
       .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
 
     return `/lowongan-kerja/kategori/${slug}/`;
-  };
+  }, []);
 
-  const getArticleUrl = (articleSlug: string) => {
+  const getArticleUrl = useCallback((articleSlug: string) => {
     return `/artikel/${articleSlug}/`;
-  };
+  }, []);
+
+  const handleBookmarkChange = useCallback((jobId: string, isBookmarked: boolean) => {
+    const newBookmarks = new Set(userBookmarks);
+    if (isBookmarked) {
+      newBookmarks.add(jobId);
+    } else {
+      newBookmarks.delete(jobId);
+    }
+    setUserBookmarks(newBookmarks);
+  }, [userBookmarks]);
 
   // Generic icon component for categories
   const CategoryIcon = () => (
@@ -345,7 +356,7 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
                 {/* Location Select */}
                 <div className="md:col-span-4">
                   <SearchableSelect
-                    options={getProvinceOptions()}
+                    options={getProvinceOptions}
                     value={selectedLocation}
                     onChange={setSelectedLocation}
                     placeholder="Semua Provinsi"
@@ -437,15 +448,7 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
                 key={job.id} 
                 job={job} 
                 isBookmarked={userBookmarks.has(job.id)}
-                onBookmarkChange={(jobId, isBookmarked) => {
-                  const newBookmarks = new Set(userBookmarks);
-                  if (isBookmarked) {
-                    newBookmarks.add(jobId);
-                  } else {
-                    newBookmarks.delete(jobId);
-                  }
-                  setUserBookmarks(newBookmarks);
-                }}
+                onBookmarkChange={handleBookmarkChange}
               />
             ))
           )}
@@ -493,6 +496,9 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        loading="lazy"
+                        placeholder="blur"
+                        blurDataURL={getBlurDataURL()}
                       />
                     </div>
                   )}

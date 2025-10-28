@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Calendar, User, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
@@ -10,6 +10,7 @@ import SchemaMarkup from '@/components/SEO/SchemaMarkup';
 import { generateArticleListingSchema, generateBreadcrumbSchema } from '@/utils/schemaUtils';
 import ArticleSidebar from '@/components/ArticleSidebar';
 import { sanitizeHTML } from '@/lib/utils/sanitize';
+import { getBlurDataURL } from '@/lib/utils/image';
 
 interface ArticlePageProps {
   settings: any;
@@ -39,14 +40,14 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ settings }) => {
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = useCallback((dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('id-ID', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
-  };
+  }, []);
 
   const breadcrumbItems = [
     { label: 'Tips Karir' }
@@ -131,6 +132,9 @@ const ArticlePage: React.FC<ArticlePageProps> = ({ settings }) => {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          loading="lazy"
+                          placeholder="blur"
+                          blurDataURL={getBlurDataURL()}
                         />
                       </div>
                     )}

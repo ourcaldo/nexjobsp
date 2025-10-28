@@ -130,6 +130,7 @@ SITEMAP_CACHE_TTL=300
 - **Sitemap Management**: XML sitemap generation
 - **WordPress Integration**: API connection settings
 - **System Settings**: Global site configuration
+- **Performance Optimized**: All admin components use dynamic imports with `ssr: false` to reduce main bundle size
 
 ### 5. SEO & Performance
 - **Dynamic Sitemaps**: Auto-generated XML sitemaps
@@ -215,8 +216,9 @@ SITEMAP_CACHE_TTL=300
 ### Performance
 - Image optimization
 - Lazy loading
-- Code splitting
+- Code splitting with dynamic imports
 - Bundle optimization
+- **Admin Panel Code Splitting**: All admin components use dynamic imports to reduce initial bundle size
 
 ## 🚀 Deployment Configuration
 

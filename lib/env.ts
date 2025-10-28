@@ -35,45 +35,52 @@ export const env = {
 
 // Validate required environment variables
 export const validateEnv = () => {
-  const required = [
+  const clientRequired = [
     'NEXT_PUBLIC_SUPABASE_URL',
     'NEXT_PUBLIC_SUPABASE_ANON_KEY'
   ] as const;
   
-  const missing: string[] = [];
+  const missing: string[] = clientRequired.filter(key => !process.env[key]);
   
-  for (const key of required) {
-    const envKey = key.replace('NEXT_PUBLIC_', '') as keyof typeof env;
-    if (!env[envKey]) {
-      missing.push(key);
-    }
+  // Check server-side only variables (only if on server)
+  if (typeof window === 'undefined') {
+    const serverRequired = ['SUPABASE_SERVICE_ROLE_KEY'];
+    const missingServer = serverRequired.filter(key => !process.env[key]);
+    missing.push(...missingServer);
   }
   
   if (missing.length > 0) {
-    const errorMessage = `Missing required environment variables: ${missing.join(', ')}`;
-    console.error(errorMessage);
+    const errorMessage = `Missing critical environment variables: ${missing.join(', ')}`;
     
-    // In development, provide helpful guidance
-    if (env.IS_DEVELOPMENT) {
-      console.error('Please check your .env.local file and ensure all required variables are set.');
-      console.error('Required variables:', missing);
-      console.error('Copy .env.example to .env.local and fill in the required values.');
+    if (env.IS_PRODUCTION) {
+      // Fail fast in production to prevent silent failures
+      throw new Error(errorMessage);
     }
     
-    // Don't throw error to prevent React initialization issues
-    // Instead, log the error and continue with fallback values
+    // In development, provide helpful guidance but don't crash
+    console.warn(`Warning: ${errorMessage}`);
+    console.warn('Please check your .env.local file and ensure all required variables are set.');
+    console.warn('Copy .env.example to .env.local and fill in the required values.');
     return false;
   }
   
   // Validate Supabase URL format
   if (env.SUPABASE_URL && !env.SUPABASE_URL.startsWith('https://')) {
-    console.error('NEXT_PUBLIC_SUPABASE_URL must be a valid HTTPS URL');
+    const errorMessage = 'NEXT_PUBLIC_SUPABASE_URL must be a valid HTTPS URL';
+    if (env.IS_PRODUCTION) {
+      throw new Error(errorMessage);
+    }
+    console.warn(`Warning: ${errorMessage}`);
     return false;
   }
   
   // Validate Supabase keys are not empty
   if (env.SUPABASE_ANON_KEY && env.SUPABASE_ANON_KEY.length < 10) {
-    console.error('NEXT_PUBLIC_SUPABASE_ANON_KEY appears to be invalid (too short)');
+    const errorMessage = 'NEXT_PUBLIC_SUPABASE_ANON_KEY appears to be invalid (too short)';
+    if (env.IS_PRODUCTION) {
+      throw new Error(errorMessage);
+    }
+    console.warn(`Warning: ${errorMessage}`);
     return false;
   }
   
@@ -94,3 +101,6 @@ export const getCurrentDomain = () => {
   
   return window.location.origin;
 };
+
+// Call validation on module load to ensure it happens on app initialization
+validateEnv();

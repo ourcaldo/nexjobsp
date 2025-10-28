@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useTransition } from 'react';
 import Link from 'next/link';
 import { MapPin, Clock, Briefcase, GraduationCap, ExternalLink, Building, Bookmark, EyeOff, Flame, Layers } from 'lucide-react';
 import { Job } from '@/types/job';
 import { supabase } from '@/lib/supabase';
 import { userBookmarkService } from '@/lib/api/user-bookmarks';
+import { toggleBookmark as toggleBookmarkAction } from '@/app/actions/bookmarks';
 import { useToast } from '@/components/ui/ToastProvider';
 import BookmarkLoginModal from '@/components/ui/BookmarkLoginModal';
 import { useRouter } from 'next/navigation';
@@ -17,7 +18,7 @@ interface JobCardProps {
   onBookmarkChange?: (jobId: string, isBookmarked: boolean) => void;
 }
 
-const JobCard: React.FC<JobCardProps> = ({ 
+const JobCard: React.FC<JobCardProps> = React.memo(({ 
   job, 
   showBookmark = true, 
   isBookmarked: initialIsBookmarked,
@@ -27,7 +28,7 @@ const JobCard: React.FC<JobCardProps> = ({
   const { showToast } = useToast();
   const [user, setUser] = useState<any>(null);
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked || false);
-  const [isBookmarkLoading, setIsBookmarkLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [showSalaryText, setShowSalaryText] = useState(false);
@@ -84,7 +85,7 @@ const JobCard: React.FC<JobCardProps> = ({
     }
   }, [initialIsBookmarked]);
 
-  const formatDate = (dateStr?: string) => {
+  const formatDate = useCallback((dateStr?: string) => {
     if (!dateStr) return 'Baru saja';
     const date = new Date(dateStr);
     const now = new Date();
@@ -101,35 +102,34 @@ const JobCard: React.FC<JobCardProps> = ({
     if (diffDays < 7) return `${diffDays} hari lalu`;
     if (diffDays < 30) return `${Math.ceil(diffDays / 7)} minggu lalu`;
     return `${Math.ceil(diffDays / 30)} bulan lalu`;
-  };
+  }, []);
 
-  const isHotJob = (dateStr?: string) => {
+  const isHotJob = useCallback((dateStr?: string) => {
     if (!dateStr) return false;
     const date = new Date(dateStr);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
     return diffHours <= 12;
-  };
+  }, []);
 
-  const getHotJobText = (dateStr?: string) => {
+  const getHotJobText = useCallback((dateStr?: string) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
     return `${diffHours} jam lalu`;
-  };
+  }, []);
 
-  const isSalaryHidden = (salary: string) => {
+  const isSalaryHidden = useCallback((salary: string) => {
     return salary === 'Perusahaan Tidak Menampilkan Gaji';
-  };
+  }, []);
 
-  const handleBookmarkClick = async (e: React.MouseEvent) => {
+  const handleBookmarkClick = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // Check if user is authenticated by checking session directly
     const { data: { session } } = await supabase.auth.getSession();
     const currentUser = session?.user;
 
@@ -138,45 +138,41 @@ const JobCard: React.FC<JobCardProps> = ({
       return;
     }
 
-    try {
-      const result = await userBookmarkService.toggleBookmark(job.id);
-
-      if (result.success) {
+    startTransition(async () => {
+      try {
+        const result = await toggleBookmarkAction(job.id);
+        
         setIsBookmarked(result.isBookmarked);
-        // Notify parent component about bookmark change
         onBookmarkChange?.(job.id, result.isBookmarked);
         showToast(
           result.isBookmarked ? 'success' : 'info',
           result.isBookmarked ? 'Lowongan berhasil disimpan!' : 'Lowongan dihapus dari bookmark'
         );
-      } else {
-        showToast('error', result.error || 'Gagal mengubah bookmark');
+      } catch (error) {
+        showToast('error', 'Gagal menyimpan lowongan');
       }
-    } catch (error) {
-      console.error('Error toggling bookmark:', error);
-      showToast('error', 'Gagal menyimpan lowongan');
-    }
-  };
+    });
+  }, [job.id, onBookmarkChange, showToast]);
 
-  const handleCardClick = (e: React.MouseEvent) => {
+  const handleCardClick = useCallback((e: React.MouseEvent) => {
     // Only open in new tab if clicking anywhere except the buttons
     const target = e.target as HTMLElement;
     if (!target.closest('button') && !target.closest('a')) {
       window.open(`/lowongan-kerja/${job.slug}/`, '_blank');
     }
-  };
+  }, [job.slug]);
 
-  const handleLoginModalLogin = () => {
+  const handleLoginModalLogin = useCallback(() => {
     setShowLoginModal(false);
     window.open('/login/', '_blank');
-  };
+  }, []);
 
-  const handleLoginModalSignup = () => {
+  const handleLoginModalSignup = useCallback(() => {
     setShowLoginModal(false);
     window.open('/signup/', '_blank');
-  };
+  }, []);
 
-  const getJobTags = () => {
+  const getJobTags = useCallback(() => {
     if (!job.tag) return [];
 
     const tags = job.tag.split(', ').map(tag => tag.trim()).filter(tag => tag.length > 0);
@@ -188,9 +184,9 @@ const JobCard: React.FC<JobCardProps> = ({
     }
 
     return tags.slice(0, 4);
-  };
+  }, [job.tag]);
 
-  const tags = getJobTags();
+  const tags = React.useMemo(() => getJobTags(), [getJobTags]);
 
 
 
@@ -294,14 +290,15 @@ const JobCard: React.FC<JobCardProps> = ({
           <div className="flex items-center space-x-2">
             <button
               onClick={handleBookmarkClick}
-              className={`p-2 rounded-lg transition-all duration-200 ${
+              disabled={isPending}
+              className={`p-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
                 isBookmarked 
                   ? 'text-primary-600 bg-primary-50 hover:bg-primary-100' 
                   : 'text-gray-400 hover:text-primary-600 hover:bg-primary-50'
               }`}
               title={isBookmarked ? 'Hapus dari bookmark' : 'Simpan ke bookmark'}
             >
-              <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
+              <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''} ${isPending ? 'animate-pulse' : ''}`} />
             </button>
             <Link
               href={`/lowongan-kerja/${job.slug}/`}
@@ -326,6 +323,8 @@ const JobCard: React.FC<JobCardProps> = ({
       />
     </>
   );
-};
+});
+
+JobCard.displayName = 'JobCard';
 
 export default JobCard;

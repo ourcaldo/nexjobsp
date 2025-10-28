@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase';
 import type { AdminSettings } from '@/lib/supabase';
 import { timingSafeCompare } from '@/lib/utils/crypto';
+import { apiSuccess, apiError } from '@/lib/api/response';
 
 export async function GET(request: NextRequest) {
   const supabase = createServerSupabaseClient();
 
-  // Authentication check
   const authResult = await checkAuthentication(request, supabase);
   if (!authResult.success) {
-    return NextResponse.json({ error: authResult.error }, { status: 401 });
+    return apiError(authResult.error || 'Unauthorized', 401);
   }
 
   try {
@@ -22,18 +22,17 @@ export async function GET(request: NextRequest) {
 
     if (error && error.code !== 'PGRST116') {
       console.error('Error fetching admin settings:', error);
-      return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
+      return apiError('Failed to fetch settings', 500);
     }
 
-    // If no settings found, return null (client will use defaults)
     if (!data || error?.code === 'PGRST116') {
-      return NextResponse.json({ data: null });
+      return apiSuccess(null);
     }
 
-    return NextResponse.json({ data });
+    return apiSuccess(data);
   } catch (error) {
     console.error('Error in GET:', error);
-    return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
+    return apiError('Failed to fetch settings', 500);
   }
 }
 
@@ -48,17 +47,16 @@ export async function PUT(request: NextRequest) {
 async function handleUpdate(request: NextRequest) {
   const supabase = createServerSupabaseClient();
 
-  // Authentication check
   const authResult = await checkAuthentication(request, supabase);
   if (!authResult.success) {
-    return NextResponse.json({ error: authResult.error }, { status: 401 });
+    return apiError(authResult.error || 'Unauthorized', 401);
   }
 
   try {
     const settings = await request.json();
 
     if (!settings || typeof settings !== 'object') {
-      return NextResponse.json({ error: 'Invalid settings data' }, { status: 400 });
+      return apiError('Invalid settings data', 400);
     }
 
     // Get existing settings
@@ -96,13 +94,13 @@ async function handleUpdate(request: NextRequest) {
 
     if (result.error) {
       console.error('Error saving admin settings:', result.error);
-      return NextResponse.json({ error: 'Failed to save settings' }, { status: 500 });
+      return apiError('Failed to save settings', 500);
     }
 
-    return NextResponse.json({ data: result.data, success: true });
+    return apiSuccess(result.data);
   } catch (error) {
     console.error('Error in handleUpdate:', error);
-    return NextResponse.json({ error: 'Failed to update settings' }, { status: 500 });
+    return apiError('Failed to update settings', 500);
   }
 }
 

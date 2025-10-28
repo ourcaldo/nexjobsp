@@ -5,7 +5,6 @@ import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import HomePage from '@/components/pages/HomePage';
-import SchemaMarkup from '@/components/SEO/SchemaMarkup';
 import { generateWebsiteSchema, generateOrganizationSchema } from '@/utils/schemaUtils';
 import { renderTemplate } from '@/utils/templateUtils';
 
@@ -95,10 +94,23 @@ export const revalidate = 86400; // ISR: Revalidate every 24 hours
 export default async function Home() {
   const { articles, filterData, settings } = await getHomeData();
 
+  const websiteSchema = generateWebsiteSchema(settings);
+  const organizationSchema = generateOrganizationSchema();
+
   return (
     <>
-      <SchemaMarkup schema={generateWebsiteSchema(settings)} />
-      <SchemaMarkup schema={generateOrganizationSchema()} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(websiteSchema)
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(organizationSchema)
+        }}
+      />
 
       <Header />
       <main>

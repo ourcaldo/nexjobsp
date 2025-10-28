@@ -7,6 +7,7 @@ import { Calendar, User, Tag, Folder, ArrowRight, Clock, Eye } from 'lucide-reac
 import Link from 'next/link';
 import Image from 'next/image';
 import AdDisplay from '@/components/Advertisement/AdDisplay';
+import { getBlurDataURL } from '@/lib/utils/image';
 
 interface ArticleListPageProps {
   initialArticles: NxdbArticle[];
@@ -228,7 +229,11 @@ export default function ArticleListPage({
                             src={article.featured_image}
                             alt={article.title}
                             fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                            placeholder="blur"
+                            blurDataURL={getBlurDataURL()}
                           />
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-primary-400 to-secondary-400 flex items-center justify-center">
@@ -361,6 +366,9 @@ export default function ArticleListPage({
                                 width={80}
                                 height={60}
                                 className="w-20 h-15 object-cover rounded-lg"
+                                loading="lazy"
+                                placeholder="blur"
+                                blurDataURL={getBlurDataURL()}
                               />
                             </div>
                           )}

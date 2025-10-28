@@ -381,7 +381,7 @@ const securityHeaders = [
 
 ## 3. Performance Optimizations
 
-### 3.1 **Heavy HTML Regex Operations** 🟠 HIGH
+### 3.1 **Heavy HTML Regex Operations** 🟠 HIGH ✅ **COMPLETED** (Oct 28, 2025)
 **File**: `lib/utils/advertisements.ts` (lines 108-137)  
 **Issue**: Using regex to find H2 tags in large HTML content
 
@@ -415,9 +415,22 @@ insertMiddleAd(content: string, adCode: string): string {
 
 **Priority**: 🟠 HIGH
 
+**Resolution**: Replaced regex-based HTML manipulation with DOMParser implementation in `lib/utils/advertisements.ts`.
+
+**Implementation Details:**
+- ✅ Replaced regex pattern matching with DOMParser API  
+- ✅ Used DOM methods: `querySelectorAll()`, `createElement()`, `insertBefore()`
+- ✅ Added isomorphic approach with client/server compatibility check
+- ✅ Maintained exact same HTML structure and functionality
+- ✅ Improved performance for large HTML content parsing
+- ✅ Added fallback for server-side environments where DOMParser unavailable
+
+**Files Modified:**
+- `lib/utils/advertisements.ts` - Updated `insertMiddleAd()` method
+
 ---
 
-### 3.2 **No Image Optimization** 🟠 HIGH
+### 3.2 **No Image Optimization** 🟠 HIGH ✅ **COMPLETED** (Oct 28, 2025)
 **Issue**: External images not optimized, no lazy loading
 
 **Recommendation**:
@@ -441,9 +454,32 @@ insertMiddleAd(content: string, adCode: string): string {
 
 **Priority**: 🟠 HIGH
 
+**Resolution**: Replaced all `<img>` tags with Next.js `Image` component throughout the application for automatic image optimization.
+
+**Implementation Details:**
+- ✅ Imported `next/image` in all components using images
+- ✅ Applied to article featured images with proper width/height attributes
+- ✅ Applied to profile images and avatars with responsive sizing
+- ✅ Implemented lazy loading for below-fold images
+- ✅ Added proper alt text for accessibility
+- ✅ Configured responsive image sizes for different viewports
+- ✅ Automatic format optimization (WebP, AVIF) by Next.js
+
+**Files Modified:**
+- `components/ArticleSidebar.tsx`
+- `components/pages/HomePage.tsx`
+- `components/pages/ArticlePage.tsx`
+- `components/pages/ArticleListPage.tsx`
+- `components/pages/ProfilePage.tsx`
+- `app/artikel/[category]/page.tsx`
+- `app/artikel/[category]/[slug]/page.tsx`
+- `components/admin/cms/UnifiedEditor.tsx`
+- `components/admin/cms/MediaManager.tsx`
+- `components/admin/cms/CmsPages.tsx`
+
 ---
 
-### 3.3 **Client-Side Schema Rendering** 🟡 MEDIUM
+### 3.3 **Client-Side Schema Rendering** 🟡 MEDIUM ✅ **COMPLETED** (Oct 28, 2025)
 **File**: `components/SEO/SchemaMarkup.tsx`  
 **Issue**: JSON-LD rendered client-side, not available for SEO initially
 
@@ -462,6 +498,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 ```
 
 **Priority**: 🟡 MEDIUM
+
+**Resolution**: Moved schema markup generation to server-side `generateMetadata()` functions for immediate SEO visibility.
+
+**Implementation Details:**
+- ✅ Created schema generation utilities in `utils/schemaUtils.ts`
+- ✅ Implemented `generateArticleSchema()` for article pages
+- ✅ Implemented `generateBreadcrumbSchema()` for navigation
+- ✅ Added schema markup to `generateMetadata()` in article detail pages
+- ✅ Schema now rendered server-side and available in initial HTML
+- ✅ Includes Article, Organization, and BreadcrumbList schemas
+- ✅ Proper structured data for search engines (Google, Bing, etc.)
+
+**Files Created:**
+- `utils/schemaUtils.ts` - Schema generation utilities
+
+**Files Modified:**
+- `app/artikel/[category]/[slug]/page.tsx` - Added server-side schema in metadata
 
 ---
 
@@ -489,7 +542,7 @@ const getCachedArticles = unstable_cache(
 
 ---
 
-### 3.5 **Bundle Size Optimization** 🟡 MEDIUM
+### 3.5 **Bundle Size Optimization** 🟡 MEDIUM ✅ **COMPLETED** (Oct 28, 2025)
 **Issue**: Large bundle size, no code splitting for admin components
 
 **Recommendation**:
@@ -511,6 +564,25 @@ npm install @next/bundle-analyzer
    - date-fns → native Intl (reduce bundle size)
 
 **Priority**: 🟡 MEDIUM
+
+**Resolution**: Implemented code splitting using Next.js dynamic imports for all admin panel components to reduce initial bundle size.
+
+**Implementation Details:**
+- ✅ Used `next/dynamic` for lazy loading admin components
+- ✅ Added `ssr: false` to prevent server-side rendering of admin code
+- ✅ Implemented loading states for better UX during code loading
+- ✅ Reduced main bundle size by deferring admin panel code
+- ✅ Admin components only loaded when users access admin routes
+- ✅ Applied to Dashboard, UserManagement, SEO, Sitemap, Integration, Advertisement, and System settings
+
+**Files Modified:**
+- `app/backend/admin/page.tsx` - Dynamic Dashboard import
+- `app/backend/admin/users/page.tsx` - Dynamic UserManagement import
+- `app/backend/admin/seo/page.tsx` - Dynamic SEOSettings import
+- `app/backend/admin/sitemap/page.tsx` - Dynamic SitemapManagement import
+- `app/backend/admin/integration/page.tsx` - Dynamic IntegrationSettings import
+- `app/backend/admin/advertisement/page.tsx` - Dynamic AdvertisementSettings import
+- `app/backend/admin/system/page.tsx` - Dynamic SystemSettings import
 
 ---
 
@@ -537,7 +609,7 @@ CREATE INDEX IF NOT EXISTS idx_articles_published_at ON nxdb_articles(published_
 
 ---
 
-### 3.7 **Unnecessary Re-renders** 🔵 LOW
+### 3.7 **Unnecessary Re-renders** 🔵 LOW ✅ **COMPLETED** (Oct 28, 2025)
 **Issue**: Components re-rendering without memoization
 
 **Recommendation**:
@@ -562,11 +634,34 @@ const handleBookmark = useCallback((jobId: string) => {
 
 **Priority**: 🔵 LOW
 
+**Resolution**: Applied React performance optimization techniques including memoization to prevent unnecessary component re-renders.
+
+**Implementation Details:**
+- ✅ Wrapped `JobCard` component with `React.memo()` to prevent re-renders
+- ✅ Used `useCallback()` for event handlers in JobCard (bookmark, initialization)
+- ✅ Applied `useMemo()` for expensive computations in HomePage
+- ✅ Applied `useMemo()` for filtered data in ArticlePage
+- ✅ Applied `useMemo()` for search results in JobSearchPage
+- ✅ Applied `useMemo()` for profile data processing in ProfilePage
+- ✅ Optimized re-renders in admin components (TiptapEditor, RichTextEditor, UnifiedEditor)
+- ✅ Proper dependency arrays to ensure correct memoization
+
+**Files Modified:**
+- `components/JobCard.tsx` - Added React.memo and useCallback
+- `components/pages/HomePage.tsx` - Added useMemo for data processing
+- `components/pages/ArticlePage.tsx` - Added useMemo for filtered content
+- `components/pages/JobSearchPage.tsx` - Added useMemo for search results
+- `components/pages/ProfilePage.tsx` - Added useMemo for profile computations
+- `components/admin/cms/TiptapEditor.tsx` - Optimized editor re-renders
+- `components/admin/cms/RichTextEditor.tsx` - Optimized editor re-renders
+- `components/admin/cms/UnifiedEditor.tsx` - Optimized editor re-renders
+- `hooks/useInfiniteScroll.ts` - Added useCallback for scroll handlers
+
 ---
 
 ## 4. Architecture Improvements
 
-### 4.1 **Inconsistent API Response Format** 🟡 MEDIUM
+### 4.1 **Inconsistent API Response Format** 🟡 MEDIUM ✅ **COMPLETED** (Oct 28, 2025)
 **Issue**: Different API routes return different response structures
 
 **Recommendation**:
@@ -599,9 +694,27 @@ export const errorResponse = (error: string): ApiResponse => ({
 
 **Priority**: 🟡 MEDIUM
 
+**Resolution**: Created standardized API response format with helper functions for consistent responses across all API routes.
+
+**Implementation Details:**
+- ✅ Created `lib/api/response.ts` with standardized interfaces
+- ✅ Defined `ApiResponse<T>` interface with generic typing
+- ✅ Implemented `successResponse()` and `errorResponse()` for standard Response
+- ✅ Implemented `apiSuccess()` and `apiError()` for NextResponse
+- ✅ Added optional metadata field for pagination information
+- ✅ Includes comprehensive JSDoc documentation and examples
+- ✅ TypeScript support with proper generic typing
+- ✅ Consistent error and success response structure
+
+**Files Created:**
+- `lib/api/response.ts` - Standard API response utilities
+
+**Files Modified:**
+- API routes updated to use standardized response format (as needed)
+
 ---
 
-### 4.2 **Mixed Server/Client Logic** 🟡 MEDIUM
+### 4.2 **Mixed Server/Client Logic** 🟡 MEDIUM ✅ **COMPLETED** (Oct 28, 2025)
 **Issue**: Business logic scattered between server and client components
 
 **Recommendation**:
@@ -624,9 +737,29 @@ export async function toggleBookmark(jobId: string) {
 
 **Priority**: 🟡 MEDIUM
 
+**Resolution**: Moved business logic from client components to server actions using Next.js 14 Server Actions pattern.
+
+**Implementation Details:**
+- ✅ Created server actions directory `app/actions/`
+- ✅ Implemented bookmark server actions with `'use server'` directive
+- ✅ Implemented profile update server actions with validation
+- ✅ Added proper authentication checks in server actions
+- ✅ Integrated with service layer for data access
+- ✅ Used `revalidatePath()` for automatic cache invalidation
+- ✅ Proper error handling with typed responses
+- ✅ Type-safe server actions with TypeScript
+- ✅ Separated business logic from UI components
+
+**Files Created:**
+- `app/actions/bookmarks.ts` - Bookmark management server actions
+- `app/actions/profile.ts` - Profile update server actions
+
+**Files Modified:**
+- Client components updated to call server actions instead of direct API calls
+
 ---
 
-### 4.3 **No Service Layer Pattern** 🟡 MEDIUM
+### 4.3 **No Service Layer Pattern** 🟡 MEDIUM ✅ **COMPLETED** (Oct 28, 2025)
 **Issue**: Direct database calls from components/routes
 
 **Recommendation**:
@@ -648,9 +781,31 @@ export const jobService = new JobService();
 
 **Priority**: 🟡 MEDIUM
 
+**Resolution**: Created service layer to abstract data access logic and provide single source of truth for business operations.
+
+**Implementation Details:**
+- ✅ Created `lib/services/` directory for service layer
+- ✅ Implemented `JobService` class for job-related operations
+- ✅ Implemented `BookmarkService` class for bookmark operations
+- ✅ Abstracted CMS API calls through service methods
+- ✅ Abstracted database operations through service methods
+- ✅ Provides consistent interface for data access
+- ✅ Includes methods for CRUD operations and business logic
+- ✅ Exported singleton instances for easy consumption
+- ✅ Type-safe with proper TypeScript interfaces
+- ✅ Integrated with CMS provider abstraction
+
+**Files Created:**
+- `lib/services/JobService.ts` - Job data access service
+- `lib/services/BookmarkService.ts` - Bookmark management service
+
+**Methods Implemented:**
+- JobService: `getJobs()`, `getJobById()`, `getJobBySlug()`, `getJobsByIds()`, `getRelatedJobs()`, `getFiltersData()`, `clearFilterCache()`
+- BookmarkService: `getBookmarks()`, `createBookmark()`, `deleteBookmark()`, `checkBookmarkExists()`, `toggle()`
+
 ---
 
-### 4.4 **Environment Configuration Issues** 🟡 MEDIUM
+### 4.4 **Environment Configuration Issues** 🟡 MEDIUM ✅ **COMPLETED** (Oct 28, 2025)
 **File**: `lib/env.ts`  
 **Issue**: Environment validation only logs errors, doesn't fail fast
 
@@ -674,9 +829,31 @@ validateEnv();
 
 **Priority**: 🟡 MEDIUM
 
+**Resolution**: Enhanced environment validation to fail fast in production and provide detailed validation with format checking.
+
+**Implementation Details:**
+- ✅ Updated `validateEnv()` to throw errors in production mode
+- ✅ Added validation for both client and server-side variables
+- ✅ Implemented Supabase URL format validation (must be HTTPS)
+- ✅ Implemented Supabase key length validation (minimum length check)
+- ✅ Separate validation for client vs server-side variables
+- ✅ Helpful warning messages in development mode
+- ✅ Automatic validation on module load
+- ✅ Added `SUPABASE_STORAGE_*` environment variables for S3 configuration
+- ✅ Environment-specific behavior (strict in production, lenient in development)
+
+**Files Modified:**
+- `lib/env.ts` - Enhanced validation logic with fail-fast behavior
+
+**Validation Checks:**
+- Required client variables: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- Required server variables: `SUPABASE_SERVICE_ROLE_KEY`
+- Optional storage variables: `SUPABASE_STORAGE_ACCESS_KEY`, `SUPABASE_STORAGE_SECRET_KEY`, `SUPABASE_STORAGE_ENDPOINT`
+- Format validation for URLs and key lengths
+
 ---
 
-### 4.5 **Tight Coupling to TugasCMS** 🟡 MEDIUM
+### 4.5 **Tight Coupling to TugasCMS** 🟡 MEDIUM ✅ **COMPLETED** (Oct 28, 2025)
 **Issue**: CMS logic tightly coupled, difficult to switch providers
 
 **Recommendation**:
@@ -714,6 +891,37 @@ export const getCMSProvider = (): CMSProvider => {
 ```
 
 **Priority**: 🟡 MEDIUM
+
+**Resolution**: Created comprehensive CMS abstraction layer with provider pattern for easy CMS switching and extensibility.
+
+**Implementation Details:**
+- ✅ Created `lib/cms/interface.ts` with `CMSProvider` interface
+- ✅ Defined comprehensive interface for all CMS operations
+- ✅ Implemented `TugasCMSProvider` class in `lib/cms/providers/tugascms.ts`
+- ✅ Created factory function `getCMSProvider()` in `lib/cms/factory.ts`
+- ✅ Supports environment-based CMS provider selection via `CMS_PROVIDER` env var
+- ✅ Easy to add new CMS providers (WordPress, Contentful, etc.)
+- ✅ Type-safe interfaces for Jobs, Articles, Categories, Tags, Filters
+- ✅ Abstracted job operations: `getJobs()`, `getJobById()`, `getJobBySlug()`, `getJobsByIds()`, `getRelatedJobs()`
+- ✅ Abstracted article operations: `getArticles()`, `getArticleBySlug()`, `getRelatedArticles()`
+- ✅ Abstracted taxonomy operations: `getCategories()`, `getTags()`, `getCategoryWithPosts()`, `getTagWithPosts()`
+- ✅ Filter cache management: `getFiltersData()`, `clearFilterCache()`
+- ✅ Connection testing: `testConnection()`
+
+**Files Created:**
+- `lib/cms/interface.ts` - CMSProvider interface and type definitions
+- `lib/cms/factory.ts` - Factory function for provider instantiation
+- `lib/cms/providers/tugascms.ts` - TugasCMS implementation (already existed, now follows interface)
+
+**Files Modified:**
+- `lib/cms/service.ts` - Uses factory to get CMS provider
+- `lib/services/JobService.ts` - Uses CMSProvider abstraction
+
+**Benefits:**
+- Decoupled from specific CMS implementation
+- Easy to switch CMS providers by changing environment variable
+- Consistent API across different CMS backends
+- Testable with mock providers
 
 ---
 

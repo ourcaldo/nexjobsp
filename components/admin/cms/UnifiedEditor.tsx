@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { 
   Save, 
   Eye, 
@@ -22,8 +23,19 @@ import { supabaseAdminService } from '@/lib/supabase/admin';
 import { supabaseStorageService } from '@/lib/supabase/storage';
 import { NxdbArticle, NxdbPage, NxdbArticleCategory, NxdbArticleTag, NxdbPageCategory, NxdbPageTag } from '@/lib/supabase';
 import { useToast } from '@/components/ui/ToastProvider';
-import TiptapEditor from './TiptapEditor';
 import MediaManager from './MediaManager';
+
+const TiptapEditor = dynamic(() => import('./TiptapEditor'), {
+  loading: () => (
+    <div className="w-full min-h-[400px] border border-gray-300 rounded-lg flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary-600 mx-auto mb-2" />
+        <p className="text-sm text-gray-600">Loading editor...</p>
+      </div>
+    </div>
+  ),
+  ssr: false
+});
 
 interface UnifiedEditorProps {
   contentType: 'articles' | 'pages' | 'jobs';

@@ -70,7 +70,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   // Helper function to calculate salary range from multiple selected ranges
-  const calculateSalaryRange = (selectedRanges: string[]): { min: string | null, max: string | null } => {
+  const calculateSalaryRange = useCallback((selectedRanges: string[]): { min: string | null, max: string | null } => {
     if (!selectedRanges || selectedRanges.length === 0) {
       return { min: null, max: null };
     }
@@ -115,7 +115,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     const finalMax = hasOpenRange ? null : (maxSalary !== null ? String(maxSalary) : null);
     
     return { min: finalMin, max: finalMax };
-  };
+  }, []);
 
   // Get current filters object - memoized to prevent unnecessary recreations
   const getCurrentFilters = useCallback(() => {
@@ -583,7 +583,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     return province ? province.name : provinceId;
   }, [filterData]);
 
-  const getFilterTypeLabel = (filterType: string): string => {
+  const getFilterTypeLabel = useCallback((filterType: string): string => {
     const labels: { [key: string]: string } = {
       cities: 'Kota',
       jobTypes: 'Tipe Pekerjaan',
@@ -595,7 +595,17 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
       industries: 'Industri'
     };
     return labels[filterType] || filterType;
-  };
+  }, []);
+
+  const handleBookmarkChange = useCallback((jobId: string, isBookmarked: boolean) => {
+    const newBookmarks = new Set(userBookmarks);
+    if (isBookmarked) {
+      newBookmarks.add(jobId);
+    } else {
+      newBookmarks.delete(jobId);
+    }
+    setUserBookmarks(newBookmarks);
+  }, [userBookmarks]);
 
   // Show loading state while initial data loads
   if (loading) {
@@ -907,15 +917,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
                       key={job.id} 
                       job={job} 
                       isBookmarked={userBookmarks.has(job.id)}
-                      onBookmarkChange={(jobId, isBookmarked) => {
-                        const newBookmarks = new Set(userBookmarks);
-                        if (isBookmarked) {
-                          newBookmarks.add(jobId);
-                        } else {
-                          newBookmarks.delete(jobId);
-                        }
-                        setUserBookmarks(newBookmarks);
-                      }}
+                      onBookmarkChange={handleBookmarkChange}
                     />
                   ))}
                 </div>

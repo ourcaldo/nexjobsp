@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase';
+import { apiSuccess, apiError } from '@/lib/api/response';
 
 const PUBLIC_FIELDS = [
   'site_title',
@@ -42,21 +43,19 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       if (error.code === 'PGRST116') {
-        // No settings found, return empty object
-        return NextResponse.json({ data: {} });
+        return apiSuccess({});
       }
       console.error('Error fetching public settings:', error);
-      return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 });
+      return apiError('Failed to fetch settings', 500);
     }
 
-    // If no data found, return empty object
     if (!data) {
-      return NextResponse.json({ data: {} });
+      return apiSuccess({});
     }
 
-    return NextResponse.json({ data });
+    return apiSuccess(data);
   } catch (error) {
     console.error('Public settings API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return apiError('Internal server error', 500);
   }
 }

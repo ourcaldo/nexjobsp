@@ -6,7 +6,6 @@ import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobDetailPage from '@/components/pages/JobDetailPage';
-import SchemaMarkup from '@/components/SEO/SchemaMarkup';
 import { generateJobPostingSchema, generateBreadcrumbSchema } from '@/utils/schemaUtils';
 import { Job } from '@/types/job';
 
@@ -115,7 +114,18 @@ export default async function JobPage({ params }: JobPageProps) {
 
   return (
     <>
-      <SchemaMarkup schema={[jobSchema, breadcrumbSchema]} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jobSchema)
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbSchema)
+        }}
+      />
       
       <Header />
       <main>

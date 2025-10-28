@@ -109,30 +109,35 @@ class AdvertisementService {
   insertMiddleAd(content: string, adCode: string): string {
     if (!adCode || !content) return content;
 
-    // Find H2 tags in content
-    const h2Regex = /<h2[^>]*>/gi;
-    const matches = [...content.matchAll(h2Regex)];
+    // Check if DOMParser is available (browser environment)
+    if (typeof DOMParser !== 'undefined') {
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(content, 'text/html');
+        const h2Elements = doc.querySelectorAll('h2');
 
-    if (matches.length === 0) return content;
+        if (h2Elements.length === 0) return content;
 
-    // Insert ad before the middle H2 tag
-    const middleIndex = Math.floor(matches.length / 2);
-    const middleH2Match = matches[middleIndex];
+        const middleIndex = Math.floor(h2Elements.length / 2);
+        const middleH2 = h2Elements[middleIndex];
 
-    if (middleH2Match && middleH2Match.index !== undefined) {
-      const beforeMiddleH2 = content.substring(0, middleH2Match.index);
-      const afterMiddleH2 = content.substring(middleH2Match.index);
-
-      const adHtml = `
-        <div class="advertisement-middle my-6">
+        const adContainer = doc.createElement('div');
+        adContainer.className = 'advertisement-middle my-6';
+        adContainer.innerHTML = `
           <div class="text-xs text-gray-500 mb-2 text-center">Advertisement</div>
           ${adCode}
-        </div>
-      `;
+        `;
 
-      return beforeMiddleH2 + adHtml + afterMiddleH2;
+        middleH2.parentNode?.insertBefore(adContainer, middleH2);
+
+        return doc.body.innerHTML;
+      } catch (error) {
+        return content;
+      }
     }
 
+    // Fallback for server-side or when DOMParser is not available
+    // This should rarely be used since the function is primarily used client-side
     return content;
   }
 }

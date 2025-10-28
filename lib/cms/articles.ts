@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabase';
-import { NxdbPage, NxdbPageCategory, NxdbPageTag } from '@/lib/supabase';
+import { NxdbArticle, NxdbArticleCategory, NxdbArticleTag } from '@/lib/supabase';
 
-export interface CreatePageData {
+export interface CreateArticleData {
   title: string;
   slug: string;
   content: string;
@@ -18,7 +18,7 @@ export interface CreatePageData {
   tag_ids?: string[];
 }
 
-export interface UpdatePageData {
+export interface UpdateArticleData {
   id: string;
   title?: string;
   slug?: string;
@@ -35,23 +35,23 @@ export interface UpdatePageData {
   tag_ids?: string[];
 }
 
-class CmsPageService {
-  async getPages(filters?: {
+class CmsArticleService {
+  async getArticles(filters?: {
     status?: string;
     limit?: number;
     offset?: number;
-  }): Promise<NxdbPage[]> {
+  }): Promise<NxdbArticle[]> {
     try {
       let query = supabase
-        .from('nxdb_pages')
+        .from('nxdb_articles')
         .select(`
           *,
           author:profiles(id, full_name, email),
-          categories:nxdb_page_category_relations(
-            category:nxdb_page_categories(*)
+          categories:nxdb_article_category_relations(
+            category:nxdb_article_categories(*)
           ),
-          tags:nxdb_page_tag_relations(
-            tag:nxdb_page_tags(*)
+          tags:nxdb_article_tag_relations(
+            tag:nxdb_article_tags(*)
           )
         `)
         .order('updated_at', { ascending: false });
@@ -74,30 +74,30 @@ class CmsPageService {
         return [];
       }
 
-      const pages = data?.map(page => ({
-        ...page,
-        categories: page.categories?.map((rel: any) => rel.category) || [],
-        tags: page.tags?.map((rel: any) => rel.tag) || []
+      const articles = data?.map(article => ({
+        ...article,
+        categories: article.categories?.map((rel: any) => rel.category) || [],
+        tags: article.tags?.map((rel: any) => rel.tag) || []
       })) || [];
 
-      return pages;
+      return articles;
     } catch (error) {
       return [];
     }
   }
 
-  async getPageById(id: string): Promise<NxdbPage | null> {
+  async getArticleById(id: string): Promise<NxdbArticle | null> {
     try {
       const { data, error } = await supabase
-        .from('nxdb_pages')
+        .from('nxdb_articles')
         .select(`
           *,
           author:profiles(id, full_name, email),
-          categories:nxdb_page_category_relations(
-            category:nxdb_page_categories(*)
+          categories:nxdb_article_category_relations(
+            category:nxdb_article_categories(*)
           ),
-          tags:nxdb_page_tag_relations(
-            tag:nxdb_page_tags(*)
+          tags:nxdb_article_tag_relations(
+            tag:nxdb_article_tags(*)
           )
         `)
         .eq('id', id)
@@ -121,18 +121,18 @@ class CmsPageService {
     }
   }
 
-  async getPageBySlug(slug: string): Promise<NxdbPage | null> {
+  async getArticleBySlug(slug: string): Promise<NxdbArticle | null> {
     try {
       const { data, error } = await supabase
-        .from('nxdb_pages')
+        .from('nxdb_articles')
         .select(`
           *,
           author:profiles(id, full_name, email),
-          categories:nxdb_page_category_relations(
-            category:nxdb_page_categories(*)
+          categories:nxdb_article_category_relations(
+            category:nxdb_article_categories(*)
           ),
-          tags:nxdb_page_tag_relations(
-            tag:nxdb_page_tags(*)
+          tags:nxdb_article_tag_relations(
+            tag:nxdb_article_tags(*)
           )
         `)
         .eq('slug', slug)
@@ -157,111 +157,111 @@ class CmsPageService {
     }
   }
 
-  async createPage(pageData: CreatePageData): Promise<{ success: boolean; page?: NxdbPage; error?: string }> {
+  async createArticle(articleData: CreateArticleData): Promise<{ success: boolean; article?: NxdbArticle; error?: string }> {
     try {
-      const { category_ids, tag_ids, ...pageFields } = pageData;
+      const { category_ids, tag_ids, ...articleFields } = articleData;
 
-      const { data: page, error: insertError } = await supabase
-        .from('nxdb_pages')
-        .insert([pageFields])
+      const { data: article, error: insertError } = await supabase
+        .from('nxdb_articles')
+        .insert([articleFields])
         .select()
         .single();
 
-      if (insertError || !page) {
-        return { success: false, error: insertError?.message || 'Failed to create page' };
+      if (insertError || !article) {
+        return { success: false, error: insertError?.message || 'Failed to create article' };
       }
 
       if (category_ids && category_ids.length > 0) {
         const categoryRelations = category_ids.map(category_id => ({
-          page_id: page.id,
+          article_id: article.id,
           category_id
         }));
 
         await supabase
-          .from('nxdb_page_category_relations')
+          .from('nxdb_article_category_relations')
           .insert(categoryRelations);
       }
 
       if (tag_ids && tag_ids.length > 0) {
         const tagRelations = tag_ids.map(tag_id => ({
-          page_id: page.id,
+          article_id: article.id,
           tag_id
         }));
 
         await supabase
-          .from('nxdb_page_tag_relations')
+          .from('nxdb_article_tag_relations')
           .insert(tagRelations);
       }
 
-      const fullPage = await this.getPageById(page.id);
-      return { success: true, page: fullPage || page };
+      const fullArticle = await this.getArticleById(article.id);
+      return { success: true, article: fullArticle || article };
     } catch (error) {
       return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
     }
   }
 
-  async updatePage(pageData: UpdatePageData): Promise<{ success: boolean; page?: NxdbPage; error?: string }> {
+  async updateArticle(articleData: UpdateArticleData): Promise<{ success: boolean; article?: NxdbArticle; error?: string }> {
     try {
-      const { id, category_ids, tag_ids, ...pageFields } = pageData;
+      const { id, category_ids, tag_ids, ...articleFields } = articleData;
 
-      const { data: page, error: updateError } = await supabase
-        .from('nxdb_pages')
-        .update(pageFields)
+      const { data: article, error: updateError } = await supabase
+        .from('nxdb_articles')
+        .update(articleFields)
         .eq('id', id)
         .select()
         .single();
 
-      if (updateError || !page) {
-        return { success: false, error: updateError?.message || 'Failed to update page' };
+      if (updateError || !article) {
+        return { success: false, error: updateError?.message || 'Failed to update article' };
       }
 
       if (category_ids !== undefined) {
         await supabase
-          .from('nxdb_page_category_relations')
+          .from('nxdb_article_category_relations')
           .delete()
-          .eq('page_id', id);
+          .eq('article_id', id);
 
         if (category_ids.length > 0) {
           const categoryRelations = category_ids.map(category_id => ({
-            page_id: id,
+            article_id: id,
             category_id
           }));
 
           await supabase
-            .from('nxdb_page_category_relations')
+            .from('nxdb_article_category_relations')
             .insert(categoryRelations);
         }
       }
 
       if (tag_ids !== undefined) {
         await supabase
-          .from('nxdb_page_tag_relations')
+          .from('nxdb_article_tag_relations')
           .delete()
-          .eq('page_id', id);
+          .eq('article_id', id);
 
         if (tag_ids.length > 0) {
           const tagRelations = tag_ids.map(tag_id => ({
-            page_id: id,
+            article_id: id,
             tag_id
           }));
 
           await supabase
-            .from('nxdb_page_tag_relations')
+            .from('nxdb_article_tag_relations')
             .insert(tagRelations);
         }
       }
 
-      const fullPage = await this.getPageById(id);
-      return { success: true, page: fullPage || page };
+      const fullArticle = await this.getArticleById(id);
+      return { success: true, article: fullArticle || article };
     } catch (error) {
       return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
     }
   }
 
-  async deletePage(id: string): Promise<{ success: boolean; error?: string }> {
+  async deleteArticle(id: string): Promise<{ success: boolean; error?: string }> {
     try {
       const { error } = await supabase
-        .from('nxdb_pages')
+        .from('nxdb_articles')
         .delete()
         .eq('id', id);
 
@@ -275,10 +275,10 @@ class CmsPageService {
     }
   }
 
-  async getCategories(): Promise<NxdbPageCategory[]> {
+  async getCategories(): Promise<NxdbArticleCategory[]> {
     try {
       const { data, error } = await supabase
-        .from('nxdb_page_categories')
+        .from('nxdb_article_categories')
         .select('*')
         .order('name', { ascending: true });
 
@@ -292,10 +292,10 @@ class CmsPageService {
     }
   }
 
-  async getTags(): Promise<NxdbPageTag[]> {
+  async getTags(): Promise<NxdbArticleTag[]> {
     try {
       const { data, error } = await supabase
-        .from('nxdb_page_tags')
+        .from('nxdb_article_tags')
         .select('*')
         .order('name', { ascending: true });
 
@@ -309,7 +309,7 @@ class CmsPageService {
     }
   }
 
-  async createCategory(name: string): Promise<{ success: boolean; category?: NxdbPageCategory; error?: string }> {
+  async createCategory(name: string): Promise<{ success: boolean; category?: NxdbArticleCategory; error?: string }> {
     try {
       const slug = name
         .toLowerCase()
@@ -319,7 +319,7 @@ class CmsPageService {
         .replace(/^-|-$/g, '');
 
       const { data, error } = await supabase
-        .from('nxdb_page_categories')
+        .from('nxdb_article_categories')
         .insert([{ name, slug, description: '' }])
         .select()
         .single();
@@ -334,7 +334,7 @@ class CmsPageService {
     }
   }
 
-  async createTag(name: string): Promise<{ success: boolean; tag?: NxdbPageTag; error?: string }> {
+  async createTag(name: string): Promise<{ success: boolean; tag?: NxdbArticleTag; error?: string }> {
     try {
       const slug = name
         .toLowerCase()
@@ -344,7 +344,7 @@ class CmsPageService {
         .replace(/^-|-$/g, '');
 
       const { data, error } = await supabase
-        .from('nxdb_page_tags')
+        .from('nxdb_article_tags')
         .insert([{ name, slug }])
         .select()
         .single();
@@ -372,7 +372,7 @@ class CmsPageService {
 
     while (true) {
       let query = supabase
-        .from('nxdb_pages')
+        .from('nxdb_articles')
         .select('id')
         .eq('slug', finalSlug)
         .limit(1);
@@ -395,4 +395,4 @@ class CmsPageService {
   }
 }
 
-export const cmsPageService = new CmsPageService();
+export const cmsArticleService = new CmsArticleService();
