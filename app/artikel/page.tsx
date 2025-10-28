@@ -4,7 +4,6 @@ import { supabaseAdminService } from '@/lib/supabase/admin';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
-import SchemaMarkup from '@/components/SEO/SchemaMarkup';
 import { generateArticleListingSchema, generateBreadcrumbSchema } from '@/utils/schemaUtils';
 import { renderTemplate } from '@/utils/templateUtils';
 import ArticleListPage from '@/components/pages/ArticleListPage';
@@ -166,7 +165,18 @@ export default async function ArtikelPage() {
 
   return (
     <>
-      <SchemaMarkup schema={[articleListingSchema, breadcrumbSchema]} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(articleListingSchema)
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbSchema)
+        }}
+      />
       <Header />
       <ArticleListPage
         initialArticles={articles}

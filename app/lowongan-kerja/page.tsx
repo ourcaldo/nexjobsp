@@ -4,7 +4,6 @@ import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobSearchPage from '@/components/pages/JobSearchPage';
-import SchemaMarkup from '@/components/SEO/SchemaMarkup';
 import { generateBreadcrumbSchema } from '@/utils/schemaUtils';
 import { renderTemplate } from '@/utils/templateUtils';
 
@@ -61,6 +60,7 @@ export default async function Jobs() {
   const { settings, currentUrl } = await getJobsData();
 
   const breadcrumbItems = [{ label: 'Lowongan Kerja' }];
+  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
 
   // Prepare template variables
   const templateVars = {
@@ -75,7 +75,12 @@ export default async function Jobs() {
 
   return (
     <>
-      <SchemaMarkup schema={generateBreadcrumbSchema(breadcrumbItems)} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbSchema)
+        }}
+      />
 
       <Header />
       <main className="min-h-screen bg-gray-50">

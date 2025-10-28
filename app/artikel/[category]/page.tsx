@@ -4,7 +4,6 @@ import { cmsService } from '@/lib/cms/service';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
-import SchemaMarkup from '@/components/SEO/SchemaMarkup';
 import { generateArticleListingSchema, generateBreadcrumbSchema } from '@/utils/schemaUtils';
 import { formatDistance } from 'date-fns';
 import { Calendar, User, Folder, ArrowRight } from 'lucide-react';
@@ -166,7 +165,18 @@ export default async function ArticleCategoryPage({ params }: ArticleCategoryPag
 
   return (
     <>
-      <SchemaMarkup schema={[articleListingSchema, breadcrumbSchema]} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(articleListingSchema)
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbSchema)
+        }}
+      />
       <Header />
 
       <main className="min-h-screen bg-gray-50">

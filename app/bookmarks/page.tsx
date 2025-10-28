@@ -4,7 +4,6 @@ import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import BookmarkPage from '@/components/pages/BookmarkPage';
-import SchemaMarkup from '@/components/SEO/SchemaMarkup';
 import { generateBreadcrumbSchema } from '@/utils/schemaUtils';
 
 async function getBookmarksData() {
@@ -38,10 +37,16 @@ export default async function Bookmarks() {
   await getBookmarksData();
 
   const breadcrumbItems = [{ label: 'Lowongan Tersimpan' }];
+  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
 
   return (
     <>
-      <SchemaMarkup schema={generateBreadcrumbSchema(breadcrumbItems)} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbSchema)
+        }}
+      />
       
       <Header />
       <main>

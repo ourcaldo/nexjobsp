@@ -3,7 +3,6 @@ import { SupabaseAdminService } from '@/lib/supabase/admin';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobSearchPage from '@/components/pages/JobSearchPage';
-import SchemaMarkup from '@/components/SEO/SchemaMarkup';
 import { generateBreadcrumbSchema } from '@/utils/schemaUtils';
 import { getCurrentDomain } from '@/lib/env';
 import { wpCategoryMappings } from '@/utils/urlUtils';
@@ -85,6 +84,7 @@ export default async function JobCategoryPage({ params }: JobCategoryPageProps) 
     { label: 'Lowongan Kerja', href: '/lowongan-kerja/' },
     { label: `Kategori: ${category}` }
   ];
+  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
 
   // Prepare template variables
   const templateVars = {
@@ -99,7 +99,12 @@ export default async function JobCategoryPage({ params }: JobCategoryPageProps) 
 
   return (
     <>
-      <SchemaMarkup schema={generateBreadcrumbSchema(breadcrumbItems)} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbSchema)
+        }}
+      />
 
       <Header />
       <main className="min-h-screen bg-gray-50">
