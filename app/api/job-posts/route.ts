@@ -42,9 +42,12 @@ export async function GET(request: NextRequest) {
       filters.workPolicies = [searchParams.get('work_policy')];
     }
     
-    // Salary range filters
-    if (searchParams.get('salary_range')) {
-      filters.salaries = [searchParams.get('salary_range')];
+    // Salary range filters - Direct min/max parameters
+    if (searchParams.get('job_salary_min')) {
+      filters.job_salary_min = searchParams.get('job_salary_min');
+    }
+    if (searchParams.get('job_salary_max')) {
+      filters.job_salary_max = searchParams.get('job_salary_max');
     }
 
     // Company filter

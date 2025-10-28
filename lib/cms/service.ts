@@ -344,8 +344,15 @@ export class CMSService {
       params.set('work_policy', workPolicy);
     }
 
-    // Salary filter (salaries) - using job_salary_min and job_salary_max primary parameters
-    if (filters.salaries && filters.salaries.length > 0) {
+    // NEW: Direct salary min/max (takes priority)
+    if (filters.job_salary_min) {
+      params.set('job_salary_min', filters.job_salary_min);
+    }
+    if (filters.job_salary_max) {
+      params.set('job_salary_max', filters.job_salary_max);
+    }
+    // FALLBACK: Old salary range logic (for backward compatibility)
+    if (!filters.job_salary_min && !filters.job_salary_max && filters.salaries && filters.salaries.length > 0) {
       const salaryRange = filters.salaries[0];
       if (salaryRange === '1-3') {
         params.set('job_salary_min', '1000000');

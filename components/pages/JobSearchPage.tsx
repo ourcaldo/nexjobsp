@@ -69,6 +69,54 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   const [sortBy, setSortBy] = useState('newest');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
+  // Helper function to calculate salary range from multiple selected ranges
+  const calculateSalaryRange = (selectedRanges: string[]): { min: string | null, max: string | null } => {
+    if (!selectedRanges || selectedRanges.length === 0) {
+      return { min: null, max: null };
+    }
+
+    // Salary range mapping
+    const rangeMapping: { [key: string]: { min: number, max: number | null } } = {
+      '1-3': { min: 1000000, max: 3000000 },
+      '4-6': { min: 4000000, max: 6000000 },
+      '7-9': { min: 7000000, max: 9000000 },
+      '10+': { min: 10000000, max: null }
+    };
+
+    // If all 4 ranges are selected, only send minimum
+    if (selectedRanges.length === 4) {
+      return { min: '1000000', max: null };
+    }
+
+    // Find min and max from selected ranges
+    let minSalary = Number.MAX_SAFE_INTEGER;
+    let maxSalary: number | null = null;
+    let hasOpenRange = false;
+
+    selectedRanges.forEach(range => {
+      const mapping = rangeMapping[range];
+      if (mapping) {
+        minSalary = Math.min(minSalary, mapping.min);
+        
+        // If any range is '10+', there's no max limit
+        if (mapping.max === null) {
+          hasOpenRange = true;
+        } else if (!hasOpenRange) {
+          if (maxSalary === null) {
+            maxSalary = mapping.max;
+          } else {
+            maxSalary = Math.max(maxSalary, mapping.max);
+          }
+        }
+      }
+    });
+
+    const finalMin = minSalary === Number.MAX_SAFE_INTEGER ? null : String(minSalary);
+    const finalMax = hasOpenRange ? null : (maxSalary !== null ? String(maxSalary) : null);
+    
+    return { min: finalMin, max: finalMax };
+  };
+
   // Get current filters object - memoized to prevent unnecessary recreations
   const getCurrentFilters = useCallback(() => {
     const locationFilter = initialLocation && locationType === 'province' ? initialLocation : selectedProvince;
@@ -140,6 +188,9 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
       // Store current filters
       currentFiltersRef.current = filters;
 
+      // Calculate salary range from selected salary filters
+      const salaryRange = calculateSalaryRange(filters.salaries);
+
       // Load jobs from API route
       const params = new URLSearchParams({
         page: '1',
@@ -152,7 +203,8 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
         ...(filters.experiences && filters.experiences.length > 0 && { experience_level: filters.experiences[0] }),
         ...(filters.educations && filters.educations.length > 0 && { education_level: filters.educations[0] }),
         ...(filters.workPolicies && filters.workPolicies.length > 0 && { work_policy: filters.workPolicies[0] }),
-        ...(filters.salaries && filters.salaries.length > 0 && { salary_range: filters.salaries[0] })
+        ...(salaryRange.min && { job_salary_min: salaryRange.min }),
+        ...(salaryRange.max && { job_salary_max: salaryRange.max })
       });
       
       const jobsResponse = await fetch(`/api/job-posts?${params.toString()}`);
@@ -205,6 +257,9 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
         router.replace(newUrl);
       }
 
+      // Calculate salary range from selected salary filters
+      const salaryRange = calculateSalaryRange(filters.salaries);
+
       const params = new URLSearchParams({
         page: '1',
         limit: '24',
@@ -216,7 +271,8 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
         ...(filters.experiences && filters.experiences.length > 0 && { experience_level: filters.experiences[0] }),
         ...(filters.educations && filters.educations.length > 0 && { education_level: filters.educations[0] }),
         ...(filters.workPolicies && filters.workPolicies.length > 0 && { work_policy: filters.workPolicies[0] }),
-        ...(filters.salaries && filters.salaries.length > 0 && { salary_range: filters.salaries[0] })
+        ...(salaryRange.min && { job_salary_min: salaryRange.min }),
+        ...(salaryRange.max && { job_salary_max: salaryRange.max })
       });
       
       const jobsResponse = await fetch(`/api/job-posts?${params.toString()}`);
@@ -277,6 +333,10 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     setLoadingMore(true);
     try {
       const filters = getCurrentFilters();
+      
+      // Calculate salary range from selected salary filters
+      const salaryRange = calculateSalaryRange(filters.salaries);
+      
       const params = new URLSearchParams({
         page: (currentPage + 1).toString(),
         limit: '24',
@@ -288,7 +348,8 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
         ...(filters.experiences && filters.experiences.length > 0 && { experience_level: filters.experiences[0] }),
         ...(filters.educations && filters.educations.length > 0 && { education_level: filters.educations[0] }),
         ...(filters.workPolicies && filters.workPolicies.length > 0 && { work_policy: filters.workPolicies[0] }),
-        ...(filters.salaries && filters.salaries.length > 0 && { salary_range: filters.salaries[0] })
+        ...(salaryRange.min && { job_salary_min: salaryRange.min }),
+        ...(salaryRange.max && { job_salary_max: salaryRange.max })
       });
       
       const jobsResponse = await fetch(`/api/job-posts?${params.toString()}`);
