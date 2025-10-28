@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Providers } from './providers';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import GoogleAnalytics from '@/components/Analytics/GoogleAnalytics';
 import GoogleTagManager, { GoogleTagManagerNoScript } from '@/components/Analytics/GoogleTagManager';
 import PopupAd from '@/components/Advertisement/PopupAd';
@@ -24,10 +25,12 @@ export default function RootLayout({
       <GoogleTagManager />
       <body className={inter.className}>
         <GoogleTagManagerNoScript />
-        <Providers>
-          {children}
-          <PopupAd />
-        </Providers>
+        <ErrorBoundary>
+          <Providers>
+            {children}
+            <PopupAd />
+          </Providers>
+        </ErrorBoundary>
         <GoogleAnalytics />
       </body>
     </html>
