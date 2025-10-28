@@ -9,6 +9,7 @@ export interface FilterData {
   categories: Array<{ id: string; name: string; slug: string; description: string | null; post_count: number }>;
   tags: Array<{ id: string; name: string; slug: string; post_count: number }>;
   salary_range: { min: string; max: string; currencies: string[] };
+  work_policy: Array<{ name: string; value: string; post_count: number }>;
   provinces: Array<{ id: string; name: string; post_count: number }>;
   regencies: Array<{ id: string; name: string; province_id: string; post_count: number }>;
   skills: Array<{ name: string; post_count: number }>;
@@ -360,6 +361,88 @@ export class CMSService {
       }
     }
 
+    // Company filter - using 'company' alias
+    if (filters.company) {
+      params.set('company', filters.company);
+    }
+    if (filters.companies && filters.companies.length > 0) {
+      params.set('company', filters.companies[0]);
+    }
+
+    // Tag filter - using 'job_tag' parameter
+    if (filters.tag) {
+      params.set('job_tag', filters.tag);
+    }
+    if (filters.tags && filters.tags.length > 0) {
+      params.set('job_tag', filters.tags[0]);
+    }
+
+    // Skill filter
+    if (filters.skill) {
+      params.set('skill', filters.skill);
+    }
+    if (filters.skills && filters.skills.length > 0) {
+      params.set('skill', filters.skills[0]);
+    }
+
+    // Benefit filter
+    if (filters.benefit) {
+      params.set('benefit', filters.benefit);
+    }
+    if (filters.benefits && filters.benefits.length > 0) {
+      params.set('benefit', filters.benefits[0]);
+    }
+
+    // Additional location filters
+    // District filter - use 'district' parameter
+    if (filters.district) {
+      params.set('district', filters.district);
+    }
+    if (filters.districts && filters.districts.length > 0) {
+      params.set('district', filters.districts[0]);
+    }
+
+    // Village filter - use 'village' parameter
+    if (filters.village) {
+      params.set('village', filters.village);
+    }
+    if (filters.villages && filters.villages.length > 0) {
+      params.set('village', filters.villages[0]);
+    }
+
+    // Additional salary filters
+    // Currency filter - use 'salary_currency' parameter as per API documentation
+    if (filters.currency) {
+      params.set('salary_currency', filters.currency);
+    }
+    if (filters.salary_currency) {
+      params.set('salary_currency', filters.salary_currency);
+    }
+
+    // Period filter - use 'salary_period' parameter as per API documentation
+    if (filters.period) {
+      params.set('salary_period', filters.period);
+    }
+    if (filters.salary_period) {
+      params.set('salary_period', filters.salary_period);
+    }
+
+    // Salary negotiable filter - use 'salary_negotiable' parameter as per API documentation
+    if (filters.negotiable !== undefined) {
+      params.set('salary_negotiable', filters.negotiable.toString());
+    }
+    if (filters.salary_negotiable !== undefined) {
+      params.set('salary_negotiable', filters.salary_negotiable.toString());
+    }
+
+    // Application deadline filters
+    if (filters.deadline_after) {
+      params.set('deadline_after', filters.deadline_after);
+    }
+    if (filters.deadline_before) {
+      params.set('deadline_before', filters.deadline_before);
+    }
+
     return `${this.baseUrl}/api/v1/job-posts?${params.toString()}`;
   }
 
@@ -417,6 +500,7 @@ export class CMSService {
       categories: [],
       tags: [],
       salary_range: { min: '0', max: '0', currencies: ['IDR'] },
+      work_policy: [],
       provinces: [],
       regencies: [],
       skills: []
@@ -636,12 +720,19 @@ export class CMSService {
     }
   }
 
-  async getCategories(page: number = 1, limit: number = 50) {
+  async getCategories(page: number = 1, limit: number = 50, search?: string) {
     await this.ensureInitialized();
     
     try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString()
+      });
+
+      if (search) params.set('search', search);
+
       const response = await this.fetchWithTimeout(
-        `${this.baseUrl}/api/v1/categories?page=${page}&limit=${limit}`
+        `${this.baseUrl}/api/v1/categories?${params.toString()}`
       );
       const data = await response.json();
       return data;
@@ -651,18 +742,65 @@ export class CMSService {
     }
   }
 
-  async getTags(page: number = 1, limit: number = 50) {
+  async getTags(page: number = 1, limit: number = 50, search?: string) {
     await this.ensureInitialized();
     
     try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString()
+      });
+
+      if (search) params.set('search', search);
+
       const response = await this.fetchWithTimeout(
-        `${this.baseUrl}/api/v1/tags?page=${page}&limit=${limit}`
+        `${this.baseUrl}/api/v1/tags?${params.toString()}`
       );
       const data = await response.json();
       return data;
     } catch (error) {
       console.error('Error fetching tags:', error);
       return { success: false, data: { tags: [], pagination: {} } };
+    }
+  }
+
+  async getCategoryWithPosts(idOrSlug: string, page: number = 1, limit: number = 20) {
+    await this.ensureInitialized();
+    
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString()
+      });
+
+      const response = await this.fetchWithTimeout(
+        `${this.baseUrl}/api/v1/categories/${idOrSlug}?${params.toString()}`
+      );
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching category with posts:', error);
+      return { success: false, data: { category: null, posts: [], pagination: {} } };
+    }
+  }
+
+  async getTagWithPosts(idOrSlug: string, page: number = 1, limit: number = 20) {
+    await this.ensureInitialized();
+    
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString()
+      });
+
+      const response = await this.fetchWithTimeout(
+        `${this.baseUrl}/api/v1/tags/${idOrSlug}?${params.toString()}`
+      );
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching tag with posts:', error);
+      return { success: false, data: { tag: null, posts: [], pagination: {} } };
     }
   }
 

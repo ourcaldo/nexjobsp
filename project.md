@@ -155,6 +155,89 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-28 05:45 - Enhanced CMS API Implementation with Complete Filter Support **[COMPLETED]**
+- **Time**: 05:45 WIB
+- **Features Added**:
+  1. Complete filter parameter support for job posts aligned with TugasCMS API v1 documentation
+  2. Search functionality for categories and tags
+  3. New methods to fetch single category/tag with paginated posts
+  4. Updated FilterData interface to include work_policy data
+  
+- **Implementation Details**:
+  
+  **Files Modified**:
+  - `lib/cms/service.ts` - Enhanced CMS service with comprehensive filter support:
+    - **buildJobsUrl()**: Added 12 new filter parameters:
+      - **Company filters**: `company` (with aliases: company_name, job_company_name)
+      - **Tag filters**: `job_tag` / `tag`
+      - **Skill filters**: `skill`
+      - **Benefit filters**: `benefit`
+      - **Additional location filters**: `district` / `district_id`, `village` / `village_id`
+      - **Additional salary filters**: `currency` / `salary_currency`, `period` / `salary_period`, `negotiable` / `salary_negotiable`
+      - **Application deadline filters**: `deadline_after`, `deadline_before`
+    
+    - **getCategories()**: Added optional `search` parameter for filtering categories by name/description
+    - **getTags()**: Added optional `search` parameter for filtering tags by name
+    
+    - **New Methods**:
+      - `getCategoryWithPosts(idOrSlug, page, limit)`: Fetch single category with paginated posts (GET /api/v1/categories/{id})
+      - `getTagWithPosts(idOrSlug, page, limit)`: Fetch single tag with paginated posts (GET /api/v1/tags/{id})
+    
+    - **FilterData Interface**: Added `work_policy` field to match API response structure:
+      ```typescript
+      work_policy: Array<{ name: string; value: string; post_count: number }>
+      ```
+  
+  - `app/api/job-posts/route.ts` - Updated API route to accept all new filter parameters:
+    - Accepts all parameter aliases (e.g., company, company_name, job_company_name)
+    - Maps query parameters to filter object for CMS service
+    - Supports boolean conversion for negotiable filter
+    - Total of 12 new filter parameters added to existing endpoint
+  
+  **Filter Parameters Now Supported**:
+  
+  **Job Posts (GET /api/v1/job-posts)**:
+  - **Basic**: page, limit, search, status ✓
+  - **Company**: company / company_name / job_company_name ✓
+  - **Type & Level**: employment_type, experience_level, education_level ✓
+  - **Category & Tag**: job_category / category, job_tag / tag ✓
+  - **Location**: province / province_id, city / regency / regency_id, district / district_id, village / village_id ✓
+  - **Work Policy**: work_policy (onsite / remote / hybrid) ✓
+  - **Salary**: salary_min / job_salary_min, salary_max / job_salary_max ✓
+  - **Salary Details**: currency / salary_currency, period / salary_period, negotiable / salary_negotiable ✓
+  - **Skills & Benefits**: skill, benefit ✓
+  - **Deadlines**: deadline_after, deadline_before ✓
+  
+  **Categories (GET /api/v1/categories)**:
+  - page, limit, search ✓
+  
+  **Tags (GET /api/v1/tags)**:
+  - page, limit, search ✓
+  
+  **API Alignment**:
+  - All filter parameters match TugasCMS API v1 specification
+  - Support for parameter aliases (e.g., salary_min, job_salary_min, min_salary)
+  - Consistent with API documentation at API_Documentation.md
+  - Ready for future CMS API updates and enhancements
+
+- **Verification**:
+  - ✅ No LSP errors after all changes
+  - ✅ Application compiles and runs successfully
+  - ✅ Workflow restarted without errors
+  - ✅ All new filter parameters properly mapped and passed to CMS API
+  - ✅ FilterData interface matches API response structure
+  - ✅ New methods follow existing code patterns and conventions
+  - ✅ Parameter aliases properly handled for flexibility
+
+- **Impact**:
+  - **API Completeness**: Implementation now fully aligned with TugasCMS API v1 specification, supporting all documented filter parameters
+  - **Filtering Capabilities**: Users can now filter jobs by 10+ additional criteria including company, tags, skills, benefits, granular location (district/village), salary details, and application deadlines
+  - **Developer Experience**: Parameter aliases provide flexibility in API usage, supporting multiple naming conventions
+  - **Maintainability**: Comprehensive implementation reduces need for future filter-related updates
+  - **Scalability**: New methods (getCategoryWithPosts, getTagWithPosts) enable building category/tag archive pages with pagination
+  - **Data Discovery**: Search support for categories and tags improves content discoverability
+  - **Future-Proof**: Complete API alignment ensures compatibility with current and future CMS versions
+
 ### 2025-10-27 17:15 - Comprehensive Project Analysis **[COMPLETED]**
 - **Time**: 17:15 WIB
 - **Deliverable**: Created detailed technical analysis document

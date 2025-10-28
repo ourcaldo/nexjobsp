@@ -46,6 +46,58 @@ export async function GET(request: NextRequest) {
     if (searchParams.get('salary_range')) {
       filters.salaries = [searchParams.get('salary_range')];
     }
+
+    // Company filter
+    if (searchParams.get('company') || searchParams.get('company_name') || searchParams.get('job_company_name')) {
+      filters.company = searchParams.get('company') || searchParams.get('company_name') || searchParams.get('job_company_name');
+    }
+
+    // Tag filter
+    if (searchParams.get('tag') || searchParams.get('job_tag')) {
+      filters.tag = searchParams.get('tag') || searchParams.get('job_tag');
+    }
+
+    // Skill filter
+    if (searchParams.get('skill')) {
+      filters.skill = searchParams.get('skill');
+    }
+
+    // Benefit filter
+    if (searchParams.get('benefit')) {
+      filters.benefit = searchParams.get('benefit');
+    }
+
+    // Additional location filters
+    if (searchParams.get('district') || searchParams.get('district_id')) {
+      filters.district = searchParams.get('district') || searchParams.get('district_id');
+    }
+
+    if (searchParams.get('village') || searchParams.get('village_id')) {
+      filters.village = searchParams.get('village') || searchParams.get('village_id');
+    }
+
+    // Additional salary filters
+    if (searchParams.get('currency') || searchParams.get('salary_currency')) {
+      filters.currency = searchParams.get('currency') || searchParams.get('salary_currency');
+    }
+
+    if (searchParams.get('period') || searchParams.get('salary_period')) {
+      filters.period = searchParams.get('period') || searchParams.get('salary_period');
+    }
+
+    if (searchParams.get('negotiable') || searchParams.get('salary_negotiable')) {
+      const negotiableValue = searchParams.get('negotiable') || searchParams.get('salary_negotiable');
+      filters.negotiable = negotiableValue === 'true';
+    }
+
+    // Application deadline filters
+    if (searchParams.get('deadline_after')) {
+      filters.deadline_after = searchParams.get('deadline_after');
+    }
+
+    if (searchParams.get('deadline_before')) {
+      filters.deadline_before = searchParams.get('deadline_before');
+    }
     
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '24');
