@@ -30,23 +30,22 @@ Sitemap: ${baseUrl}/sitemap.xml`;
     try {
       const settings = await SupabaseAdminService.getSettingsServerSide();
       
-      // Handle the response properly - settings might be wrapped in a data object
-      const robotsValue = settings?.robots_txt || settings?.data?.robots_txt;
-      
       console.log('DEBUG robots_txt from DB:', {
         settingsType: typeof settings,
-        hasRobotsTxt: !!robotsValue,
-        robotsType: typeof robotsValue,
-        length: robotsValue?.length,
-        preview: typeof robotsValue === 'string' ? robotsValue.substring(0, 50) : 'NOT A STRING'
+        hasRobotsTxt: !!settings?.robots_txt,
+        robotsType: typeof settings?.robots_txt,
+        length: settings?.robots_txt?.length,
+        settingsKeys: settings ? Object.keys(settings).slice(0, 10) : 'NO SETTINGS',
+        preview: typeof settings?.robots_txt === 'string' ? settings.robots_txt.substring(0, 50) : 'NOT A STRING'
       });
       
-      if (robotsValue && typeof robotsValue === 'string' && robotsValue.trim() !== '') {
-        robotsTxt = robotsValue;
+      if (settings?.robots_txt && typeof settings.robots_txt === 'string' && settings.robots_txt.trim() !== '') {
+        robotsTxt = settings.robots_txt;
         console.log('SUCCESS: Serving robots.txt from database');
       } else {
         robotsTxt = defaultRobotsTxt;
         console.error('ERROR: Database robots_txt is invalid or empty! Using fallback');
+        console.error('Settings object:', JSON.stringify(settings, null, 2).substring(0, 500));
       }
     } catch (dbError) {
       console.error('Error fetching robots.txt from database:', dbError);

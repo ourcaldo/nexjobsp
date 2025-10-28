@@ -641,7 +641,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
             return SupabaseAdminService.getDefaultSettings();
           }
 
-          console.log('Settings fetched successfully via public access, robots_txt type:', typeof publicData.robots_txt);
+          console.log('Settings fetched via public access - robots_txt:', typeof publicData.robots_txt, 'length:', publicData.robots_txt?.length);
           return publicData;
         } catch (publicErr) {
           console.error('Public retry failed:', publicErr);
@@ -654,7 +654,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
         return SupabaseAdminService.getDefaultSettings();
       }
 
-      console.log('Settings fetched successfully, robots_txt type:', typeof data.robots_txt);
+      console.log('Settings fetched successfully - robots_txt:', typeof data.robots_txt, 'length:', data.robots_txt?.length, 'preview:', data.robots_txt?.substring(0, 30));
       return data;
     } catch (error) {
       console.error('Error fetching admin settings server-side:', error);
