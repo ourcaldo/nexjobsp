@@ -344,20 +344,20 @@ export class CMSService {
       params.set('work_policy', workPolicy);
     }
 
-    // Salary filter (salaries) - using salary_min and salary_max aliases
+    // Salary filter (salaries) - using job_salary_min and job_salary_max primary parameters
     if (filters.salaries && filters.salaries.length > 0) {
       const salaryRange = filters.salaries[0];
       if (salaryRange === '1-3') {
-        params.set('salary_min', '1000000');
-        params.set('salary_max', '3000000');
+        params.set('job_salary_min', '1000000');
+        params.set('job_salary_max', '3000000');
       } else if (salaryRange === '4-6') {
-        params.set('salary_min', '4000000');
-        params.set('salary_max', '6000000');
+        params.set('job_salary_min', '4000000');
+        params.set('job_salary_max', '6000000');
       } else if (salaryRange === '7-9') {
-        params.set('salary_min', '7000000');
-        params.set('salary_max', '9000000');
+        params.set('job_salary_min', '7000000');
+        params.set('job_salary_max', '9000000');
       } else if (salaryRange === '10+') {
-        params.set('salary_min', '10000000');
+        params.set('job_salary_min', '10000000');
       }
     }
 
