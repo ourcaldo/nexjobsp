@@ -336,33 +336,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
 
       const { data, error } = await supabaseServer
         .from('admin_settings')
-        .select(`
-          id,
-          site_title,
-          site_tagline,
-          site_description,
-          site_url,
-          ga_id,
-          gtm_id,
-          cms_endpoint,
-          cms_token,
-          cms_timeout,
-          supabase_storage_endpoint,
-          supabase_storage_region,
-          supabase_storage_access_key,
-          supabase_storage_secret_key,
-          robots_txt,
-          sitemap_update_interval,
-          auto_generate_sitemap,
-          last_sitemap_update,
-          popup_ad_url,
-          popup_ad_enabled,
-          popup_ad_load_settings,
-          popup_ad_max_executions,
-          popup_ad_device,
-          created_at,
-          updated_at
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
@@ -639,33 +613,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
 
       const { data, error } = await supabaseServer
         .from('admin_settings')
-        .select(`
-          id,
-          site_title,
-          site_tagline,
-          site_description,
-          site_url,
-          ga_id,
-          gtm_id,
-          cms_endpoint,
-          cms_token,
-          cms_timeout,
-          supabase_storage_endpoint,
-          supabase_storage_region,
-          supabase_storage_access_key,
-          supabase_storage_secret_key,
-          robots_txt,
-          sitemap_update_interval,
-          auto_generate_sitemap,
-          last_sitemap_update,
-          popup_ad_url,
-          popup_ad_enabled,
-          popup_ad_load_settings,
-          popup_ad_max_executions,
-          popup_ad_device,
-          created_at,
-          updated_at
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
@@ -683,33 +631,7 @@ Sitemap: ${env.SITE_URL}/sitemap.xml`,
 
           const { data: publicData, error: publicError } = await publicClient
             .from('admin_settings')
-            .select(`
-              id,
-              site_title,
-              site_tagline,
-              site_description,
-              site_url,
-              ga_id,
-              gtm_id,
-              cms_endpoint,
-              cms_token,
-              cms_timeout,
-              supabase_storage_endpoint,
-              supabase_storage_region,
-              supabase_storage_access_key,
-              supabase_storage_secret_key,
-              robots_txt,
-              sitemap_update_interval,
-              auto_generate_sitemap,
-              last_sitemap_update,
-              popup_ad_url,
-              popup_ad_enabled,
-              popup_ad_load_settings,
-              popup_ad_max_executions,
-              popup_ad_device,
-              created_at,
-              updated_at
-            `)
+            .select('*')
             .order('created_at', { ascending: false })
             .limit(1)
             .single();
