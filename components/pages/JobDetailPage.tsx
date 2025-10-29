@@ -16,7 +16,8 @@ import {
   Bookmark,
   Share2,
   CalendarDays,
-  Badge
+  Badge,
+  AlertTriangle
 } from 'lucide-react';
 import { Job } from '@/types/job';
 import { bookmarkService } from '@/lib/utils/bookmarks';
@@ -26,6 +27,7 @@ import { useAnalytics } from '@/hooks/useAnalytics';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import JobCard from '@/components/JobCard';
 import BookmarkLoginModal from '@/components/ui/BookmarkLoginModal';
+import JobApplicationModal from '@/components/ui/JobApplicationModal';
 import { sanitizeHTML } from '@/lib/utils/sanitize';
 import ShareButton from '@/components/ui/ShareButton';
 
@@ -44,6 +46,7 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, slug, settings }) =>
   const [isHydrated, setIsHydrated] = useState(false);
   const [isBookmarkLoading, setIsBookmarkLoading] = useState(false);
   const [showBookmarkModal, setShowBookmarkModal] = useState(false);
+  const [showApplicationModal, setShowApplicationModal] = useState(false);
 
   // Load related jobs - only fetch once when job ID changes
   useEffect(() => {
@@ -133,10 +136,12 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, slug, settings }) =>
   };
 
   const handleApplyClick = () => {
-    // Track job application click
-    trackJobApplication(job.title, job.company_name, job.id);
+    setShowApplicationModal(true);
+  };
 
-    // Open application link
+  const handleProceedApplication = () => {
+    trackJobApplication(job.title, job.company_name, job.id);
+    setShowApplicationModal(false);
     window.open(job.link, '_blank');
   };
 
@@ -382,6 +387,21 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, slug, settings }) =>
 
             {/* Job Description */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 mb-8">
+              {/* Scam Warning Notice */}
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-5 mb-6 rounded-lg">
+                <div className="flex items-start">
+                  <AlertTriangle className="h-5 w-5 text-yellow-600 mr-3 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-semibold text-yellow-900 mb-1">
+                      Perhatian: Waspada Penipuan!
+                    </p>
+                    <p className="text-yellow-800">
+                      Perusahaan yang sah <strong>tidak akan pernah meminta biaya apapun</strong> dalam proses rekrutmen. Jika diminta membayar, segera laporkan dan hentikan proses lamaran Anda.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Deskripsi Pekerjaan</h2>
               <div 
                 className="prose prose-gray max-w-none"
@@ -508,6 +528,14 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, slug, settings }) =>
         onClose={() => setShowBookmarkModal(false)}
         onLogin={handleBookmarkModalLogin}
         onSignup={handleBookmarkModalSignup}
+      />
+
+      {/* Job Application Modal */}
+      <JobApplicationModal
+        isOpen={showApplicationModal}
+        onClose={() => setShowApplicationModal(false)}
+        onProceed={handleProceedApplication}
+        jobLink={job.link}
       />
     </div>
   );

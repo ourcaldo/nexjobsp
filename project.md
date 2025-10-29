@@ -155,6 +155,101 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-29 - UX Enhancement: Job Application Safety & Scam Warning **[COMPLETED]**
+- **Time**: 21:15 WIB
+- **Scope**: Added scam warning notices and application confirmation modal to protect users from recruitment fraud
+- **Status**: Implemented and ready for testing
+- **Priority**: HIGH - User safety and trust improvement
+
+**Features Implemented**:
+
+1. **Scam Warning Notice Box**
+   - **Location**: Job detail page, before "Deskripsi Pekerjaan" section
+   - **Design**: Yellow notice box with warning icon
+   - **Content**: Warning message in Bahasa Indonesia about recruitment scams
+   - **Message**: Warns users that legitimate companies never ask for money during recruitment
+   - **Purpose**: Proactive user protection against common recruitment scams
+
+2. **Job Application Confirmation Modal**
+   - **Component**: New `JobApplicationModal` component (`components/ui/JobApplicationModal.tsx`)
+   - **Trigger**: Shown when user clicks "Lamar Sekarang" button
+   - **Content Structure** (in order):
+     - Advertisement from backend admin settings (single_top position)
+     - Comprehensive scam warning message with examples of fraudulent requests:
+       - Registration fees
+       - Training/certification costs
+       - Medical examination fees
+       - Uniform/equipment costs
+     - Redirect notice informing user they'll be sent to company website
+     - Action buttons: "Batalkan" (cancel) and "Kirim Lamaran" (proceed)
+   - **Flow**: Modal → User reads warnings → Click "Kirim Lamaran" → Redirects to company job page
+   - **Analytics**: Maintains tracking of job applications
+
+3. **Login Modal UI Cleanup**
+   - **File**: `components/ui/BookmarkLoginModal.tsx`
+   - **Change**: Removed profile icon from modal header
+   - **Reason**: User feedback - cleaner, less cluttered interface
+   - **Retained**: Close button (X) in header, User and Mail icons in action buttons
+
+**Technical Implementation**:
+
+**New Component - JobApplicationModal.tsx**:
+```typescript
+interface JobApplicationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onProceed: () => void;
+  jobLink: string;
+}
+```
+- Integrates with existing AdDisplay component for advertisement
+- Responsive modal with max-height and scroll for mobile devices
+- Consistent styling with other modals in the project
+- Accessible with aria-labels and keyboard support
+
+**Updated JobDetailPage.tsx**:
+- Added `showApplicationModal` state
+- Modified `handleApplyClick()` to show modal instead of direct redirect
+- Created `handleProceedApplication()` to handle confirmed applications
+- Added scam warning notice before job description section
+- Imported AlertTriangle icon and JobApplicationModal component
+
+**Files Modified**:
+1. `components/ui/JobApplicationModal.tsx` - New component created
+2. `components/pages/JobDetailPage.tsx` - Added modal integration and warning notice
+3. `components/ui/BookmarkLoginModal.tsx` - Removed profile icon from header
+
+**User Safety Features**:
+- ✅ Two-layer warning system (notice box + confirmation modal)
+- ✅ Clear examples of fraudulent requests to watch for
+- ✅ Educates users about legitimate recruitment practices
+- ✅ Non-intrusive but visible warnings
+- ✅ Maintains smooth application flow with confirmation step
+- ✅ Monetization through ad display in application modal
+
+**Impact**:
+- ✅ **User Trust**: Demonstrates platform's commitment to user safety
+- ✅ **Scam Prevention**: Multiple warnings reduce risk of users falling for recruitment scams
+- ✅ **Legal Protection**: Platform shows due diligence in warning users
+- ✅ **User Experience**: Clean modal design without unnecessary clutter
+- ✅ **Monetization**: Strategic ad placement in application flow
+- ✅ **Compliance**: Follows best practices for job portal safety measures
+
+**Design Update - Compact Modal**:
+- **Updated**: Modal redesigned for compact appearance without scrolling
+- **Width**: Changed from `max-w-2xl` to `max-w-lg` for smaller footprint
+- **Ad Area**: Limited to `max-h-24` to prevent excessive height
+- **Warning Text**: Condensed from bullet list to single flowing paragraph
+- **Typography**: Reduced to `text-sm` throughout for compact design
+- **Padding**: Reduced spacing (p-4 instead of p-6, py-2.5 for buttons)
+- **Result**: Clean, compact modal that fits on screen without scrolling
+
+**Verification**:
+- ✅ Zero LSP/TypeScript errors
+- ✅ Workflow running successfully
+- ✅ Compact design without scrolling
+- ✅ All functionality maintained
+
 ### 2025-10-29 - Debug Logs Cleanup **[COMPLETED]**
 - **Time**: 20:36 WIB
 - **Scope**: Removed all user-visible debug console.log statements from client-side components
