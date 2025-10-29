@@ -388,15 +388,17 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, slug, settings }) =>
             {/* Job Description */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 mb-8">
               {/* Scam Warning Notice */}
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-5 mb-6 rounded-lg">
-                <div className="flex items-start">
-                  <AlertTriangle className="h-5 w-5 text-yellow-600 mr-3 flex-shrink-0 mt-0.5" />
-                  <div className="text-sm">
-                    <p className="font-semibold text-yellow-900 mb-1">
-                      Perhatian: Waspada Penipuan!
-                    </p>
-                    <p className="text-yellow-800">
-                      Perusahaan yang sah <strong>tidak akan pernah meminta biaya apapun</strong> dalam proses rekrutmen. Jika diminta membayar, segera laporkan dan hentikan proses lamaran Anda.
+              <div className="border-2 border-dashed border-yellow-500 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-5 mb-6 shadow-sm">
+                <div className="flex items-start gap-3">
+                  <div className="bg-yellow-500 rounded-full p-2 flex-shrink-0">
+                    <AlertTriangle className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-yellow-900 text-base mb-2 flex items-center gap-2">
+                      ⚠️ Perhatian: Waspada Penipuan!
+                    </h3>
+                    <p className="text-yellow-900 text-sm leading-relaxed">
+                      Perusahaan yang sah <span className="font-bold text-orange-700">tidak akan pernah meminta biaya apapun</span> dalam proses rekrutmen. Jika diminta membayar, segera laporkan dan hentikan proses lamaran Anda.
                     </p>
                   </div>
                 </div>

@@ -235,14 +235,25 @@ interface JobApplicationModalProps {
 - ✅ **Monetization**: Strategic ad placement in application flow
 - ✅ **Compliance**: Follows best practices for job portal safety measures
 
-**Design Update - Compact Modal**:
-- **Updated**: Modal redesigned for compact appearance without scrolling
+**Design Updates**:
+
+*Compact Modal Design*:
 - **Width**: Changed from `max-w-2xl` to `max-w-lg` for smaller footprint
 - **Ad Area**: Limited to `max-h-24` to prevent excessive height
 - **Warning Text**: Condensed from bullet list to single flowing paragraph
 - **Typography**: Reduced to `text-sm` throughout for compact design
 - **Padding**: Reduced spacing (p-4 instead of p-6, py-2.5 for buttons)
 - **Result**: Clean, compact modal that fits on screen without scrolling
+
+*Modern Warning Box Design*:
+- **Border Style**: Upgraded to `border-2 border-dashed` (dashed borders) instead of basic left-border
+- **Background**: Gradient background `from-yellow-50 to-orange-50` for visual depth
+- **Icon Badge**: Warning icon placed in circular yellow background (white icon on yellow-500)
+- **Visual Elements**: Added warning emoji (⚠️), shadow effect, rounded-xl corners
+- **Typography**: Bold headings, orange-700 emphasis on key text "tidak akan pernah meminta biaya"
+- **Layout**: Better spacing with gap-3, proper visual hierarchy
+- **Additional Feature**: Modal includes subtle white/60 background badge for redirect notice
+- **Result**: Modern, professional, eye-catching design that's no longer quote-like
 
 **Verification**:
 - ✅ Zero LSP/TypeScript errors

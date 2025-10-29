@@ -40,16 +40,21 @@ const JobApplicationModal: React.FC<JobApplicationModalProps> = ({
             <AdDisplay position="single_top" />
           </div>
 
-          {/* Warning Message - Compact */}
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-5 rounded">
+          {/* Warning Message - Modern Design */}
+          <div className="border-2 border-dashed border-yellow-500 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-4 mb-5 shadow-sm">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+              <div className="bg-yellow-500 rounded-full p-2 flex-shrink-0">
+                <AlertTriangle className="h-4 w-4 text-white" />
+              </div>
               <div className="text-sm">
-                <p className="font-semibold text-yellow-900 mb-1.5">
-                  Peringatan Penting!
+                <p className="font-bold text-yellow-900 mb-2">
+                  ⚠️ Peringatan Penting!
                 </p>
-                <p className="text-yellow-800 leading-relaxed">
-                  Hati-hati terhadap penipuan! Perusahaan yang sah <strong>tidak akan pernah meminta biaya</strong> dalam proses rekrutmen, termasuk untuk: biaya administrasi atau pendaftaran, pelatihan atau sertifikasi, pemeriksaan kesehatan, dan seragam atau perlengkapan. Anda akan dialihkan ke situs web perusahaan untuk melanjutkan proses lamaran.
+                <p className="text-yellow-900 leading-relaxed mb-2">
+                  Hati-hati terhadap penipuan! Perusahaan yang sah <span className="font-bold text-orange-700">tidak akan pernah meminta biaya</span> dalam proses rekrutmen, termasuk untuk: biaya administrasi atau pendaftaran, pelatihan atau sertifikasi, pemeriksaan kesehatan, dan seragam atau perlengkapan.
+                </p>
+                <p className="text-gray-700 text-xs bg-white/60 rounded px-2 py-1 inline-block">
+                  Anda akan dialihkan ke situs web perusahaan untuk melanjutkan proses lamaran.
                 </p>
               </div>
             </div>
