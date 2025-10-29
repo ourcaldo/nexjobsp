@@ -82,12 +82,7 @@ const PopupAd: React.FC = () => {
     // Remove cookies from other pages
     keysToRemove.forEach(key => {
       sessionStorage.removeItem(key);
-      console.log('[DEBUG] PopupAd: Removed sessionStorage from other page:', key);
     });
-
-    if (keysToRemove.length > 0) {
-      console.log('[DEBUG] PopupAd: Cleared', keysToRemove.length, 'sessionStorage entries from other pages');
-    }
   }, [getPageKey]);
 
   /**
@@ -97,7 +92,6 @@ const PopupAd: React.FC = () => {
     const sessionKey = 'sessionID_' + getPageKey();
     if (!sessionStorage.getItem(sessionKey)) {
       sessionStorage.setItem(sessionKey, generateSessionId());
-      console.log('[DEBUG] PopupAd: Session initialized:', sessionKey);
     }
   }, [getPageKey, generateSessionId]);
 
@@ -107,12 +101,8 @@ const PopupAd: React.FC = () => {
   const openTabOnce = useCallback((): void => {
     const tabKey = 'tabOpened_' + getPageKey();
     if (!sessionStorage.getItem(tabKey)) {
-      console.log('[DEBUG] PopupAd: Opening new tab - no previous session found');
       window.open(popupConfig.url, '_blank');
       sessionStorage.setItem(tabKey, 'true');
-      console.log('[DEBUG] PopupAd: Tab opened and marked in sessionStorage:', tabKey);
-    } else {
-      console.log('[DEBUG] PopupAd: Tab already opened in this session - BLOCKED');
     }
   }, [popupConfig.url, getPageKey]);
 
@@ -121,7 +111,6 @@ const PopupAd: React.FC = () => {
    * EXACTLY like reference - init session and open tab ONLY on user click
    */
   const handleUserEventTrigger = useCallback((): void => {
-    console.log('[DEBUG] PopupAd: User click detected');
     initSession();
     openTabOnce();
   }, [initSession, openTabOnce]);
@@ -130,13 +119,11 @@ const PopupAd: React.FC = () => {
   useEffect(() => {
     const loadConfig = async () => {
       try {
-        console.log('[DEBUG] PopupAd: Loading popup configuration...');
         const config = await advertisementService.getPopupAdConfig();
         setPopupConfig(config);
         setIsConfigLoaded(true);
-        console.log('[DEBUG] PopupAd: Configuration loaded:', config);
       } catch (error) {
-        console.error('[DEBUG] PopupAd: Error loading popup config:', error);
+        console.error('PopupAd: Error loading popup config:', error);
         setIsConfigLoaded(true);
       }
     };
@@ -147,24 +134,19 @@ const PopupAd: React.FC = () => {
   // Set up click event listener and cleanup sessionStorage when page changes
   useEffect(() => {
     if (!isConfigLoaded || !popupConfig.enabled || !popupConfig.url) {
-      console.log('[DEBUG] PopupAd: Popup disabled or no URL configured');
       return;
     }
 
     // Check if should trigger on this page
     if (!shouldTriggerOnPage(popupConfig.loadSettings)) {
-      console.log('[DEBUG] PopupAd: Page not eligible for popup based on load settings');
       return;
     }
 
     // Check device compatibility
     const currentDevice = getDeviceType();
     if (popupConfig.device !== 'all' && popupConfig.device !== currentDevice) {
-      console.log('[DEBUG] PopupAd: Device not compatible:', { current: currentDevice, required: popupConfig.device });
       return;
     }
-
-    console.log('[DEBUG] PopupAd: Setting up click listener for page:', getPageKey());
 
     // CLEAR sessionStorage dari page lain saat mount component
     clearOtherPagesSessions();
@@ -178,7 +160,6 @@ const PopupAd: React.FC = () => {
 
     // Cleanup function - HAPUS sessionStorage dari halaman sebelumnya
     return () => {
-      console.log('[DEBUG] PopupAd: Removing click listener');
       document.removeEventListener('click', handleClick);
 
       // HAPUS sessionStorage untuk halaman ini saat pindah halaman
@@ -189,10 +170,6 @@ const PopupAd: React.FC = () => {
       if (sessionStorage.getItem(sessionKey) || sessionStorage.getItem(tabKey)) {
         sessionStorage.removeItem(sessionKey);
         sessionStorage.removeItem(tabKey);
-        console.log('[DEBUG] PopupAd: Cleared sessionStorage on page leave:', { 
-          sessionKey, 
-          tabKey 
-        });
       }
     };
   }, [isConfigLoaded, popupConfig, pathname, shouldTriggerOnPage, getPageKey, clearOtherPagesSessions, handleUserEventTrigger]);

@@ -130,17 +130,6 @@ const JobCard: React.FC<JobCardProps> = React.memo(({
     const target = e.target as HTMLElement;
     if (!target.closest('button') && !target.closest('a')) {
       const categorySlug = job.job_categories?.[0]?.slug || 'uncategorized';
-      
-      // DEBUG: Log category information for demo-job
-      if (job.slug === 'demo-job') {
-        console.log('[JobCard] Category check:', {
-          slug: job.slug,
-          job_categories: job.job_categories,
-          categorySlug,
-          url: `/lowongan-kerja/${categorySlug}/${job.slug}/`
-        });
-      }
-      
       window.open(`/lowongan-kerja/${categorySlug}/${job.slug}/`, '_blank');
     }
   }, [job.slug, job.job_categories]);

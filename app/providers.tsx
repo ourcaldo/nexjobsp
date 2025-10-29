@@ -28,7 +28,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
         if (error) {
           console.error('Error getting session:', error);
         } else {
-          console.log('Session restored:', session?.user?.id || 'No session');
           authInitialized = true;
           
           // Dispatch a custom event to notify components
@@ -48,8 +47,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
     // Set up auth state change listener for the entire app
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
-      
-      console.log('Global auth state change:', event, session?.user?.id);
       
       // Clear auth cache on state changes
       const { clearAuthCache } = await import('@/lib/supabase');
@@ -72,7 +69,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
         }
       } else if (event === 'TOKEN_REFRESHED') {
         // Don't force a full page reload, just update state
-        console.log('Token refreshed, updating auth state');
       }
     });
 

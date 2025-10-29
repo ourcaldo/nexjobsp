@@ -30,8 +30,6 @@ class AdvertisementService {
     }
 
     try {
-      console.log('Fetching advertisement config from public API');
-      
       const response = await fetch('/api/public/advertisements/', {
         method: 'GET',
         headers: {

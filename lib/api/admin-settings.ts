@@ -75,11 +75,8 @@ export class AdminSettingsApiService {
     try {
       // Use cache if valid and not forcing refresh
       if (!forceRefresh && this.isCacheValid() && this.settingsCache) {
-        console.log('Using cached admin settings');
         return this.settingsCache.data;
       }
-
-      console.log('Fetching admin settings from API');
 
       const result = await this.makeRequest<{ data: AdminSettings }>(this.baseUrl);
 
@@ -120,7 +117,6 @@ export class AdminSettingsApiService {
 
   clearCache(): void {
     this.settingsCache = null;
-    console.log('Admin settings cache cleared');
   }
 }
 

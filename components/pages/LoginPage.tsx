@@ -59,7 +59,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ settings }) => {
       }
 
       if (data.user && data.session) {
-        console.log('Login successful, session created:', data.session.access_token.substring(0, 20) + '...');
         showToast('success', 'Berhasil masuk!');
 
         // Ensure session is properly set before navigation

@@ -45,11 +45,8 @@ class PublicSettingsApiService {
     try {
       // Use cache if valid and not forcing refresh
       if (!forceRefresh && this.isCacheValid() && this.cache) {
-        console.log('Using cached public settings');
         return this.cache.data;
       }
-
-      console.log('Fetching fresh public settings from API');
 
       const response = await fetch(`${this.baseUrl}/settings/`, {
         method: 'GET',
@@ -81,7 +78,6 @@ class PublicSettingsApiService {
   // Clear cache (useful after admin updates)
   clearCache(): void {
     this.cache = null;
-    console.log('Public settings cache cleared');
   }
 }
 

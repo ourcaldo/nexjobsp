@@ -108,7 +108,6 @@ export async function generateStaticParams() {
       }
     }
 
-    console.log(`generateStaticParams: Generated ${allParams.length} article paths across ${currentPage - 1} pages`);
     return allParams;
   } catch (error) {
     console.error('Error in generateStaticParams:', error);
