@@ -25,6 +25,18 @@ const JobCard: React.FC<JobCardProps> = React.memo(({
   isBookmarked: initialIsBookmarked,
   onBookmarkChange 
 }) => {
+  // DEBUG: Log job_categories on render for demo-job
+  if (job.slug === 'demo-job' && typeof window !== 'undefined') {
+    console.log('[JobCard RENDER] demo-job data:', {
+      slug: job.slug,
+      job_categories: job.job_categories,
+      typeof_job_categories: typeof job.job_categories,
+      is_array: Array.isArray(job.job_categories),
+      length: job.job_categories?.length,
+      first_category: job.job_categories?.[0]
+    });
+  }
+
   const router = useRouter();
   const { showToast } = useToast();
   const [user, setUser] = useState<any>(null);
@@ -130,6 +142,17 @@ const JobCard: React.FC<JobCardProps> = React.memo(({
     const target = e.target as HTMLElement;
     if (!target.closest('button') && !target.closest('a')) {
       const categorySlug = job.job_categories?.[0]?.slug || 'uncategorized';
+      
+      // DEBUG: Log category information for demo-job
+      if (job.slug === 'demo-job') {
+        console.log('[JobCard] Category check:', {
+          slug: job.slug,
+          job_categories: job.job_categories,
+          categorySlug,
+          url: `/lowongan-kerja/${categorySlug}/${job.slug}/`
+        });
+      }
+      
       window.open(`/lowongan-kerja/${categorySlug}/${job.slug}/`, '_blank');
     }
   }, [job.slug, job.job_categories]);

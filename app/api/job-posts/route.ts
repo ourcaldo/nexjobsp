@@ -96,6 +96,16 @@ export async function GET(request: NextRequest) {
     
     const response = await jobService.getJobs(filters, page, limit);
     
+    // DEBUG: Check if job_categories exists in first job
+    if (response.jobs.length > 0 && response.jobs[0].slug === 'demo-job') {
+      console.log('[API /job-posts] First job (demo-job) data:', {
+        slug: response.jobs[0].slug,
+        has_job_categories: !!response.jobs[0].job_categories,
+        job_categories_length: response.jobs[0].job_categories?.length || 0,
+        job_categories: response.jobs[0].job_categories
+      });
+    }
+    
     return NextResponse.json({
       success: true,
       data: response
