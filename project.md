@@ -155,6 +155,68 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-29 - CRITICAL FIX: Missing job_categories Field in Job Card URLs **[COMPLETED]**
+- **Time**: 20:17 WIB
+- **Scope**: Fixed critical bug where job_categories field was missing from job transformation, causing all job cards to use "uncategorized" instead of actual category slugs
+- **Status**: Fixed and verified
+- **Priority**: CRITICAL - Job cards were showing incorrect URLs leading to 404 errors
+
+**Problem Identified**:
+- Job cards on /lowongan-kerja page were displaying "uncategorized" category for all jobs
+- Clicking on job cards led to URLs like `/lowongan-kerja/uncategorized/demo-job/` which resulted in 404 errors
+- The correct URL should be `/lowongan-kerja/category-1/demo-job/` based on the actual job category
+- CMS API was returning `job_categories` correctly, but it was being lost in the transformation
+
+**Root Cause Analysis**:
+- The project uses `TugasCMSProvider` from `lib/cms/providers/tugascms.ts` as the active CMS provider
+- The `transformCMSJobToJob()` method in this provider was **missing** the `job_categories` field in the returned Job object
+- Even though the CMS API was returning `job_categories: [{ id, name, slug }]`, the transformation function didn't include it
+- This caused all jobs to have `job_categories: undefined` in the frontend
+- JobCard component correctly tried to use `job.job_categories?.[0]?.slug`, but since it was undefined, it defaulted to `'uncategorized'`
+
+**Changes Implemented**:
+
+1. **Fixed TugasCMSProvider Transformation**
+   - **File**: `lib/cms/providers/tugascms.ts`
+   - **Line**: 213 (added missing field)
+   - **Change**: Added `job_categories: cmsJob.job_categories || []` to the returned Job object
+   - **Purpose**: Ensure job category data from CMS API is properly passed through to the Job object
+
+2. **Updated Job Link Structure**
+   - **File**: `lib/cms/providers/tugascms.ts`
+   - **Line**: 231
+   - **Change**: Updated fallback link URL to use category slug: `/lowongan-kerja/${cmsJob.job_categories?.[0]?.slug || 'uncategorized'}/${cmsJob.slug}`
+   - **Purpose**: Ensure the link field also uses the correct category-based URL structure
+
+**Verification**:
+- ✅ API logs confirmed `job_categories` is now present:
+  ```javascript
+  {
+    slug: 'demo-job',
+    has_job_categories: true,
+    job_categories_length: 1,
+    job_categories: [{
+      id: 'ab315273-bc4c-44f6-bba2-c3a60839aa5c',
+      name: 'Category 1',
+      slug: 'category-1'
+    }]
+  }
+  ```
+- ✅ Job cards now correctly use actual category slug instead of "uncategorized"
+- ✅ Job card URLs now point to `/lowongan-kerja/category-1/demo-job/` (correct)
+- ✅ No more 404 errors when clicking job cards
+
+**Impact**:
+- ✅ **Critical Bug Fixed**: Users can now click on job cards and access job detail pages
+- ✅ **SEO Maintained**: Job URLs now correctly include category information as intended
+- ✅ **User Experience**: No more broken links or 404 errors on job listings
+- ✅ **Data Integrity**: Job category information now flows correctly from CMS API to frontend
+
+**Files Modified**:
+- `lib/cms/providers/tugascms.ts` - Added missing `job_categories` field and updated link structure
+
+**Note**: This was a critical bug that made job listings unusable. The fix ensures data consistency between CMS API response and frontend Job objects.
+
 ### 2025-10-29 - Job URL Structure Enhancement: Added Category Slug to Job URLs **[COMPLETED]**
 - **Time**: 16:30 WIB
 - **Scope**: Updated job detail page URL structure to include category slug for better SEO and URL clarity

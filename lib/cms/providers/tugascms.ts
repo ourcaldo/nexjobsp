@@ -207,6 +207,7 @@ export class TugasCMSProvider implements CMSProvider {
       content: cmsJob.content || '',
       company_name: cmsJob.job_company_name || 'Perusahaan',
       kategori_pekerjaan: cmsJob.job_categories?.[0]?.name || '',
+      job_categories: cmsJob.job_categories || [],
       lokasi_provinsi: cmsJob.province?.name || '',
       lokasi_kota: cmsJob.regency?.name || '',
       tipe_pekerjaan: cmsJob.employment_type?.name || 'Full Time',
@@ -224,7 +225,7 @@ export class TugasCMSProvider implements CMSProvider {
       industry: cmsJob.job_categories?.[0]?.name || '',
       link: cmsJob.job_application_url || cmsJob.job_application_email ? 
         (cmsJob.job_application_url || `mailto:${cmsJob.job_application_email}`) : 
-        `https://nexjob.tech/lowongan/${cmsJob.slug}`,
+        `https://nexjob.tech/lowongan-kerja/${cmsJob.job_categories?.[0]?.slug || 'uncategorized'}/${cmsJob.slug}`,
       sumber_lowongan: 'Nexjob',
       created_at: cmsJob.created_at,
       seo_title: cmsJob.seo_title || cmsJob.title,
