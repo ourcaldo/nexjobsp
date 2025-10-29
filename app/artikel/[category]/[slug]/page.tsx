@@ -101,9 +101,9 @@ export async function generateStaticParams() {
       hasMorePages = articlesResponse.data.pagination?.hasNextPage || false;
       currentPage++;
 
-      // Safety check: prevent infinite loops (max 10 pages = 500 articles)
-      if (currentPage > 10) {
-        console.warn('generateStaticParams: Reached max page limit (10 pages, 500 articles)');
+      // Safety check: prevent infinite loops (reasonable max: 100 pages = 5000 articles)
+      if (currentPage > 100) {
+        console.warn('generateStaticParams: Reached safety limit (100 pages, 5000 articles). If you have more articles, increase this limit.');
         break;
       }
     }
