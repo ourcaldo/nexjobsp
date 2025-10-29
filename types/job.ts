@@ -5,6 +5,7 @@ export interface Job {
   content: string;
   company_name: string;
   kategori_pekerjaan: string;
+  job_categories: Array<{ id: string; name: string; slug: string }>;
   lokasi_provinsi: string;
   lokasi_kota: string;
   tipe_pekerjaan: string;

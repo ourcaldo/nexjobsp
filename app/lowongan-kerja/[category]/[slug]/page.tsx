@@ -12,12 +12,13 @@ import { Job } from '@/types/job';
 
 interface JobPageProps {
   params: {
+    category: string;
     slug: string;
   };
 }
 
 // Wrap with React cache() to deduplicate API calls between generateMetadata() and page component
-const getJobData = cache(async (slug: string) => {
+const getJobData = cache(async (category: string, slug: string) => {
   try {
     const [job, settings] = await Promise.all([
       cmsService.getJobBySlug(slug),
@@ -30,8 +31,14 @@ const getJobData = cache(async (slug: string) => {
       notFound();
     }
 
+    const jobCategorySlug = job.job_categories?.[0]?.slug || 'uncategorized';
+    if (jobCategorySlug !== category) {
+      notFound();
+    }
+
     return {
       job,
+      category,
       slug,
       settings,
       currentUrl
@@ -44,11 +51,11 @@ const getJobData = cache(async (slug: string) => {
 
 export async function generateMetadata({ params }: JobPageProps): Promise<Metadata> {
   try {
-    const { job, slug, settings, currentUrl } = await getJobData(params.slug);
+    const { job, category, slug, settings, currentUrl } = await getJobData(params.category, params.slug);
 
     const pageTitle = job.seo_title || `${job.title} - ${job.company_name} | Nexjob`;
     const pageDescription = job.seo_description || `Lowongan ${job.title} di ${job.company_name}, ${job.lokasi_kota}. Gaji: ${job.gaji}. Lamar sekarang!`;
-    const canonicalUrl = `${currentUrl}/lowongan-kerja/${slug}/`;
+    const canonicalUrl = `${currentUrl}/lowongan-kerja/${category}/${slug}/`;
     const ogImage = settings.default_job_og_image || `${currentUrl}/og-job-default.jpg`;
 
     return {
@@ -91,9 +98,13 @@ export async function generateStaticParams() {
   try {
     // Get some popular jobs for initial static generation
     const response = await cmsService.getJobs({}, 1, 50); // Get first 50 jobs
-    return response.jobs.map(job => ({
-      slug: job.slug
-    }));
+    return response.jobs.map(job => {
+      const categorySlug = job.job_categories?.[0]?.slug || 'uncategorized';
+      return {
+        category: categorySlug,
+        slug: job.slug
+      };
+    });
   } catch (error) {
     console.error('Error generating static paths:', error);
     return [];
@@ -104,10 +115,12 @@ export const revalidate = 300; // ISR: Revalidate every 5 minutes
 export const dynamicParams = true; // Enable dynamic params for jobs not in static paths
 
 export default async function JobPage({ params }: JobPageProps) {
-  const { job, slug, settings, currentUrl } = await getJobData(params.slug);
+  const { job, category, slug, settings, currentUrl } = await getJobData(params.category, params.slug);
 
+  const categoryName = job.job_categories?.[0]?.name || 'Kategori';
   const breadcrumbItems = [
     { label: 'Lowongan Kerja', href: '/lowongan-kerja/' },
+    { label: categoryName, href: `/lowongan-kerja/kategori/${category}/` },
     { label: job.title }
   ];
 

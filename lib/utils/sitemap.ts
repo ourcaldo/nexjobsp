@@ -288,12 +288,15 @@ class SitemapService {
     console.log(`Generating fresh jobs sitemap for page ${page}`);
     const baseUrl = getCurrentDomain();
 
-    const sitemapItems: SitemapItem[] = jobs.map(job => ({
-      url: `${baseUrl}/lowongan-kerja/${job.slug}/`,
-      lastmod: this.formatDateForSitemap(job.created_at || new Date().toISOString()),
-      changefreq: 'weekly',
-      priority: '0.7'
-    }));
+    const sitemapItems: SitemapItem[] = jobs.map(job => {
+      const categorySlug = job.job_categories?.[0]?.slug || 'uncategorized';
+      return {
+        url: `${baseUrl}/lowongan-kerja/${categorySlug}/${job.slug}/`,
+        lastmod: this.formatDateForSitemap(job.created_at || new Date().toISOString()),
+        changefreq: 'weekly',
+        priority: '0.7'
+      };
+    });
 
     const xml = this.generateSitemapXml(sitemapItems);
 

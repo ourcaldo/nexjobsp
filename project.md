@@ -155,6 +155,111 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-10-29 - Job URL Structure Enhancement: Added Category Slug to Job URLs **[COMPLETED]**
+- **Time**: 16:30 WIB
+- **Scope**: Updated job detail page URL structure to include category slug for better SEO and URL clarity
+- **Status**: All changes completed, zero LSP errors
+- **Priority**: MEDIUM - Improves URL structure consistency and SEO
+
+**Problem Identified**:
+- Job detail page URLs were using `/lowongan-kerja/{slug}/` structure
+- Sitemap and proper SEO best practices suggest including category in URL: `/lowongan-kerja/{category-slug}/{slug}/`
+- This mismatch caused URL inconsistency between pages and sitemap
+- Job categories are available in API response as `job_categories` array with id, name, and slug
+
+**Changes Implemented**:
+
+1. **Updated Job Type Definition**
+   - **File**: `types/job.ts`
+   - **Change**: Added `job_categories: Array<{ id: string; name: string; slug: string }>` field to Job interface
+   - **Purpose**: Store full category information from API response
+
+2. **Updated CMS Service Transformation**
+   - **File**: `lib/cms/service.ts`
+   - **Change**: Modified `transformCMSJobToJob()` to include `job_categories: cmsJob.job_categories || []`
+   - **Purpose**: Pass category data from CMS API to Job object
+
+3. **Restructured Job Detail Page Route**
+   - **Old Location**: `app/lowongan-kerja/[slug]/page.tsx`
+   - **New Location**: `app/lowongan-kerja/[category]/[slug]/page.tsx`
+   - **Files Modified**:
+     - `app/lowongan-kerja/[category]/[slug]/page.tsx` - Main page component
+     - `app/lowongan-kerja/[category]/[slug]/opengraph-image.tsx` - OG image generator
+   - **Key Changes**:
+     - Updated `JobPageProps` interface to include `category: string` param
+     - Modified `getJobData()` to validate that job's category matches URL category (404 if mismatch)
+     - Updated `generateStaticParams()` to return both category and slug: `{ category: categorySlug, slug: job.slug }`
+     - Enhanced breadcrumbs to include category link: `Lowongan Kerja > {Category Name} > {Job Title}`
+     - Updated canonical URL to `/lowongan-kerja/{category}/{slug}/`
+   - **Category Selection Logic**: Uses first category from `job_categories` array, defaults to `'uncategorized'` if none exist
+
+4. **Updated Sitemap Generation**
+   - **File**: `lib/utils/sitemap.ts`
+   - **Method**: `generateJobsSitemap()`
+   - **Change**: Modified job URL construction to include category:
+     ```typescript
+     const categorySlug = job.job_categories?.[0]?.slug || 'uncategorized';
+     url: `${baseUrl}/lowongan-kerja/${categorySlug}/${job.slug}/`
+     ```
+
+5. **Updated All Job URL References**
+   - **File**: `components/JobCard.tsx`
+     - Updated `handleCardClick()` to use category slug in URL
+     - Updated Link `href` to `/lowongan-kerja/${categorySlug}/${job.slug}/`
+   - **File**: `utils/schemaUtils.ts`
+     - Updated `generateJobPostingSchema()` URL to include category slug
+     - Updated `generateJobListingSchema()` item URLs to include category slug
+   - **File**: `lib/cms/service.ts`
+     - Updated fallback job `link` field to use new URL structure
+
+**Technical Implementation**:
+
+**URL Structure**:
+```
+Before: /lowongan-kerja/demo-job/
+After:  /lowongan-kerja/category-1/demo-job/
+```
+
+**Category Validation**:
+```typescript
+const jobCategorySlug = job.job_categories?.[0]?.slug || '';
+if (jobCategorySlug !== category) {
+  notFound(); // 404 if URL category doesn't match job's actual category
+}
+```
+
+**Files Modified**:
+- `types/job.ts` - Added job_categories field
+- `lib/cms/service.ts` - Updated transformCMSJobToJob to include categories
+- `app/lowongan-kerja/[category]/[slug]/page.tsx` - New route with category param
+- `app/lowongan-kerja/[category]/[slug]/opengraph-image.tsx` - Updated OG image route
+- `lib/utils/sitemap.ts` - Updated sitemap URL generation
+- `components/JobCard.tsx` - Updated job detail links
+- `utils/schemaUtils.ts` - Updated schema markup URLs
+
+**Deleted**:
+- `app/lowongan-kerja/[slug]/` directory - Old route structure removed
+
+**Verification**:
+- ✅ Zero TypeScript/LSP errors after changes
+- ✅ All job URLs now consistently use `/lowongan-kerja/{category}/{slug}/` format
+- ✅ Sitemap matches actual page URLs
+- ✅ Breadcrumbs include category navigation
+- ✅ Schema markup URLs updated
+- ✅ Job cards and links use correct URL structure
+
+**Impact**:
+- ✅ **SEO Improvement**: URLs now include category keywords for better search engine optimization
+- ✅ **URL Consistency**: All job URLs follow the same pattern across sitemap, pages, and links
+- ✅ **Better UX**: Breadcrumbs provide clearer navigation path including category
+- ✅ **Category Validation**: Ensures URL category matches job's actual category (prevents incorrect URLs)
+- ✅ **Backward Compatibility**: Old `/lowongan-kerja/{slug}/` URLs will naturally 404 (acceptable for migration)
+
+**Category Handling**:
+- Primary category: Uses first item from `job_categories` array
+- Fallback: Uses `'uncategorized'` if no categories exist
+- Validation: Verifies URL category matches job's actual category
+
 ### 2025-10-29 - Build Optimization: Fixed Duplicate API Calls & Cache Size Limit **[COMPLETED]**
 - **Time**: Current session
 - **Scope**: Resolved two critical build issues identified in BUILD_ISSUES_ANALYSIS.md to enable successful production builds
