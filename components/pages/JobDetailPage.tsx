@@ -395,7 +395,7 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, slug, settings }) =>
                   </div>
                   <div>
                     <h3 className="font-bold text-yellow-900 text-base mb-2 flex items-center gap-2">
-                      ⚠️ Perhatian: Waspada Penipuan!
+                      Perhatian: Waspada Penipuan!
                     </h3>
                     <p className="text-yellow-900 text-sm leading-relaxed">
                       Perusahaan yang sah <span className="font-bold text-orange-700">tidak akan pernah meminta biaya apapun</span> dalam proses rekrutmen. Jika diminta membayar, segera laporkan dan hentikan proses lamaran Anda.
