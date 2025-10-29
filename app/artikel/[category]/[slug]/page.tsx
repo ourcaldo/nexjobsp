@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 import { cmsService } from '@/lib/cms/service';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
@@ -21,7 +22,8 @@ interface ArticleDetailPageProps {
   };
 }
 
-async function getArticleData(categorySlug: string, slug: string) {
+// Wrap with React cache() to deduplicate API calls between generateMetadata() and page component
+const getArticleData = cache(async (categorySlug: string, slug: string) => {
   try {
     const articleResponse = await cmsService.getArticleBySlug(slug);
 
@@ -70,21 +72,46 @@ async function getArticleData(categorySlug: string, slug: string) {
   } catch (error) {
     return null;
   }
-}
+});
 
 export async function generateStaticParams() {
   try {
-    const articlesResponse = await cmsService.getArticles(1, 100);
-    
-    if (!articlesResponse.success) {
-      return [];
+    const allParams: Array<{ category: string; slug: string }> = [];
+    let currentPage = 1;
+    let hasMorePages = true;
+    const limitPerPage = 50; // Fetch 50 articles per page to stay under 2MB cache limit
+
+    // Fetch articles in batches using pagination
+    while (hasMorePages) {
+      const articlesResponse = await cmsService.getArticles(currentPage, limitPerPage);
+      
+      if (!articlesResponse.success || !articlesResponse.data.posts.length) {
+        break;
+      }
+
+      // Add articles from this page to params
+      const pageParams = articlesResponse.data.posts.map((article: any) => ({
+        category: article.categories?.[0]?.slug || 'uncategorized',
+        slug: article.slug
+      }));
+      
+      allParams.push(...pageParams);
+
+      // Check if there are more pages
+      hasMorePages = articlesResponse.data.pagination?.hasNextPage || false;
+      currentPage++;
+
+      // Safety check: prevent infinite loops (max 10 pages = 500 articles)
+      if (currentPage > 10) {
+        console.warn('generateStaticParams: Reached max page limit (10 pages, 500 articles)');
+        break;
+      }
     }
 
-    return articlesResponse.data.posts.map((article: any) => ({
-      category: article.categories?.[0]?.slug || 'uncategorized',
-      slug: article.slug
-    }));
+    console.log(`generateStaticParams: Generated ${allParams.length} article paths across ${currentPage - 1} pages`);
+    return allParams;
   } catch (error) {
+    console.error('Error in generateStaticParams:', error);
     return [];
   }
 }
@@ -129,7 +156,11 @@ export async function generateMetadata({ params }: ArticleDetailPageProps): Prom
   };
 }
 
+// ISR Configuration: Revalidate every 1 hour (3600 seconds)
 export const revalidate = 3600;
+
+// Allow dynamic params for articles not in static generation
+export const dynamicParams = true;
 
 export default async function ArticleDetailPage({ params }: ArticleDetailPageProps) {
   const data = await getArticleData(params.category, params.slug);

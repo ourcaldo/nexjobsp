@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { cache } from 'react';
 import { cmsService } from '@/lib/cms/service';
 import { SupabaseAdminService } from '@/lib/supabase/admin';
 import { getCurrentDomain } from '@/lib/env';
@@ -15,7 +16,8 @@ interface JobPageProps {
   };
 }
 
-async function getJobData(slug: string) {
+// Wrap with React cache() to deduplicate API calls between generateMetadata() and page component
+const getJobData = cache(async (slug: string) => {
   try {
     const [job, settings] = await Promise.all([
       cmsService.getJobBySlug(slug),
@@ -38,7 +40,7 @@ async function getJobData(slug: string) {
     console.error('Error fetching job:', error);
     notFound();
   }
-}
+});
 
 export async function generateMetadata({ params }: JobPageProps): Promise<Metadata> {
   try {
