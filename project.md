@@ -249,10 +249,10 @@ interface JobApplicationModalProps {
 - **Border Style**: Upgraded to `border-2 border-dashed` (dashed borders) instead of basic left-border
 - **Background**: Gradient background `from-yellow-50 to-orange-50` for visual depth
 - **Icon Badge**: Warning icon placed in circular yellow background (white icon on yellow-500)
-- **Visual Elements**: Added warning emoji (⚠️), shadow effect, rounded-xl corners
+- **Visual Elements**: Shadow effect, rounded-xl corners
 - **Typography**: Bold headings, orange-700 emphasis on key text "tidak akan pernah meminta biaya"
 - **Layout**: Better spacing with gap-3, proper visual hierarchy
-- **Additional Feature**: Modal includes subtle white/60 background badge for redirect notice
+- **Text Formatting**: Redirect notice is bold within the same paragraph (no separate background)
 - **Result**: Modern, professional, eye-catching design that's no longer quote-like
 
 **Verification**:

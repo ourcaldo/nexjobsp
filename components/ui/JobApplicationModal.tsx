@@ -48,13 +48,10 @@ const JobApplicationModal: React.FC<JobApplicationModalProps> = ({
               </div>
               <div className="text-sm">
                 <p className="font-bold text-yellow-900 mb-2">
-                  ⚠️ Peringatan Penting!
+                  Peringatan Penting!
                 </p>
-                <p className="text-yellow-900 leading-relaxed mb-2">
-                  Hati-hati terhadap penipuan! Perusahaan yang sah <span className="font-bold text-orange-700">tidak akan pernah meminta biaya</span> dalam proses rekrutmen, termasuk untuk: biaya administrasi atau pendaftaran, pelatihan atau sertifikasi, pemeriksaan kesehatan, dan seragam atau perlengkapan.
-                </p>
-                <p className="text-gray-700 text-xs bg-white/60 rounded px-2 py-1 inline-block">
-                  Anda akan dialihkan ke situs web perusahaan untuk melanjutkan proses lamaran.
+                <p className="text-yellow-900 leading-relaxed">
+                  Hati-hati terhadap penipuan! Perusahaan yang sah <span className="font-bold text-orange-700">tidak akan pernah meminta biaya</span> dalam proses rekrutmen, termasuk untuk: biaya administrasi atau pendaftaran, pelatihan atau sertifikasi, pemeriksaan kesehatan, dan seragam atau perlengkapan. <span className="font-bold">Anda akan dialihkan ke situs web perusahaan untuk melanjutkan proses lamaran.</span>
                 </p>
               </div>
             </div>

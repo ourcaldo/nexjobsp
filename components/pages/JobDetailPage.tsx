@@ -394,7 +394,7 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, slug, settings }) =>
                     <AlertTriangle className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-yellow-900 text-base mb-2 flex items-center gap-2">
+                    <h3 className="font-bold text-yellow-900 text-base mb-2">
                       Perhatian: Waspada Penipuan!
                     </h3>
                     <p className="text-yellow-900 text-sm leading-relaxed">
