@@ -155,6 +155,63 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-11-11 - Build Fix: Added Missing job_categories Field to Mock Data **[COMPLETED]**
+- **Time**: Current session
+- **Scope**: Fixed TypeScript compilation error in HomePage component that prevented production builds
+- **Status**: Fixed and verified
+- **Priority**: CRITICAL - Build was failing
+
+**Problem Identified**:
+- `npm run build` was failing with TypeScript error in `components/pages/HomePage.tsx`
+- Error: `Property 'job_categories' is missing in type` for mock job data
+- The Job interface requires `job_categories: Array<{ id: string; name: string; slug: string }>` field
+- All 6 mock job objects in HomePage were missing this required field
+
+**Changes Implemented**:
+1. **Updated Mock Job Data**
+   - **File**: `components/pages/HomePage.tsx`
+   - **Lines**: 127-285 (mock job data array)
+   - **Change**: Added `job_categories` field to all 6 mock jobs
+   - **Format**: Each job now includes `job_categories: [{ id: string, name: string, slug: string }]`
+   - **Example**: 
+     ```typescript
+     job_categories: [{ id: '1', name: 'Teknologi Informasi', slug: 'teknologi-informasi' }]
+     ```
+
+**Jobs Updated**:
+1. Software Engineer - Added `job_categories: [{ id: '1', name: 'Teknologi Informasi', slug: 'teknologi-informasi' }]`
+2. Data Scientist - Added `job_categories: [{ id: '2', name: 'Data Science', slug: 'data-science' }]`
+3. Web Developer - Added `job_categories: [{ id: '3', name: 'Web Development', slug: 'web-development' }]`
+4. Mobile Developer - Added `job_categories: [{ id: '4', name: 'Mobile Development', slug: 'mobile-development' }]`
+5. UI/UX Designer - Added `job_categories: [{ id: '5', name: 'Design', slug: 'design' }]`
+6. Product Manager - Added `job_categories: [{ id: '6', name: 'Product Management', slug: 'product-management' }]`
+
+**Verification**:
+- ✅ TypeScript compilation successful
+- ✅ All type checking passed
+- ✅ Production build completed successfully
+- ✅ All static pages generated (85 pages total)
+- ✅ Zero build errors
+
+**Build Output**:
+```
+✓ Compiled successfully
+✓ Linting and checking validity of types
+✓ Collecting page data
+✓ Generating static pages (85/85)
+```
+
+**Impact**:
+- ✅ **Build Fixed**: Production builds now complete without errors
+- ✅ **Type Safety**: Mock data now matches Job interface requirements
+- ✅ **Consistency**: HomePage mock jobs follow same structure as real CMS jobs
+- ✅ **Deployment Ready**: Project can now be built for production
+
+**Files Modified**:
+- `components/pages/HomePage.tsx` - Added `job_categories` field to all 6 mock jobs
+
+**Note**: This fix ensures the mock data used for homepage job display matches the updated Job type interface that includes the job_categories field (added in earlier update for category-based URL structure).
+
 ### 2025-10-29 - UX Enhancement: Job Application Safety & Scam Warning **[COMPLETED]**
 - **Time**: 21:15 WIB
 - **Scope**: Added scam warning notices and application confirmation modal to protect users from recruitment fraud
