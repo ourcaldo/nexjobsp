@@ -1,0 +1,157 @@
+{
+    "success": true,
+    "data": {
+        "posts": [
+            {
+                "id": "4fd71f4f-6aae-4d09-acc3-636e2b3e2312",
+                "title": "Sales Agen Properti",
+                "content": "<p>Sebagai Sales Properti, Anda akan memasarkan produk hunian eksklusif kami kepada calon pembeli. Tugas utama mencakup membangun relasi dengan klien, memberikan informasi produk secara jelas, dan mendampingi proses penjualan hingga transaksi selesai.</p><h2>Tanggung Jawab Pekerjaan:</h2><ol><li>Mempromosikan produk properti melalui berbagai saluran penjualan.</li><li>Melayani pertanyaan dan kebutuhan informasi klien secara profesional.</li><li>Melakukan presentasi produk dan survei lokasi bersama calon pembeli.</li><li>Menjalin dan menjaga hubungan baik dengan klien untuk meningkatkan loyalitas.</li><li>Menyusun laporan aktivitas penjualan.</li><li>Bekerja sama dengan tim marketing dan proyek untuk mencapai target penjualan.</li></ol><h2>Keahlian:</h2><ul><li>Teknik penawaran dan negosiasi.</li><li>Pengetahuan detail produk properti, spesifikasi bangunan, lokasi, legalitas, dan nilai investasi.</li><li>Manajemen jadwal kunjungan, follow-up, dan administrasi penjualan.</li><li>Pemasaran melalui media sosial, WhatsApp Business, dan platform online.</li></ul><h2>Kualifikasi:</h2><ul><li>Pendidikan minimal SMA/SMK (diutamakan D3/S1 di bidang Pemasaran, Komunikasi, atau Bisnis).</li><li>Pengalaman minimal 1 tahun sebagai Sales, khususnya di bidang properti.</li><li>Memiliki SIM C/A dan kendaraan pribadi.</li><li>Bersedia bekerja mobile dan di lapangan.</li></ul><h2>Waktu Bekerja:</h2><p>Senin-Minggu (libur 1 hari di weekday), jam 9.00-16.00</p>",
+                "excerpt": "Lowongan Sales Agen Properti di PT Zalila Hasiba Arshiya - Jawa Barat. Lamar Sekarang!",
+                "slug": "lowongan-sales-agen-properti-jawa-barat",
+                "featured_image": null,
+                "publish_date": "2025-11-11T14:40:08.099Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Sales Agen Properti di PT Zalila Hasiba Arshiya - Jawa Barat",
+                "meta_description": "Lowongan Sales Agen Properti di PT Zalila Hasiba Arshiya - Jawa Barat. Lamar Sekarang!",
+                "focus_keyword": "Sales Agen Properti",
+                "job_company_name": "PT Zalila Hasiba Arshiya",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15715829",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Teknik Penawaran Dan Negosiasi",
+                    "Pengetahuan Produk Properti",
+                    "Manajemen Jadwal",
+                    "Pemasaran Online"
+                ],
+                "job_benefits": [
+                    "Gaji Kompetitif",
+                    "Tunjangan Transportasi",
+                    "Asuransi Kesehatan",
+                    "Bonus Penjualan"
+                ],
+                "employment_type": {
+                    "id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                    "name": "Full Time",
+                    "slug": "full-time"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-11T14:40:08.245Z",
+                "updated_at": "2025-11-11T14:40:08.245Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15715829",
+                "job_is_salary_negotiable": false,
+                "job_province_id": "32",
+                "job_regency_id": "3201",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal SMA/SMK, Pengalaman 1 tahun sebagai Sales, SIM C/A, Kendaraan pribadi",
+                "job_responsibilities": "Memasarkan produk properti, Melayani pertanyaan klien, Presentasi produk, Menjaga hubungan klien, Menyusun laporan penjualan, Bekerja sama dengan tim marketing",
+                "job_education_level_id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                "job_categories": [
+                    {
+                        "id": "61ee989d-5eec-4854-b6cb-849d95a3d91e",
+                        "name": "Pengembangan Properti",
+                        "slug": "pengembangan-properti"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "0542b6e5-a684-4411-89f1-96613bc6869f",
+                        "name": "Sales Property",
+                        "slug": "sales-property"
+                    },
+                    {
+                        "id": "061a4805-25e1-40c7-99ef-fbd34b8f196b",
+                        "name": "Sma/smk",
+                        "slug": "sma-smk"
+                    },
+                    {
+                        "id": "1c2494e1-441d-4ea3-bcb0-0e06c8f024cf",
+                        "name": "Penjualan Rumah",
+                        "slug": "penjualan-rumah"
+                    },
+                    {
+                        "id": "545009d8-9062-4c31-8ad4-929c35bd633d",
+                        "name": "Junior / Entry Level",
+                        "slug": "junior-entry-level"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "32",
+                    "name": "JAWA BARAT"
+                },
+                "regency": {
+                    "id": "3201",
+                    "name": "KAB. BOGOR",
+                    "province_id": "32"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                    "name": "SMA/SMK/Sederajat",
+                    "slug": "sma-smk-sederajat"
+                }
+            }
+        ],
+        "pagination": {
+            "page": 1,
+            "limit": 1,
+            "total": 45,
+            "totalPages": 45,
+            "hasNextPage": true,
+            "hasPrevPage": false
+        },
+        "filters": {
+            "search": null,
+            "status": null,
+            "job_company_name": null,
+            "employment_type": null,
+            "experience_level": null,
+            "education_level": null,
+            "job_category": null,
+            "job_tag": null,
+            "job_salary_min": null,
+            "job_salary_max": null,
+            "job_salary_currency": null,
+            "job_salary_period": null,
+            "job_is_salary_negotiable": null,
+            "job_province_id": null,
+            "job_regency_id": null,
+            "job_district_id": null,
+            "job_village_id": null,
+            "job_is_remote": null,
+            "job_is_hybrid": null,
+            "work_policy": null,
+            "skill": null,
+            "benefit": null,
+            "job_deadline_before": null,
+            "job_deadline_after": null
+        }
+    },
+    "cached": false
+}

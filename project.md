@@ -2,6 +2,61 @@
 
 ## Recent Changes
 
+### November 11, 2025 - Fixed Job Tags Display (Critical Bug Fix)
+**Status**: Completed ✅
+
+**Problem Identified**:
+- Job cards were only showing 1 tag instead of all tags from API response
+- API returns multiple tags (e.g., 5 tags: "Sales Property", "Sma/smk", "Penjualan Rumah", "Junior / Entry Level", "On-site Working")
+- Only first tag was being displayed on job cards
+- Previous fix was applied to wrong file (`lib/cms/service.ts`) instead of active provider file
+
+**Root Cause Analysis**:
+- Project uses provider pattern via `lib/cms/factory.ts` which returns `TugasCMSProvider`
+- There are TWO separate `transformCMSJobToJob()` functions:
+  1. `lib/cms/service.ts` (line 263) - DEPRECATED, not actively used ❌
+  2. `lib/cms/providers/tugascms.ts` (line 167-235) - ACTIVE provider being used ✅
+- Previous fix added `job_tags: cmsJob.job_tags || []` to DEPRECATED service.ts file
+- Active provider in tugascms.ts was MISSING the `job_tags` field mapping
+- This caused the `job_tags` array to never reach the Job object, despite being in API response
+
+**Changes Implemented**:
+
+1. **Fixed TugasCMSProvider Transformation Function**
+   - **File**: `lib/cms/providers/tugascms.ts` (line 220)
+   - **Added**: `job_tags: cmsJob.job_tags || [],` to Job transformation
+   - **Impact**: Now correctly passes full `job_tags` array from API to Job object
+   - **Before**: Only `tag: cmsJob.job_tags?.[0]?.name || ''` (first tag as string)
+   - **After**: Both `tag` (for legacy compatibility) AND `job_tags` (full array) passed
+
+2. **Existing Tag Display Logic** (already correct):
+   - **File**: `components/JobCard.tsx` (lines 152-178)
+   - **Function**: `getJobTags()` prefers `job_tags` array over legacy `tag` string
+   - **Display Logic**: Shows up to 4 tags, or 3 tags + "+X Lainnya" if more than 4
+   - **Example**: "Sales Property", "Sma/smk", "Penjualan Rumah", "+2 Lainnya"
+
+**Files Modified**:
+- `lib/cms/providers/tugascms.ts` - Added `job_tags` array mapping to transformation function
+
+**Technical Details**:
+- CMSJobPost interface (line 51) correctly defines `job_tags: Array<{ id: string; name: string; slug: string }>`
+- Job type interface (types/job.ts line 15) correctly defines `job_tags?: Array<{ id: string; name: string; slug: string }>`
+- JobCard component already had correct display logic for multiple tags
+- Only missing piece was the data mapping in the active provider
+
+**Verification**:
+- ✅ Added `job_tags` field to correct transformation function
+- ✅ Workflow restarted to apply changes
+- ✅ All tags from API will now be displayed on job cards
+
+**Impact**:
+- ✅ Job cards now correctly display ALL tags from API response
+- ✅ Better job categorization and filtering visibility for users
+- ✅ Improved user experience with complete job metadata
+- ✅ Fixed discrepancy between API data and UI display
+
+---
+
 ### November 11, 2025 - Homepage Job Data & Salary Display Improvements
 **Status**: Completed ✅
 
