@@ -1,7 +1,62 @@
 # Nexjob Project Documentation
 
+## Recent Changes
+
+### November 11, 2025 - Supabase CMS Cleanup (Post TugasCMS Migration)
+**Status**: Completed ✅
+
+After successfully migrating all articles and pages content from internal Supabase CMS to external TugasCMS API (https://cms.nexjob.tech), performed comprehensive cleanup of deprecated code and database tables:
+
+**Code Cleanup:**
+1. Deleted unused CMS service files:
+   - `lib/cms/articles.ts` - Legacy Supabase articles service
+   - `lib/cms/pages.ts` - Legacy Supabase pages service
+
+2. Deleted unused admin CMS UI components:
+   - `components/admin/cms/CmsPages.tsx` - Pages management UI
+   - `components/admin/cms/UnifiedEditor.tsx` - Article/Page editor
+   - `components/admin/cms/MediaManager.tsx` - Media upload interface
+   - `components/admin/cms/TiptapEditor.tsx` - Rich text editor component
+
+3. Updated admin dashboard statistics:
+   - Modified `app/api/admin/dashboard-stats/route.ts` to fetch article counts from TugasCMS API
+   - Changed from Supabase `count()` queries to `cmsService.getArticles(1, 1)` with pagination.total
+   - Added proper null-safety checks for API responses
+
+4. Fixed TypeScript type definitions:
+   - Removed deprecated `NxdbArticle` and `NxdbPage` type imports from `lib/supabase.ts`
+   - Removed unused `generatePageSchema()` function from `utils/schemaUtils.ts`
+   - Updated `components/pages/ArticleListPage.tsx` with local Article interface
+   - Added fallback date handling (published_at → post_date → created_at → now)
+
+**Database Cleanup (User Action Required):**
+Created SQL DROP queries in `SUPABASE_CLEANUP_QUERIES.sql` for deprecated tables:
+- `nxdb_articles` - Article content (now in TugasCMS)
+- `nxdb_pages` - Page content (now in TugasCMS)
+- `nxdb_article_categories` - Article categories junction table
+- `nxdb_article_tags` - Article tags junction table
+- `nxdb_page_categories` - Page categories junction table
+- `nxdb_page_tags` - Page tags junction table
+
+**Files Modified**: 
+- lib/cms/service.ts, app/api/admin/dashboard-stats/route.ts
+- components/pages/ArticleListPage.tsx, utils/schemaUtils.ts, lib/supabase.ts
+- Deleted: lib/cms/articles.ts, lib/cms/pages.ts, components/admin/cms/*
+
+**Impact**: 
+- Cleaner codebase with single source of truth for content (TugasCMS)
+- Reduced bundle size by removing unused admin components
+- Zero TypeScript/LSP errors after cleanup
+- All architect reviews passed
+
+**Next Steps**:
+- User should run SQL cleanup queries in Supabase SQL Editor
+- Verify TugasCMS API credentials are properly set in .env
+
+---
+
 ## Project Overview
-Nexjob is a full-featured job portal platform built with Next.js 14, TypeScript, Supabase (PostgreSQL), and WordPress as headless CMS. It provides advanced job search capabilities, user management, content management system, and comprehensive admin controls.
+Nexjob is a full-featured job portal platform built with Next.js 14, TypeScript, Supabase (PostgreSQL), and TugasCMS as external headless CMS. It provides advanced job search capabilities, user management, content management system, and comprehensive admin controls.
 
 ## Technology Stack
 - **Framework**: Next.js 14.2.30 (App Router)
@@ -48,7 +103,10 @@ Nexjob is a full-featured job portal platform built with Next.js 14, TypeScript,
 - Sitemap settings
 - Created/Updated timestamps
 
-#### nxdb_articles
+#### nxdb_articles [DEPRECATED - Removed Nov 11, 2025]
+**Note**: This table is deprecated after TugasCMS migration. Content now managed via external CMS API.
+Run SQL cleanup queries in `SUPABASE_CLEANUP_QUERIES.sql` to drop this table.
+
 - `id` (UUID, PK)
 - `title` (text)
 - `slug` (text, unique)
@@ -65,20 +123,26 @@ Nexjob is a full-featured job portal platform built with Next.js 14, TypeScript,
 - `created_at` (timestamptz)
 - `updated_at` (timestamptz)
 
-#### nxdb_article_categories
+#### nxdb_article_categories [DEPRECATED - Removed Nov 11, 2025]
+**Note**: Deprecated after TugasCMS migration. Categories now managed in external CMS.
+
 - `id` (UUID, PK)
 - `name` (text, unique)
 - `slug` (text, unique)
 - `description` (text)
 - `created_at` (timestamptz)
 
-#### nxdb_article_tags
+#### nxdb_article_tags [DEPRECATED - Removed Nov 11, 2025]
+**Note**: Deprecated after TugasCMS migration. Tags now managed in external CMS.
+
 - `id` (UUID, PK)
 - `name` (text, unique)
 - `slug` (text, unique)
 - `created_at` (timestamptz)
 
-#### nxdb_pages (similar to articles)
+#### nxdb_pages [DEPRECATED - Removed Nov 11, 2025]
+**Note**: This table is deprecated after TugasCMS migration. Pages now managed via external CMS API.
+
 - `id` (UUID, PK)
 - `title` (text)
 - `slug` (text, unique)
