@@ -182,7 +182,7 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, slug, settings }) =>
   const getJobTags = (tagString: string) => {
     if (!tagString) return [];
 
-    // Tags are already decoded in cmsService, so just split them
+    // Tags are already decoded in TugasCMSProvider, so just split them
     return tagString.split(', ').map(tag => tag.trim()).filter(tag => tag.length > 0);
   };
 
