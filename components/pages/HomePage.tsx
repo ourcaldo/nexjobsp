@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Search, TrendingUp, ArrowRight, Users, Building, Code, Heart, Calculator, Truck, Briefcase } from 'lucide-react';
-import { FilterData } from '@/lib/cms/service';
+import { FilterData } from '@/lib/cms/interface';
 import { userBookmarkService } from '@/lib/api/user-bookmarks';
 import { supabase } from '@/lib/supabase';
 import { adminService } from '@/lib/utils/admin-legacy';

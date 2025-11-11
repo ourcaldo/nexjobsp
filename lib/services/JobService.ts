@@ -29,6 +29,10 @@ export class JobService {
     return await this.cms.getRelatedJobs(jobId, limit);
   }
   
+  async getAllJobsForSitemap(): Promise<Job[]> {
+    return await this.cms.getAllJobsForSitemap();
+  }
+  
   async getFiltersData(): Promise<FilterData> {
     return await this.cms.getFiltersData();
   }

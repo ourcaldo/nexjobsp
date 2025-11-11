@@ -1,5 +1,7 @@
 import { supabaseAdminService } from '@/lib/supabase/admin';
-import { cmsService } from '@/lib/cms/service';
+import { jobService } from '@/lib/services/JobService';
+import { articleService } from '@/lib/services/ArticleService';
+import { pageService } from '@/lib/services/PageService';
 import { Job } from '@/types/job';
 import { getCurrentDomain } from '@/lib/env';
 
@@ -522,7 +524,7 @@ class SitemapService {
   private async fetchJobsWithRetry(maxRetries: number = 3): Promise<Job[]> {
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const jobs = await cmsService.getAllJobsForSitemap();
+        const jobs = await jobService.getAllJobsForSitemap();
         return jobs;
       } catch (error) {
         console.error(`Attempt ${attempt} to fetch jobs failed:`, error);
@@ -627,7 +629,7 @@ class SitemapService {
   // Get CMS articles for sitemap
   async getCmsArticles(): Promise<{ articles: any[] }> {
     try {
-      const articlesResponse = await cmsService.getArticles(1, 10000);
+      const articlesResponse = await articleService.getArticles(1, 10000);
 
       if (!articlesResponse.success) {
         return { articles: [] };
@@ -655,7 +657,7 @@ class SitemapService {
   // Get CMS pages for sitemap
   async getCmsPages(): Promise<{ pages: any[] }> {
     try {
-      const pagesResponse = await cmsService.getAllPagesForSitemap();
+      const pagesResponse = await pageService.getAllPagesForSitemap();
 
       if (!pagesResponse || pagesResponse.length === 0) {
         return { pages: [] };

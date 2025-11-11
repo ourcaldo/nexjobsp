@@ -85,40 +85,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
         // Import and validate environment only after component mount
         const { validateEnv } = await import('@/lib/env');
         validateEnv();
-
-        // Initialize settings only for non-admin pages with better error handling
-        const initializeSettings = async () => {
-          try {
-            // Skip initialization for admin pages to avoid unnecessary DB calls
-            if (typeof window !== 'undefined' && (
-              window.location.pathname.startsWith('/backend/admin') ||
-              window.location.pathname.startsWith('/admin')
-            )) {
-              return;
-            }
-
-            const { supabaseAdminService } = await import('@/lib/supabase/admin');
-
-            // Use cached settings for frontend to avoid repeated DB calls
-            const settings = await supabaseAdminService.getSettings(false);
-
-            // Check if settings is defined before accessing its properties
-            if (!settings) {
-              console.warn('Settings not available, continuing with default configuration');
-              return;
-            }
-
-            // Apply settings to cmsService
-            const { cmsService } = await import('@/lib/cms/service');
-            cmsService.setBaseUrl(settings.cms_endpoint);
-            cmsService.setAuthToken(settings.cms_token || '');
-          } catch (error) {
-            console.error('Error initializing settings:', error);
-            // Continue with default settings if initialization fails
-          }
-        };
-
-        await initializeSettings();
       } catch (error) {
         console.error('Environment validation failed:', error);
         // In development, we can continue with warnings

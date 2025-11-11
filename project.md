@@ -2,6 +2,100 @@
 
 ## Recent Changes
 
+### November 11, 2025 - CMS Migration: Completed Transition from Legacy Singleton to Factory Pattern
+**Status**: Completed ✅
+
+**Background**:
+The project had TWO parallel CMS systems running simultaneously, causing code duplication and maintenance issues:
+- **Legacy System**: `lib/cms/service.ts` - CMSService singleton class used by 19+ files
+- **New System**: Factory pattern (`lib/cms/factory.ts` + `lib/cms/providers/tugascms.ts`) - Already implemented but underutilized
+
+**Problem**:
+- Bug fixes had to be applied to BOTH systems
+- Code drift between the two implementations
+- Maintenance nightmare with nearly identical code in two places
+- The factory pattern was only being used by 1 file (`lib/services/JobService.ts`)
+
+**Solution**: Full migration to factory pattern and deletion of legacy singleton
+
+**Implementation Details**:
+
+1. **Added Missing Method to Factory Pattern**
+   - **Files**: `lib/cms/interface.ts`, `lib/cms/providers/tugascms.ts`, `lib/services/JobService.ts`
+   - **Added**: `getAllJobsForSitemap(): Promise<Job[]>` method to complete the interface
+   - **Implementation**: Full pagination walking logic (fetches all jobs in batches of 100)
+   - **Impact**: Sitemap service can now use factory pattern for job data
+
+2. **Migrated lib/utils/sitemap.ts**
+   - **Before**: Used `cmsService.getAllJobsForSitemap()`, `cmsService.getArticles()`, `cmsService.getAllPagesForSitemap()`
+   - **After**: Uses `jobService.getAllJobsForSitemap()`, `articleService.getArticles()`, `pageService.getAllPagesForSitemap()`
+   - **Lines Changed**: 4 imports, 3 method calls
+   - **Impact**: Sitemap generation now uses factory pattern exclusively
+
+3. **Migrated components/pages/ArticlePage.tsx**
+   - **Before**: Used `cmsService.getArticles()` with BUGGY response handling (treated response object as array)
+   - **After**: Uses `articleService.getArticles()` with correct response unwrapping
+   - **Bug Fixed**: Now correctly checks `response.success` and extracts `response.data.posts`
+   - **Impact**: Article page will now correctly display articles instead of failing silently
+
+4. **Updated Type Imports (4 files)**
+   - **Files**: `components/pages/HomePage.tsx`, `components/JobSidebar.tsx`, `components/pages/JobSearchPage.tsx`
+   - **Before**: `import { FilterData } from '@/lib/cms/service'`
+   - **After**: `import { FilterData } from '@/lib/cms/interface'`
+   - **Impact**: Type imports now reference the correct interface location
+
+5. **Removed Legacy Configuration in app/providers.tsx**
+   - **Before**: Dynamically imported `cmsService` and called `setBaseUrl()`, `setAuthToken()`
+   - **After**: Removed all cmsService initialization logic
+   - **Reason**: Configuration is now handled internally by `TugasCMSProvider.ensureInitialized()`
+   - **Impact**: Simplified providers.tsx by removing 30+ lines of unnecessary code
+
+6. **Deleted Legacy Service File**
+   - **Deleted**: `lib/cms/service.ts` (1080 lines)
+   - **Impact**: Removed duplicate code, eliminated maintenance burden, prevented future code drift
+
+**Files Modified** (9 total):
+- `lib/cms/interface.ts` - Added getAllJobsForSitemap to interface
+- `lib/cms/providers/tugascms.ts` - Implemented getAllJobsForSitemap method
+- `lib/services/JobService.ts` - Added getAllJobsForSitemap wrapper
+- `lib/utils/sitemap.ts` - Migrated to use jobService, articleService, pageService
+- `components/pages/ArticlePage.tsx` - Migrated to articleService and fixed response handling bug
+- `components/pages/HomePage.tsx` - Updated FilterData import to use lib/cms/interface
+- `components/JobSidebar.tsx` - Updated FilterData import to use lib/cms/interface
+- `components/pages/JobSearchPage.tsx` - Updated FilterData import to use lib/cms/interface
+- `app/providers.tsx` - Removed legacy cmsService initialization
+
+**Files Deleted** (1 total):
+- `lib/cms/service.ts` - Legacy CMSService singleton class (1080 lines removed)
+
+**Verification**:
+- ✅ Zero TypeScript/LSP errors after migration
+- ✅ Application compiled successfully (1157 modules in 13.9s)
+- ✅ Workflow running without errors
+- ✅ No remaining references to `lib/cms/service` found in codebase
+- ✅ Architect review passed with no issues
+- ✅ All sitemap generation logic migrated successfully
+- ✅ Bug in ArticlePage response handling fixed as part of migration
+
+**Architecture Improvements**:
+- ✅ **Single Source of Truth**: One CMS implementation instead of two
+- ✅ **Factory Pattern**: All CMS access goes through `getCMSProvider()`
+- ✅ **Service Layer**: Domain services (JobService, ArticleService, PageService) provide clean APIs
+- ✅ **Maintainability**: Bug fixes only need to be applied once
+- ✅ **Testability**: Factory pattern makes it easier to swap providers for testing
+- ✅ **Separation of Concerns**: Configuration handled in provider, not in client code
+
+**Impact**:
+- ✅ **Code Quality**: Removed 1080 lines of duplicate code
+- ✅ **Maintenance**: No more code drift between two systems
+- ✅ **Bug Fixes**: Fixed response handling bug in ArticlePage
+- ✅ **Architecture**: Clean factory pattern implementation throughout
+- ✅ **Future-Proof**: Easy to add new CMS providers without changing consumer code
+
+---
+
+## Recent Changes
+
 ### November 11, 2025 - Fixed Job Tags Display (Critical Bug Fix)
 **Status**: Completed ✅
 

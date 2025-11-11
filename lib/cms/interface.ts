@@ -65,6 +65,7 @@ export interface CMSProvider {
   getJobBySlug(slug: string): Promise<Job | null>;
   getJobsByIds(jobIds: string[]): Promise<Job[]>;
   getRelatedJobs(jobId: string, limit?: number): Promise<Job[]>;
+  getAllJobsForSitemap(): Promise<Job[]>;
   
   getArticles(page?: number, limit?: number, category?: string, search?: string): Promise<any>;
   getArticleBySlug(slug: string): Promise<any>;

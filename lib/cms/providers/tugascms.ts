@@ -564,6 +564,34 @@ export class TugasCMSProvider implements CMSProvider {
     }
   }
 
+  async getAllJobsForSitemap(): Promise<Job[]> {
+    try {
+      const allJobs: Job[] = [];
+      let page = 1;
+      let hasMore = true;
+
+      while (hasMore) {
+        try {
+          const response = await this.getJobs({}, page, 100);
+
+          if (response.jobs.length === 0) {
+            hasMore = false;
+          } else {
+            allJobs.push(...response.jobs);
+            hasMore = response.hasMore && page < response.totalPages;
+            page++;
+          }
+        } catch (error) {
+          hasMore = false;
+        }
+      }
+
+      return allJobs;
+    } catch (error) {
+      return [];
+    }
+  }
+
   async getArticles(page: number = 1, limit: number = 20, category?: string, search?: string) {
     await this.ensureInitialized();
     
