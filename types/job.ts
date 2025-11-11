@@ -12,6 +12,7 @@ export interface Job {
   pendidikan: string;
   pengalaman: string;
   tag: string;
+  job_tags?: Array<{ id: string; name: string; slug: string }>;
   gender: string;
   gaji: string;
   kebijakan_kerja: string;

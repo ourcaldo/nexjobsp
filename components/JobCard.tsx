@@ -90,6 +90,11 @@ const JobCard: React.FC<JobCardProps> = React.memo(({
     return salary === 'Perusahaan Tidak Menampilkan Gaji';
   }, []);
 
+  const formatSalary = useCallback((salary: string) => {
+    // Remove period suffixes like /monthly, /yearly, /bulan, /tahun, etc.
+    return salary.replace(/\/(monthly|yearly|bulan|tahun|month|year)$/i, '').trim();
+  }, []);
+
   const handleBookmarkClick = useCallback(async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -145,6 +150,20 @@ const JobCard: React.FC<JobCardProps> = React.memo(({
   }, []);
 
   const getJobTags = useCallback(() => {
+    // Prefer job_tags array from API, fallback to old tag string
+    if (job.job_tags && job.job_tags.length > 0) {
+      const tagNames = job.job_tags.map(tag => tag.name);
+      
+      if (tagNames.length > 4) {
+        const visibleTags = tagNames.slice(0, 3);
+        const remainingCount = tagNames.length - 3;
+        return [...visibleTags, `+${remainingCount} Lainnya`];
+      }
+
+      return tagNames.slice(0, 4);
+    }
+
+    // Fallback to old comma-separated tag string
     if (!job.tag) return [];
 
     const tags = job.tag.split(', ').map(tag => tag.trim()).filter(tag => tag.length > 0);
@@ -156,7 +175,7 @@ const JobCard: React.FC<JobCardProps> = React.memo(({
     }
 
     return tags.slice(0, 4);
-  }, [job.tag]);
+  }, [job.job_tags, job.tag]);
 
   const tags = React.useMemo(() => getJobTags(), [getJobTags]);
 
@@ -202,7 +221,7 @@ const JobCard: React.FC<JobCardProps> = React.memo(({
                 )}
               </div>
             ) : (
-              <p className="text-lg font-bold text-accent-600">{job.gaji}</p>
+              <p className="text-lg font-bold text-accent-600">{formatSalary(job.gaji)}</p>
             )}
           </div>
         </div>

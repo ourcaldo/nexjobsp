@@ -2,6 +2,52 @@
 
 ## Recent Changes
 
+### November 11, 2025 - Homepage Job Data & Salary Display Improvements
+**Status**: Completed ✅
+
+**Changes Implemented**:
+
+1. **Removed Mock Job Data from Homepage**
+   - **File**: `components/pages/HomePage.tsx`
+   - **Before**: Homepage displayed 6 hardcoded placeholder jobs (PT. Teknologi Maju, PT. Analytics Solutions, etc.)
+   - **After**: Now fetches real jobs from TugasCMS API using `cmsService.getJobs({}, 1, 6)`
+   - **Removed**: 160+ lines of mock data
+   - **Impact**: Homepage now displays actual job listings from CMS, no more placeholder data
+
+2. **Improved Salary Display in Job Cards**
+   - **File**: `components/JobCard.tsx`
+   - **Added**: `formatSalary()` function to remove salary period suffixes
+   - **Before**: "Rp 3-5 Juta/monthly"
+   - **After**: "Rp 3-5 Juta"
+   - **Regex Pattern**: Removes `/monthly`, `/yearly`, `/bulan`, `/tahun`, `/month`, `/year` suffixes
+   - **Impact**: Cleaner, more concise salary display on job cards
+
+3. **Fixed Job Tags Display - Now Shows All Tags from API**
+   - **Files**: `components/JobCard.tsx`, `types/job.ts`
+   - **Before**: Only showed 1 tag from legacy `tag` string field
+   - **After**: Now displays all tags from `job_tags` array (API response)
+   - **Added**: `job_tags?: Array<{ id: string; name: string; slug: string }>` to Job type
+   - **Updated**: `getJobTags()` function to prefer `job_tags` array over old `tag` string
+   - **Display Logic**: Shows up to 4 tags, or 3 tags + "+X Lainnya" if more than 4
+   - **Backward Compatible**: Falls back to old `tag` string if `job_tags` not available
+   - **Example**: Now shows "Sma/smk", "Laboratorium & Riset", "Operator Laboratorium", "+2 Lainnya" instead of just 1 tag
+   - **Impact**: Users can see multiple relevant tags for each job listing
+
+**Files Modified**:
+- `components/pages/HomePage.tsx` - Replaced mock data with real API call
+- `components/JobCard.tsx` - Added salary formatting function and updated tag display logic
+- `types/job.ts` - Added `job_tags` field to Job interface
+
+**Impact**:
+- ✅ Homepage shows real job data from TugasCMS
+- ✅ Cleaner salary display without period information
+- ✅ Job cards now display multiple tags from API (up to 4 visible tags)
+- ✅ Better job categorization and filtering for users
+- ✅ Consistent user experience across all job listings
+- ✅ No more confusing placeholder data
+
+---
+
 ### November 11, 2025 - Supabase CMS Cleanup (Post TugasCMS Migration)
 **Status**: Completed ✅
 
