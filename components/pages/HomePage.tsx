@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Search, TrendingUp, ArrowRight, Users, Building, Code, Heart, Calculator, Truck, Briefcase } from 'lucide-react';
-import { cmsService, FilterData } from '@/lib/cms/service';
+import { FilterData } from '@/lib/cms/service';
 import { userBookmarkService } from '@/lib/api/user-bookmarks';
 import { supabase } from '@/lib/supabase';
 import { adminService } from '@/lib/utils/admin-legacy';
@@ -122,8 +122,14 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
   const loadData = async () => {
     setLoading(true);
     try {
-      const response = await cmsService.getJobs({}, 1, 6);
-      setJobs(response.jobs);
+      const response = await fetch('/api/job-posts?page=1&limit=6');
+      const result = await response.json();
+      
+      if (result.success) {
+        setJobs(result.data.jobs);
+      } else {
+        setJobs([]);
+      }
     } catch (error) {
       setJobs([]);
     } finally {

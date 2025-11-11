@@ -10,11 +10,21 @@
 1. **Removed Mock Job Data from Homepage**
    - **File**: `components/pages/HomePage.tsx`
    - **Before**: Homepage displayed 6 hardcoded placeholder jobs (PT. Teknologi Maju, PT. Analytics Solutions, etc.)
-   - **After**: Now fetches real jobs from TugasCMS API using `cmsService.getJobs({}, 1, 6)`
+   - **After**: Now fetches real jobs from TugasCMS API via `/api/job-posts` endpoint
    - **Removed**: 160+ lines of mock data
    - **Impact**: Homepage now displays actual job listings from CMS, no more placeholder data
 
-2. **Improved Salary Display in Job Cards**
+2. **Fixed Homepage CMS Endpoint Issue - Critical Fix**
+   - **File**: `components/pages/HomePage.tsx`
+   - **Problem**: Homepage was using client-side `cmsService.getJobs()` which fell back to hardcoded endpoint `https://cms.tugasin.me` instead of database-configured endpoint
+   - **Root Cause**: Client-side cmsService singleton couldn't access Supabase server-side settings initialization
+   - **Solution**: Changed to use `/api/job-posts` API route (same as lowongan-kerja page)
+   - **Before**: `cmsService.getJobs({}, 1, 6)` (client-side, wrong endpoint)
+   - **After**: `fetch('/api/job-posts?page=1&limit=6')` (server-side via API route)
+   - **Impact**: Homepage now uses correct CMS endpoint from database settings
+   - **Security**: Removed client-side cmsService usage that could expose server-only settings
+
+3. **Improved Salary Display in Job Cards**
    - **File**: `components/JobCard.tsx`
    - **Added**: `formatSalary()` function to remove salary period suffixes
    - **Before**: "Rp 3-5 Juta/monthly"
@@ -22,29 +32,40 @@
    - **Regex Pattern**: Removes `/monthly`, `/yearly`, `/bulan`, `/tahun`, `/month`, `/year` suffixes
    - **Impact**: Cleaner, more concise salary display on job cards
 
-3. **Fixed Job Tags Display - Now Shows All Tags from API**
-   - **Files**: `components/JobCard.tsx`, `types/job.ts`
-   - **Before**: Only showed 1 tag from legacy `tag` string field
-   - **After**: Now displays all tags from `job_tags` array (API response)
+4. **Fixed Job Tags Display - Now Shows All Tags from API**
+   - **Files**: `components/JobCard.tsx`, `types/job.ts`, `lib/cms/service.ts`
+   - **Problem**: Only showed 1 tag instead of all tags from API
+   - **Root Cause**: `transformCMSJobToJob()` was not passing `job_tags` array to Job object (only passing first tag name as string)
+   - **Solution 1**: Added `job_tags: cmsJob.job_tags || []` to transformation function (line 266 in `lib/cms/service.ts`)
+   - **Solution 2**: Updated `getJobTags()` to prefer `job_tags` array over legacy `tag` string
+   - **Before**: Only showed first tag name from `tag` string field
+   - **After**: Shows all tags from `job_tags` array with proper display logic
    - **Added**: `job_tags?: Array<{ id: string; name: string; slug: string }>` to Job type
-   - **Updated**: `getJobTags()` function to prefer `job_tags` array over old `tag` string
    - **Display Logic**: Shows up to 4 tags, or 3 tags + "+X Lainnya" if more than 4
    - **Backward Compatible**: Falls back to old `tag` string if `job_tags` not available
    - **Example**: Now shows "Sma/smk", "Laboratorium & Riset", "Operator Laboratorium", "+2 Lainnya" instead of just 1 tag
    - **Impact**: Users can see multiple relevant tags for each job listing
 
 **Files Modified**:
-- `components/pages/HomePage.tsx` - Replaced mock data with real API call
+- `components/pages/HomePage.tsx` - Changed to use `/api/job-posts` endpoint, removed client-side cmsService usage
 - `components/JobCard.tsx` - Added salary formatting function and updated tag display logic
 - `types/job.ts` - Added `job_tags` field to Job interface
+- `lib/cms/service.ts` - Added `job_tags` array to Job transformation
+
+**Architectural Improvements**:
+- ✅ **Server-Only Pattern**: cmsService is now server-only, client components use API routes
+- ✅ **Correct Endpoint**: Homepage uses database-configured CMS endpoint
+- ✅ **Security**: No server-side settings exposed to client
+- ✅ **Consistency**: Homepage and lowongan-kerja use same data fetching pattern
 
 **Impact**:
-- ✅ Homepage shows real job data from TugasCMS
+- ✅ Homepage shows real job data from correct CMS endpoint
 - ✅ Cleaner salary display without period information
 - ✅ Job cards now display multiple tags from API (up to 4 visible tags)
 - ✅ Better job categorization and filtering for users
 - ✅ Consistent user experience across all job listings
 - ✅ No more confusing placeholder data
+- ✅ Fixed "Failed to fetch" error on homepage
 
 ---
 

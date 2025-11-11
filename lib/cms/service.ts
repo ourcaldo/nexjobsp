@@ -260,6 +260,7 @@ export class CMSService {
       pendidikan: cmsJob.education_level?.name || '',
       pengalaman: cmsJob.experience_level?.name || '',
       tag: cmsJob.job_tags?.[0]?.name || '',
+      job_tags: cmsJob.job_tags || [],
       gender: '',
       gaji: formatSalary(
         cmsJob.job_salary_min,
