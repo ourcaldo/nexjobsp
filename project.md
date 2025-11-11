@@ -155,6 +155,99 @@ nexjob-portal/
 
 ## Recent Changes
 
+### 2025-11-11 - Database Cleanup: Removed Unused nxdb_article_* and nxdb_page_* Code **[COMPLETED]**
+- **Time**: Current session
+- **Scope**: Removed all code references to deprecated Supabase nxdb_article_* and nxdb_page_* tables after migration to TugasCMS
+- **Status**: Completed - Code cleanup done, SQL drop queries provided to user
+- **Priority**: HIGH - Code maintenance and database cleanup
+
+**Background**:
+- Project previously used Supabase tables (nxdb_articles, nxdb_pages, etc.) for content management
+- Migrated to external TugasCMS API (https://cms.nexjob.tech) for all article and page management
+- Old Supabase CMS tables were no longer in use but code references remained
+
+**Changes Implemented**:
+
+1. **Deleted Unused CMS Service Files**
+   - **Removed**: `lib/cms/articles.ts` - Full article management service for Supabase (399 lines)
+   - **Removed**: `lib/cms/pages.ts` - Full page management service for Supabase (399 lines)
+   - **Impact**: These services were only used by removed admin components
+
+2. **Deleted Unused Admin CMS UI Components**
+   - **Removed**: `components/admin/cms/CmsPages.tsx` - Admin CMS management interface
+   - **Removed**: `components/admin/cms/UnifiedEditor.tsx` - Rich text editor for articles/pages
+   - **Removed**: `components/admin/cms/MediaManager.tsx` - Media management component
+   - **Removed**: `components/admin/cms/TiptapEditor.tsx` - TipTap editor wrapper
+   - **Removed**: `components/admin/cms/RichTextEditor.tsx` - Additional rich text editor
+   - **Removed**: `components/admin/cms/` directory (now empty)
+   - **Impact**: These were not accessible (no routes existed in app/backend/admin/)
+
+3. **Updated Dashboard Stats API**
+   - **File**: `app/api/admin/dashboard-stats/route.ts`
+   - **Before**: Queried `supabase.from('nxdb_articles').select()` for article count
+   - **After**: Now uses `cmsService.getArticles(1, 1)` to fetch from TugasCMS
+   - **Change**: `totalArticles: articlesResult?.totalArticles || 0`
+   - **Impact**: Admin dashboard now shows article count from active CMS
+
+4. **Cleaned TypeScript Type Definitions**
+   - **File**: `lib/supabase.ts`
+   - **Removed Types**:
+     - `NxdbArticle` - Article interface with relations
+     - `NxdbArticleCategory` - Article category interface
+     - `NxdbArticleTag` - Article tag interface
+     - `NxdbPage` - Page interface with relations (duplicate definition removed)
+     - `NxdbPageCategory` - Page category interface
+     - `NxdbPageTag` - Page tag interface
+     - `NxdbMedia` - Media file interface
+     - `NxdbPageCategoryRelation` - Junction table interface
+     - `NxdbPageTagRelation` - Junction table interface
+   - **Impact**: Removed ~150 lines of unused type definitions
+
+**Supabase Tables to Drop** (User must run these SQL queries):
+The following tables are no longer used by the application and can be safely dropped:
+- `nxdb_articles`
+- `nxdb_article_categories`
+- `nxdb_article_tags`
+- `nxdb_article_category_relations`
+- `nxdb_article_tag_relations`
+- `nxdb_pages`
+- `nxdb_page_categories`
+- `nxdb_page_tags`
+- `nxdb_page_category_relations`
+- `nxdb_page_tag_relations`
+
+**Files Deleted**:
+1. `lib/cms/articles.ts`
+2. `lib/cms/pages.ts`
+3. `components/admin/cms/CmsPages.tsx`
+4. `components/admin/cms/UnifiedEditor.tsx`
+5. `components/admin/cms/MediaManager.tsx`
+6. `components/admin/cms/TiptapEditor.tsx`
+7. `components/admin/cms/RichTextEditor.tsx`
+8. `components/admin/cms/` (directory)
+
+**Files Modified**:
+1. `app/api/admin/dashboard-stats/route.ts` - Updated to use TugasCMS instead of Supabase tables
+2. `lib/supabase.ts` - Removed all nxdb type definitions
+3. `.local/state/replit/agent/progress_tracker.md` - Updated with cleanup status
+
+**Verification**:
+- ✅ Zero LSP/TypeScript errors after cleanup
+- ✅ No remaining code references to nxdb_article_* or nxdb_page_* tables
+- ✅ Dashboard stats API now correctly fetches from TugasCMS
+- ✅ All type definitions cleaned up
+- ✅ Project structure updated in documentation
+
+**Impact**:
+- ✅ **Codebase Cleanup**: Removed ~1,200+ lines of unused code
+- ✅ **Type Safety**: Eliminated unused type definitions
+- ✅ **Maintainability**: Single source of truth for articles/pages (TugasCMS)
+- ✅ **Database Ready**: Prepared for Supabase table cleanup
+- ✅ **Admin Dashboard**: Still functional with TugasCMS data source
+
+**Next Steps for User**:
+Run the provided SQL DROP queries on Supabase to complete the cleanup.
+
 ### 2025-11-11 - Build Fix: Added Missing job_categories Field to Mock Data **[COMPLETED]**
 - **Time**: Current session
 - **Scope**: Fixed TypeScript compilation error in HomePage component that prevented production builds

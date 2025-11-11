@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { NxdbArticle, NxdbArticleCategory } from '@/lib/supabase';
 import { formatDistance } from 'date-fns';
 import { Calendar, User, Tag, Folder, ArrowRight, Clock, Eye } from 'lucide-react';
 import Link from 'next/link';
@@ -9,11 +8,38 @@ import Image from 'next/image';
 import AdDisplay from '@/components/Advertisement/AdDisplay';
 import { getBlurDataURL } from '@/lib/utils/image';
 
+interface Article {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  status: string;
+  featured_image?: string | null;
+  seo_title?: string | null;
+  meta_description?: string | null;
+  publish_date?: string;
+  published_at?: string;
+  post_date?: string;
+  created_at?: string;
+  updated_at?: string;
+  author?: { id?: string; full_name?: string; email?: string };
+  categories?: any[];
+  tags?: any[];
+}
+
+interface ArticleCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+}
+
 interface ArticleListPageProps {
-  initialArticles: NxdbArticle[];
-  categories: NxdbArticleCategory[];
-  featuredArticle: NxdbArticle | null;
-  latestArticles: NxdbArticle[];
+  initialArticles: Article[];
+  categories: ArticleCategory[];
+  featuredArticle: Article | null;
+  latestArticles: Article[];
   tags: string[];
   seoTitle: string;
   seoDescription: string;
@@ -41,7 +67,7 @@ export default function ArticleListPage({
   seoTitle,
   seoDescription
 }: ArticleListPageProps) {
-  const [articles, setArticles] = useState<NxdbArticle[]>(initialArticles);
+  const [articles, setArticles] = useState<Article[]>(initialArticles);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -277,7 +303,7 @@ export default function ArticleListPage({
                           <div className="flex items-center">
                             <Clock className="h-3.5 w-3.5 mr-1" />
                             <span>
-                              {formatDistance(new Date(article.published_at || article.post_date), new Date(), { addSuffix: true })}
+                              {formatDistance(new Date(article.published_at || article.post_date || article.created_at || new Date()), new Date(), { addSuffix: true })}
                             </span>
                           </div>
                         </div>
@@ -378,7 +404,7 @@ export default function ArticleListPage({
                             </h4>
                             <p className="text-xs text-gray-500 flex items-center">
                               <Calendar className="h-3 w-3 mr-1" />
-                              {formatDistance(new Date(article.published_at || article.post_date), new Date(), { addSuffix: true })}
+                              {formatDistance(new Date(article.published_at || article.post_date || article.created_at || new Date()), new Date(), { addSuffix: true })}
                             </p>
                           </div>
                         </div>

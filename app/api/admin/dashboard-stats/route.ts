@@ -10,19 +10,19 @@ export async function GET(request: NextRequest) {
     const [
       { count: totalUsers },
       { count: totalBookmarks },
-      { count: totalArticles },
-      jobsResult
+      jobsResult,
+      articlesResult
     ] = await Promise.all([
       supabase.from('profiles').select('*', { count: 'exact', head: true }),
       supabase.from('user_bookmarks').select('*', { count: 'exact', head: true }),
-      supabase.from('nxdb_articles').select('*', { count: 'exact', head: true }),
-      cmsService.getJobs({}, 1, 1)
+      cmsService.getJobs({}, 1, 1),
+      cmsService.getArticles(1, 1)
     ]);
 
     const stats = {
       totalUsers: totalUsers || 0,
       totalBookmarks: totalBookmarks || 0,
-      totalArticles: totalArticles || 0,
+      totalArticles: (articlesResult?.success && articlesResult?.data?.pagination?.total) || 0,
       totalJobs: jobsResult?.totalJobs || 0
     };
 

@@ -1,5 +1,5 @@
 import { Job } from '@/types/job';
-import { AdminSettings, NxdbPage } from '@/lib/supabase';
+import { AdminSettings } from '@/lib/supabase';
 import { getCurrentDomain } from '@/lib/env';
 
 export const generateWebsiteSchema = (settings: AdminSettings) => {
@@ -227,120 +227,6 @@ export const generateArticleSchema = (article: any) => {
       "url": `${baseUrl}/artikel/${article.categories?.[0]?.slug || 'uncategorized'}/${article.slug}/`
     };
   }
-};
-
-export const generatePageSchema = (page: NxdbPage) => {
-  const baseUrl = getCurrentDomain();
-
-  // Generate schema based on the page's schema types
-  const schemas = page.schema_types.map(schemaType => {
-    const baseSchema = {
-      "@context": "https://schema.org",
-      "@type": schemaType,
-      "name": page.title,
-      "description": page.meta_description || page.excerpt,
-      "url": `${baseUrl}/${page.slug}/`,
-      "datePublished": page.post_date,
-      "dateModified": page.updated_at,
-      "author": {
-        "@type": "Person",
-        "name": page.author?.full_name || page.author?.email || "Nexjob Team"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "Nexjob",
-        "logo": {
-          "@type": "ImageObject",
-          "url": `${baseUrl}/logo.png`
-        }
-      }
-    };
-
-    // Add specific properties based on schema type
-    switch (schemaType) {
-      case 'Article':
-        return {
-          ...baseSchema,
-          "headline": page.title,
-          "image": page.featured_image || `${baseUrl}/default-page-image.jpg`,
-          "articleSection": page.categories?.[0]?.name || "General",
-          "keywords": page.tags?.map(tag => tag.name).join(", ") || ""
-        };
-
-      case 'WebPage':
-        return {
-          ...baseSchema,
-          "mainEntity": {
-            "@type": "WebPageElement",
-            "text": page.content.replace(/<[^>]*>/g, '').substring(0, 300)
-          }
-        };
-
-      case 'Product':
-        return {
-          ...baseSchema,
-          "image": page.featured_image || `${baseUrl}/default-product-image.jpg`,
-          "brand": {
-            "@type": "Brand",
-            "name": "Nexjob"
-          }
-        };
-
-      case 'FAQPage':
-        return {
-          ...baseSchema,
-          "mainEntity": {
-            "@type": "Question",
-            "name": page.title,
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": page.content.replace(/<[^>]*>/g, '').substring(0, 500)
-            }
-          }
-        };
-
-      case 'LocalBusiness':
-        return {
-          ...baseSchema,
-          "address": {
-            "@type": "PostalAddress",
-            "addressCountry": "ID"
-          },
-          "telephone": "+62-xxx-xxxx-xxxx",
-          "openingHours": "Mo-Fr 09:00-17:00"
-        };
-
-      case 'Event':
-        return {
-          ...baseSchema,
-          "startDate": page.post_date,
-          "location": {
-            "@type": "Place",
-            "name": "Online",
-            "address": {
-              "@type": "PostalAddress",
-              "addressCountry": "ID"
-            }
-          },
-          "organizer": {
-            "@type": "Organization",
-            "name": "Nexjob"
-          }
-        };
-
-      default:
-        return baseSchema;
-    }
-  });
-
-  // Return the first schema if multiple types are selected
-  return schemas[0] || {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": page.title,
-    "description": page.meta_description || page.excerpt,
-    "url": `${baseUrl}/${page.slug}/`
-  };
 };
 
 export const generateJobListingSchema = (jobs: Job[]) => {
