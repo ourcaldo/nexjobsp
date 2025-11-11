@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { cmsService } from '@/lib/cms/service';
+import { articleService } from '@/lib/services/ArticleService';
+import { categoryService } from '@/lib/services/CategoryService';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
@@ -18,7 +19,7 @@ interface ArticleCategoryPageProps {
 
 async function getCategoryData(categorySlug: string) {
   try {
-    const categoriesResponse = await cmsService.getCategories();
+    const categoriesResponse = await categoryService.getCategories();
     if (!categoriesResponse.success) {
       return null;
     }
@@ -30,7 +31,7 @@ async function getCategoryData(categorySlug: string) {
       return null;
     }
 
-    const articlesResponse = await cmsService.getArticles(1, 100, category.id);
+    const articlesResponse = await articleService.getArticles(1, 100, category.id);
     
     if (!articlesResponse.success) {
       return null;
@@ -81,7 +82,7 @@ async function getCategoryData(categorySlug: string) {
 
 export async function generateStaticParams() {
   try {
-    const categoriesResponse = await cmsService.getCategories();
+    const categoriesResponse = await categoryService.getCategories();
     if (!categoriesResponse.success) {
       return [];
     }

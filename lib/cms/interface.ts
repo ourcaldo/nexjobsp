@@ -77,6 +77,13 @@ export interface CMSProvider {
   getCategoryWithPosts(idOrSlug: string, page?: number, limit?: number): Promise<any>;
   getTagWithPosts(idOrSlug: string, page?: number, limit?: number): Promise<any>;
   
+  getPages(page?: number, limit?: number, category?: string, tag?: string, search?: string): Promise<any>;
+  getPageBySlug(slug: string): Promise<any>;
+  getAllPagesForSitemap(): Promise<any>;
+  
+  getSitemaps(): Promise<any>;
+  getSitemapXML(sitemapPath: string): Promise<string | null>;
+  
   testConnection(): Promise<{ success: boolean; data?: any; error?: string }>;
   clearFilterCache(): void;
 }

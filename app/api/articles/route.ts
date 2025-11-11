@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cmsService } from '@/lib/cms/service';
+import { articleService } from '@/lib/services/ArticleService';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category') || undefined;
     const search = searchParams.get('search') || undefined;
 
-    const response = await cmsService.getArticles(page, limit, category, search);
+    const response = await articleService.getArticles(page, limit, category, search);
 
     if (!response.success) {
       return NextResponse.json(

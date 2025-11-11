@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cmsService } from '@/lib/cms/service';
+import { pageService } from '@/lib/services/PageService';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const tag = searchParams.get('tag') || undefined;
     const search = searchParams.get('search') || undefined;
 
-    const response = await cmsService.getPages(page, limit, category, tag, search);
+    const response = await pageService.getPages(page, limit, category, tag, search);
 
     if (!response.success) {
       return NextResponse.json(

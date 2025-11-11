@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cmsService } from '@/lib/cms/service';
+import { jobService } from '@/lib/services/JobService';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const jobs = await cmsService.getJobsByIds(jobIds);
+    const jobs = await jobService.getJobsByIds(jobIds);
 
     return NextResponse.json({
       success: true,

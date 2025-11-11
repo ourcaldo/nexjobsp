@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cmsService } from '@/lib/cms/service';
+import { jobService } from '@/lib/services/JobService';
 
 export async function GET(
   request: NextRequest,
@@ -10,7 +10,7 @@ export async function GET(
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '4');
 
-    const relatedJobs = await cmsService.getRelatedJobs(id, limit);
+    const relatedJobs = await jobService.getRelatedJobs(id, limit);
 
     return NextResponse.json({
       success: true,

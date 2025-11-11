@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cmsService } from '@/lib/cms/service';
+import { articleService } from '@/lib/services/ArticleService';
 
 export async function GET(
   request: NextRequest,
@@ -10,7 +10,7 @@ export async function GET(
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '3');
 
-    const relatedArticles = await cmsService.getRelatedArticles(id, limit);
+    const relatedArticles = await articleService.getRelatedArticles(id, limit);
 
     return NextResponse.json({
       success: true,

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { cmsService } from '@/lib/cms/service';
+import { articleService } from '@/lib/services/ArticleService';
+import { categoryService } from '@/lib/services/CategoryService';
 import { supabaseAdminService } from '@/lib/supabase/admin';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
@@ -11,8 +12,8 @@ import ArticleListPage from '@/components/pages/ArticleListPage';
 async function getArticleData() {
   try {
     const [articlesResponse, categoriesResponse, seoSettings] = await Promise.all([
-      cmsService.getArticles(1, 20),
-      cmsService.getCategories(),
+      articleService.getArticles(1, 20),
+      categoryService.getCategories(),
       supabaseAdminService.getSettings()
     ]);
 

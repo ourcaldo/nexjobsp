@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { cmsService } from '@/lib/cms/service';
+import { jobService } from '@/lib/services/JobService';
 
 export async function GET() {
   try {
     // Call CMS service server-side (has access to cms_token from database)
-    const filterData = await cmsService.getFiltersData();
+    const filterData = await jobService.getFiltersData();
     
     return NextResponse.json({
       success: true,

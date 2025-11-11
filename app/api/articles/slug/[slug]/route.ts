@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cmsService } from '@/lib/cms/service';
+import { articleService } from '@/lib/services/ArticleService';
 
 export async function GET(
   request: NextRequest,
@@ -8,7 +8,7 @@ export async function GET(
   try {
     const { slug } = params;
 
-    const response = await cmsService.getArticleBySlug(slug);
+    const response = await articleService.getArticleBySlug(slug);
 
     if (!response.success || !response.data) {
       return NextResponse.json(

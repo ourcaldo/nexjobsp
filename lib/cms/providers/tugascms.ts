@@ -2,6 +2,7 @@ import { Job } from '@/types/job';
 import { supabaseAdminService } from '@/lib/supabase/admin';
 import { env } from '@/lib/env';
 import { CMSProvider, FilterData, JobsResponse } from '../interface';
+import { transformCMSPageToPage } from '@/lib/cms/utils/transformers';
 
 interface CMSJobPost {
   id: string;
@@ -739,6 +740,145 @@ export class TugasCMSProvider implements CMSProvider {
       return { success: true, data: relatedArticles };
     } catch (error) {
       return { success: false, data: [] };
+    }
+  }
+
+  async getPages(page: number = 1, limit: number = 20, category?: string, tag?: string, search?: string) {
+    await this.ensureInitialized();
+    
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        status: 'published'
+      });
+
+      if (category) params.set('category', category);
+      if (tag) params.set('tag', tag);
+      if (search) params.set('search', search);
+
+      const response = await this.fetchWithTimeout(
+        `${this.baseUrl}/api/v1/pages?${params.toString()}`
+      );
+      const data = await response.json();
+
+      if (!data.success) {
+        return { success: false, data: { pages: [], pagination: {} } };
+      }
+
+      const transformedPages = data.data.pages.map((page: any) => transformCMSPageToPage(page));
+
+      return {
+        success: true,
+        data: {
+          pages: transformedPages,
+          pagination: data.data.pagination
+        },
+        cached: data.cached
+      };
+    } catch (error) {
+      console.error('Error fetching pages:', error);
+      return { success: false, data: { pages: [], pagination: {} } };
+    }
+  }
+
+  async getPageBySlug(slug: string) {
+    await this.ensureInitialized();
+    
+    try {
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/pages/${slug}`);
+      const data = await response.json();
+
+      if (!data.success || !data.data) {
+        return { success: false, data: null };
+      }
+
+      const transformedPage = transformCMSPageToPage(data.data);
+
+      return {
+        success: true,
+        data: transformedPage,
+        cached: data.cached
+      };
+    } catch (error) {
+      console.error('Error fetching page by slug:', error);
+      return { success: false, data: null };
+    }
+  }
+
+  async getAllPagesForSitemap() {
+    await this.ensureInitialized();
+    
+    try {
+      const allPages: any[] = [];
+      let page = 1;
+      let hasMore = true;
+
+      while (hasMore) {
+        try {
+          const response = await this.getPages(page, 100);
+
+          if (!response.success) {
+            console.error('Failed to fetch pages for sitemap');
+            break;
+          }
+
+          if (!response.data.pages || response.data.pages.length === 0) {
+            hasMore = false;
+          } else {
+            allPages.push(...response.data.pages);
+            hasMore = response.data.pagination?.hasNextPage || false;
+            page++;
+          }
+        } catch (error) {
+          console.error(`Error fetching pages page ${page}:`, error);
+          break;
+        }
+      }
+
+      return allPages;
+    } catch (error) {
+      console.error('Error fetching all pages for sitemap:', error);
+      return [];
+    }
+  }
+
+  async getSitemaps() {
+    await this.ensureInitialized();
+    
+    try {
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/sitemaps`);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching sitemaps:', error);
+      return { success: false, data: { sitemaps: [] } };
+    }
+  }
+
+  async getSitemapXML(sitemapPath: string): Promise<string | null> {
+    await this.ensureInitialized();
+    
+    try {
+      const response = await this.fetchWithTimeout(`${this.baseUrl}${sitemapPath}`);
+      let xmlContent = await response.text();
+      
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nexjob.tech';
+      
+      xmlContent = xmlContent.replace(
+        /\/api\/v1\/sitemaps\//g,
+        '/'
+      );
+      
+      xmlContent = xmlContent.replace(
+        /https?:\/\/cms\.nexjob\.tech\//g,
+        `${siteUrl}/`
+      );
+      
+      return xmlContent;
+    } catch (error) {
+      console.error('Error fetching sitemap XML:', error);
+      return null;
     }
   }
 }

@@ -1,10 +1,38 @@
 import { NextResponse } from 'next/server';
-import { cmsService } from '@/lib/cms/service';
+import { jobService } from '@/lib/services/JobService';
+import { categoryService } from '@/lib/services/CategoryService';
 
 export async function GET() {
   try {
-    const wpTest = await cmsService.testConnection();
-    const filtersTest = await cmsService.testFiltersConnection();
+    const wpTest = await (async () => {
+      try {
+        const result = await jobService.getJobs({}, 1, 1);
+        return { 
+          success: result.totalJobs >= 0,
+          data: result.jobs?.[0] || null 
+        };
+      } catch (error) {
+        return { 
+          success: false, 
+          error: error instanceof Error ? error.message : 'Unknown error' 
+        };
+      }
+    })();
+
+    const filtersTest = await (async () => {
+      try {
+        const result = await categoryService.getCategories(1, 1);
+        return { 
+          success: result.success || false,
+          data: result 
+        };
+      } catch (error) {
+        return { 
+          success: false, 
+          error: error instanceof Error ? error.message : 'Unknown error' 
+        };
+      }
+    })();
 
     return NextResponse.json({
       success: true,

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
-import { cmsService } from '@/lib/cms/service';
+import { articleService } from '@/lib/services/ArticleService';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
@@ -25,7 +25,7 @@ interface ArticleDetailPageProps {
 // Wrap with React cache() to deduplicate API calls between generateMetadata() and page component
 const getArticleData = cache(async (categorySlug: string, slug: string) => {
   try {
-    const articleResponse = await cmsService.getArticleBySlug(slug);
+    const articleResponse = await articleService.getArticleBySlug(slug);
 
     if (!articleResponse.success || !articleResponse.data) {
       return null;
@@ -61,7 +61,7 @@ const getArticleData = cache(async (categorySlug: string, slug: string) => {
       return null;
     }
 
-    const relatedArticlesResponse = await cmsService.getRelatedArticles(slug, 5);
+    const relatedArticlesResponse = await articleService.getRelatedArticles(slug, 5);
     const relatedArticles = relatedArticlesResponse || [];
 
     return {
@@ -83,7 +83,7 @@ export async function generateStaticParams() {
 
     // Fetch articles in batches using pagination
     while (hasMorePages) {
-      const articlesResponse = await cmsService.getArticles(currentPage, limitPerPage);
+      const articlesResponse = await articleService.getArticles(currentPage, limitPerPage);
       
       if (!articlesResponse.success || !articlesResponse.data.posts.length) {
         break;

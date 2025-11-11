@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
-import { cmsService } from '@/lib/cms/service';
+import { jobService } from '@/lib/services/JobService';
 import { SupabaseAdminService } from '@/lib/supabase/admin';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
@@ -21,7 +21,7 @@ interface JobPageProps {
 const getJobData = cache(async (category: string, slug: string) => {
   try {
     const [job, settings] = await Promise.all([
-      cmsService.getJobBySlug(slug),
+      jobService.getJobBySlug(slug),
       SupabaseAdminService.getSettingsServerSide()
     ]);
 
@@ -97,7 +97,7 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
 export async function generateStaticParams() {
   try {
     // Get some popular jobs for initial static generation
-    const response = await cmsService.getJobs({}, 1, 50); // Get first 50 jobs
+    const response = await jobService.getJobs({}, 1, 50); // Get first 50 jobs
     return response.jobs.map(job => {
       const categorySlug = job.job_categories?.[0]?.slug || 'uncategorized';
       return {

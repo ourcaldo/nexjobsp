@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
-import { CMSService, FilterData } from '@/lib/cms/service';
+import { FilterData } from '@/lib/cms/interface';
+import { articleService } from '@/lib/services/ArticleService';
+import { jobService } from '@/lib/services/JobService';
 import { SupabaseAdminService } from '@/lib/supabase/admin';
 import { getCurrentDomain } from '@/lib/env';
 import Header from '@/components/Layout/Header';
@@ -12,21 +14,10 @@ async function getHomeData() {
   try {
     const settings = await SupabaseAdminService.getSettingsServerSide();
 
-    // Create isolated cmsService instance for this request
-    const currentCmsService = new CMSService();
-    if (settings.cms_endpoint) currentCmsService.setBaseUrl(settings.cms_endpoint);
-    if (settings.cms_token) currentCmsService.setAuthToken(settings.cms_token);
-    if (settings.cms_timeout) {
-      const timeout = typeof settings.cms_timeout === 'string' 
-        ? parseInt(settings.cms_timeout) 
-        : settings.cms_timeout;
-      currentCmsService.setTimeout(timeout);
-    }
-
     // Fetch data
     const [articlesResponse, filterData] = await Promise.all([
-      currentCmsService.getArticles(1, 3),
-      currentCmsService.getFiltersData()
+      articleService.getArticles(1, 3),
+      jobService.getFiltersData()
     ]);
 
     // Extract articles from CMS response

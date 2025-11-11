@@ -1,5 +1,5 @@
 import { ImageResponse } from '@vercel/og';
-import { cmsService } from '@/lib/cms/service';
+import { jobService } from '@/lib/services/JobService';
 
 export const runtime = 'edge';
 export const alt = 'Lowongan Kerja - Nexjob';
@@ -11,7 +11,7 @@ export const contentType = 'image/png';
 
 export default async function Image({ params }: { params: { category: string; slug: string } }) {
   try {
-    const job = await cmsService.getJobBySlug(params.slug);
+    const job = await jobService.getJobBySlug(params.slug);
 
     if (!job) {
       return new ImageResponse(
