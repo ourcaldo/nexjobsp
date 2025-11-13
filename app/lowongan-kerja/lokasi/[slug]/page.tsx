@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import { SupabaseAdminService } from '@/lib/supabase/admin';
 import { jobService } from '@/lib/services/JobService';
 import Header from '@/components/Layout/Header';
@@ -54,20 +55,24 @@ async function getLocationData(slug: string) {
 export async function generateMetadata({ params }: JobLocationPageProps): Promise<Metadata> {
   const { slug, locationName, category, settings, currentUrl } = await getLocationData(params.slug);
 
+  // Will redirect if invalid, but need metadata for valid case
+  if (!locationName) {
+    return {
+      title: 'Lowongan Kerja',
+      description: 'Temukan lowongan kerja terbaru'
+    };
+  }
+
   // Prepare template variables
   const templateVars = {
     site_title: settings?.site_title || 'Nexjob',
-    lokasi: locationName || slug.charAt(0).toUpperCase() + slug.slice(1),
+    lokasi: locationName,
     kategori: category
   };
 
-  // Get SEO settings with template rendering - fallback if location not found
-  const pageTitle = locationName 
-    ? renderTemplate(settings?.location_page_title_template || 'Lowongan Kerja di {{lokasi}} - {{site_title}}', templateVars)
-    : `Lowongan Kerja - ${settings?.site_title || 'Nexjob'}`;
-  const pageDescription = locationName
-    ? renderTemplate(settings?.location_page_description_template || 'Temukan lowongan kerja terbaru di {{lokasi}} dari berbagai perusahaan terpercaya. Dapatkan pekerjaan impian Anda di {{lokasi}}.', templateVars)
-    : 'Temukan lowongan kerja terbaru dari berbagai perusahaan terpercaya di seluruh Indonesia.';
+  // Get SEO settings with template rendering
+  const pageTitle = renderTemplate(settings?.location_page_title_template || 'Lowongan Kerja di {{lokasi}} - {{site_title}}', templateVars);
+  const pageDescription = renderTemplate(settings?.location_page_description_template || 'Temukan lowongan kerja terbaru di {{lokasi}} dari berbagai perusahaan terpercaya. Dapatkan pekerjaan impian Anda di {{lokasi}}.', templateVars);
 
   return {
     title: pageTitle,
@@ -106,30 +111,27 @@ export const dynamicParams = true; // Enable dynamic params for locations not in
 export default async function JobLocationPage({ params }: JobLocationPageProps) {
   const { slug, location, locationName, category, locationType, settings, currentUrl } = await getLocationData(params.slug);
 
-  const breadcrumbItems = locationName 
-    ? [
-        { label: 'Lowongan Kerja', href: '/lowongan-kerja/' },
-        { label: `Lokasi: ${locationName}` }
-      ]
-    : [
-        { label: 'Lowongan Kerja', href: '/lowongan-kerja/' }
-      ];
+  // Redirect to main job page if province is not found
+  if (!locationName) {
+    redirect('/lowongan-kerja/');
+  }
+
+  const breadcrumbItems = [
+    { label: 'Lowongan Kerja', href: '/lowongan-kerja/' },
+    { label: `Lokasi: ${locationName}` }
+  ];
   const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
 
   // Prepare template variables
   const templateVars = {
     site_title: settings?.site_title || 'Nexjob',
-    lokasi: locationName || slug.charAt(0).toUpperCase() + slug.slice(1),
+    lokasi: locationName,
     kategori: category
   };
 
-  // Get SEO settings with template rendering - fallback if location not found
-  const pageTitle = locationName 
-    ? renderTemplate(settings?.location_page_title_template || 'Lowongan Kerja di {{lokasi}} - {{site_title}}', templateVars)
-    : `Lowongan Kerja - ${settings?.site_title || 'Nexjob'}`;
-  const pageDescription = locationName
-    ? renderTemplate(settings?.location_page_description_template || 'Temukan lowongan kerja terbatu di {{lokasi}} dari berbagai perusahaan terpercaya. Dapatkan pekerjaan impian Anda di {{lokasi}}.', templateVars)
-    : 'Temukan lowongan kerja terbaru dari berbagai perusahaan terpercaya di seluruh Indonesia.';
+  // Get SEO settings with template rendering
+  const pageTitle = renderTemplate(settings?.location_page_title_template || 'Lowongan Kerja di {{lokasi}} - {{site_title}}', templateVars);
+  const pageDescription = renderTemplate(settings?.location_page_description_template || 'Temukan lowongan kerja terbaru di {{lokasi}} dari berbagai perusahaan terpercaya. Dapatkan pekerjaan impian Anda di {{lokasi}}.', templateVars);
 
   return (
     <>
@@ -151,30 +153,19 @@ export default async function JobLocationPage({ params }: JobLocationPageProps) 
                   <span className="text-white">Home</span>
                   <span className="mx-2">/</span>
                   <span className="text-white">Lowongan Kerja</span>
-                  {locationName && (
-                    <>
-                      <span className="mx-2">/</span>
-                      <span className="text-white">Lokasi: {locationName}</span>
-                    </>
-                  )}
+                  <span className="mx-2">/</span>
+                  <span className="text-white">Lokasi: {locationName}</span>
                 </li>
               </ol>
             </nav>
 
             <div className="text-center">
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                {locationName 
-                  ? pageTitle.replace(` - ${templateVars.site_title}`, '') 
-                  : 'Lowongan Kerja Terbaru'}
+                {pageTitle.replace(` - ${templateVars.site_title}`, '')}
               </h1>
               <p className="text-xl text-primary-100 max-w-3xl mx-auto leading-relaxed">
                 {pageDescription}
               </p>
-              {!locationName && (
-                <p className="text-sm text-primary-200 mt-4">
-                  Lokasi &quot;{slug}&quot; tidak ditemukan. Menampilkan semua lowongan kerja.
-                </p>
-              )}
             </div>
           </div>
         </div>

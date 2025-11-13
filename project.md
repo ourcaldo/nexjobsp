@@ -29,9 +29,8 @@
    - **Added** `initialLocationName={locationName}` prop to pass province name (e.g., "Bali") to JobSearchPage (line 166)
    - **Fixed** `getLocationData` to only set location if valid province found (line 48: `location: provinceId` instead of `location: provinceId || provinceName`)
    - **Fixed** `locationName` to only be set if valid province found (line 49: conditional on `provinceId`)
-   - **Added** fallback metadata when province not found (lines 68-73): generic title/description instead of invalid location
-   - **Added** fallback UI when province not found (lines 176-180): shows notice "Lokasi 'jakarta' tidak ditemukan. Menampilkan semua lowongan kerja."
-   - **Updated** breadcrumbs to only show location if valid (lines 157-162)
+   - **Added** redirect logic when province not found (lines 114-116): `redirect('/lowongan-kerja/')` using Next.js navigation
+   - **Added** fallback metadata when province not found (lines 62-67): prevents metadata generation errors before redirect
 
 **User Experience Improvements**:
 - ✅ **Valid Province** (e.g., `/lowongan-kerja/lokasi/bali/`):
@@ -40,10 +39,9 @@
   - Results header displays "Lokasi: Bali (Provinsi)" instead of "Lokasi: 51 (Provinsi)"
   - Filter removal behavior consistent between chip X button and "Hapus Semua Filter"
 - ✅ **Invalid Province** (e.g., `/lowongan-kerja/lokasi/jakarta/`):
-  - No invalid filter auto-selected (shows all jobs instead of 0 jobs)
-  - Clear notice displayed: "Lokasi 'jakarta' tidak ditemukan. Menampilkan semua lowongan kerja."
-  - Generic page title: "Lowongan Kerja Terbaru" instead of location-specific title
-  - Breadcrumb doesn't show invalid location name
+  - Automatically redirects to `/lowongan-kerja/` (main job listing page)
+  - No invalid filter auto-selected or broken UI state
+  - User sees all available jobs immediately
 
 **Files Modified**:
 - `components/pages/JobSearchPage.tsx` - Added initialLocationName prop, fixed filter count logic, fixed filter removal navigation, updated display
@@ -60,9 +58,9 @@
 - ✅ **Functionality**: Filter removal works correctly, redirecting to main job listing
 - ✅ **Display Accuracy**: Province names shown instead of IDs for better readability
 - ✅ **Consistency**: Filter removal behavior unified across all scenarios
-- ✅ **Invalid Slug Handling**: Invalid province slugs no longer create broken filters showing 0 jobs
-- ✅ **SEO Improvement**: Fallback metadata prevents misleading SEO with invalid location names
-- ✅ **User Communication**: Clear messaging when location is not found
+- ✅ **Invalid Slug Handling**: Invalid province slugs automatically redirect to main job page
+- ✅ **SEO Protection**: No invalid location pages indexed by search engines (404-like behavior via redirect)
+- ✅ **User Experience**: Immediate access to all jobs without confusing error states
 
 ---
 
