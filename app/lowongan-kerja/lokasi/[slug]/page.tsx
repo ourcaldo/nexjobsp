@@ -160,6 +160,7 @@ export default async function JobLocationPage({ params }: JobLocationPageProps) 
         <JobSearchPage 
           settings={settings} 
           initialLocation={location}
+          initialLocationName={locationName}
           initialCategory={category}
           locationType={locationType as 'province' | 'city'}
         />

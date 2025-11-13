@@ -554,15 +554,19 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     if (filterType === 'keyword') {
       setKeyword('');
     } else if (filterType === 'province') {
-      setSelectedProvince(initialLocation && locationType === 'province' ? initialLocation : '');
-      setSidebarFilters(prev => ({ ...prev, cities: initialLocation && locationType === 'city' ? [initialLocation] : [] }));
+      if (initialLocation && locationType === 'province') {
+        router.replace('/lowongan-kerja/');
+      } else {
+        setSelectedProvince('');
+        setSidebarFilters(prev => ({ ...prev, cities: [] }));
+      }
     } else if (value) {
       setSidebarFilters(prev => ({
         ...prev,
         [filterType]: prev[filterType as keyof typeof prev].filter(item => item !== value)
       }));
     }
-  }, [initialLocation, locationType]);
+  }, [initialLocation, locationType, router]);
 
   const getProvinceOptions = useMemo(() => {
     if (!filterData) return [];
