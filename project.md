@@ -2,6 +2,55 @@
 
 ## Recent Changes
 
+### November 13, 2025 - Fixed Lokasi Page Active Filters & Display Issues
+**Status**: Completed ✅
+
+**Problem Identified**:
+1. **Missing Active Filter Indicator**: When visiting `/lowongan-kerja/lokasi/bali/`, the province filter (Bali) was automatically applied but the active filter indicator didn't show it. Users couldn't see that a location filter was active and couldn't clear it individually.
+2. **Incorrect Display**: The results header showed "Lokasi: 51 (Provinsi)" instead of "Lokasi: Bali (Provinsi)" because it was displaying the province ID instead of the human-readable name.
+
+**Root Cause Analysis**:
+- The `JobSearchPage` component had logic that excluded `initialLocation` from active filter counts and display (line 532, 868)
+- The lokasi page passed the province ID but not the province name to the component
+- The `removeFilter` function reset the province filter to `initialLocation` instead of clearing it, making the X button non-functional on lokasi pages
+
+**Changes Implemented**:
+
+1. **Updated JobSearchPage Component** (`components/pages/JobSearchPage.tsx`):
+   - **Added** `initialLocationName` prop to accept the human-readable location name
+   - **Modified** `getActiveFiltersCount` to always count `initialLocation` as an active filter (lines 538-542)
+   - **Updated** active filter display to show the province filter chip with proper name using `initialLocationName` (lines 878-898)
+   - **Fixed** `removeFilter` function to navigate to `/lowongan-kerja/` when removing province filter on lokasi pages (lines 560-561)
+   - **Updated** results header to display `initialLocationName` instead of province ID (line 964)
+
+2. **Updated Lokasi Page** (`app/lowongan-kerja/lokasi/[slug]/page.tsx`):
+   - **Added** `initialLocationName={locationName}` prop to pass province name (e.g., "Bali") to JobSearchPage (line 166)
+
+**User Experience Improvements**:
+- ✅ Active filter chip now appears showing "Provinsi: Bali" when visiting `/lowongan-kerja/lokasi/bali/`
+- ✅ Clicking the X button on the filter chip redirects to `/lowongan-kerja/` (all jobs, no location filter)
+- ✅ Results header displays "Lokasi: Bali (Provinsi)" instead of "Lokasi: 51 (Provinsi)"
+- ✅ "Hapus Semua Filter" button behavior remains consistent (redirects to main page)
+- ✅ Filter removal behavior is now consistent between chip X button and "Hapus Semua Filter"
+
+**Files Modified**:
+- `components/pages/JobSearchPage.tsx` - Added initialLocationName prop, fixed filter count logic, fixed filter removal navigation, updated display
+- `app/lowongan-kerja/lokasi/[slug]/page.tsx` - Passed locationName to component
+
+**Verification**:
+- ✅ Architect review passed: Filter removal correctly navigates to unfiltered listing
+- ✅ Zero TypeScript/LSP errors after changes
+- ✅ Application compiled successfully (1157 modules)
+- ✅ Workflow running without errors
+
+**Impact**:
+- ✅ **UX Clarity**: Users can now see which location filter is active on lokasi pages
+- ✅ **Functionality**: Filter removal works correctly, redirecting to main job listing
+- ✅ **Display Accuracy**: Province names shown instead of IDs for better readability
+- ✅ **Consistency**: Filter removal behavior unified across all scenarios
+
+---
+
 ### November 11, 2025 - CMS Migration: Completed Transition from Legacy Singleton to Factory Pattern
 **Status**: Completed ✅
 
