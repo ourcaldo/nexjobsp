@@ -17,7 +17,7 @@ interface JobLocationPageProps {
 async function getLocationData(slug: string) {
   const location = wpLocationMappings[slug] || slug.charAt(0).toUpperCase() + slug.slice(1);
   const category = '';
-  const locationType: 'province' | 'city' = 'city';
+  const locationType: 'province' | 'city' = 'province';
   const settings = await SupabaseAdminService.getSettingsServerSide();
   const currentUrl = getCurrentDomain();
 
