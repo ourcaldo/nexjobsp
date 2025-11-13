@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { SupabaseAdminService } from '@/lib/supabase/admin';
+import { jobService } from '@/lib/services/JobService';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobSearchPage from '@/components/pages/JobSearchPage';
@@ -15,29 +16,48 @@ interface JobLocationPageProps {
 }
 
 async function getLocationData(slug: string) {
-  const location = wpLocationMappings[slug] || slug.charAt(0).toUpperCase() + slug.slice(1);
-  const category = '';
-  const locationType: 'province' | 'city' = 'province';
   const settings = await SupabaseAdminService.getSettingsServerSide();
   const currentUrl = getCurrentDomain();
+  
+  let provinceId = '';
+  let provinceName = slug.charAt(0).toUpperCase() + slug.slice(1);
+  
+  try {
+    const filterData = await jobService.getFiltersData();
+    if (filterData && filterData.provinces) {
+      const slugNormalized = slug.toLowerCase().replace(/-/g, ' ');
+      const province = filterData.provinces.find((p: any) => 
+        p.name.toLowerCase() === slugNormalized ||
+        p.name.toLowerCase().replace(/\s+/g, '-') === slug
+      );
+      
+      if (province) {
+        provinceId = province.id;
+        provinceName = province.name;
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching filters:', error);
+  }
 
   return {
     slug,
-    location,
-    category,
-    locationType,
+    location: provinceId || provinceName,
+    locationName: provinceName,
+    category: '',
+    locationType: 'province' as const,
     settings,
     currentUrl
   };
 }
 
 export async function generateMetadata({ params }: JobLocationPageProps): Promise<Metadata> {
-  const { slug, location, category, settings, currentUrl } = await getLocationData(params.slug);
+  const { slug, locationName, category, settings, currentUrl } = await getLocationData(params.slug);
 
   // Prepare template variables
   const templateVars = {
     site_title: settings?.site_title || 'Nexjob',
-    lokasi: location,
+    lokasi: locationName,
     kategori: category
   };
 
@@ -48,7 +68,7 @@ export async function generateMetadata({ params }: JobLocationPageProps): Promis
   return {
     title: pageTitle,
     description: pageDescription,
-    keywords: `lowongan kerja ${location}, jobs ${location}, karir ${location}, pekerjaan ${location}`,
+    keywords: `lowongan kerja ${locationName}, jobs ${locationName}, karir ${locationName}, pekerjaan ${locationName}`,
     openGraph: {
       title: pageTitle,
       description: pageDescription,
@@ -80,18 +100,18 @@ export const revalidate = 300; // ISR: Revalidate every 5 minutes
 export const dynamicParams = true; // Enable dynamic params for locations not in static paths
 
 export default async function JobLocationPage({ params }: JobLocationPageProps) {
-  const { slug, location, category, locationType, settings, currentUrl } = await getLocationData(params.slug);
+  const { slug, location, locationName, category, locationType, settings, currentUrl } = await getLocationData(params.slug);
 
   const breadcrumbItems = [
     { label: 'Lowongan Kerja', href: '/lowongan-kerja/' },
-    { label: `Lokasi: ${location}` }
+    { label: `Lokasi: ${locationName}` }
   ];
   const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
 
   // Prepare template variables
   const templateVars = {
     site_title: settings?.site_title || 'Nexjob',
-    lokasi: location,
+    lokasi: locationName,
     kategori: category
   };
 
@@ -120,7 +140,7 @@ export default async function JobLocationPage({ params }: JobLocationPageProps) 
                   <span className="mx-2">/</span>
                   <span className="text-white">Lowongan Kerja</span>
                   <span className="mx-2">/</span>
-                  <span className="text-white">Lokasi: {location}</span>
+                  <span className="text-white">Lokasi: {locationName}</span>
                 </li>
               </ol>
             </nav>
