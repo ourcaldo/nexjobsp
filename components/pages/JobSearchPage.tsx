@@ -59,7 +59,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
 
   // Main search filters
   const [keyword, setKeyword] = useState('');
-  const [selectedProvince, setSelectedProvince] = useState(initialLocation || '');
+  const [selectedProvince, setSelectedProvince] = useState(initialLocation && locationType === 'province' ? initialLocation : '');
 
   // Sidebar filters
   const [sidebarFilters, setSidebarFilters] = useState({
@@ -130,7 +130,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
 
     return {
       search: keyword,
-      location: locationFilter,
+      location: locationType === 'city' ? '' : locationFilter,
       sortBy: sortBy,
       ...sidebarFilters
     };
@@ -491,24 +491,40 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   }, [handleManualSearch]);
 
   const clearAllFilters = useCallback(() => {
-    setKeyword('');
-    setSelectedProvince(initialLocation && locationType === 'province' ? initialLocation : '');
-    setSidebarFilters({
-      cities: initialLocation && locationType === 'city' ? [initialLocation] : [],
+    const clearedFilters = {
+      search: '',
+      location: '',
+      sortBy: 'newest',
+      cities: [],
       jobTypes: [],
       experiences: [],
       educations: [],
       industries: [],
       workPolicies: [],
-      categories: initialCategory ? [initialCategory] : [],
+      categories: [],
+      salaries: []
+    };
+
+    setKeyword('');
+    setSelectedProvince('');
+    setSidebarFilters({
+      cities: [],
+      jobTypes: [],
+      experiences: [],
+      educations: [],
+      industries: [],
+      workPolicies: [],
+      categories: [],
       salaries: []
     });
     setSortBy('newest');
 
-    if (!initialCategory && !initialLocation) {
+    searchWithFilters(clearedFilters, false);
+
+    if (initialCategory || initialLocation) {
       router.replace('/lowongan-kerja/');
     }
-  }, [initialLocation, locationType, initialCategory, router]);
+  }, [searchWithFilters, initialCategory, initialLocation, router]);
 
   const getActiveFiltersCount = useMemo(() => {
     let count = 0;
