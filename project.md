@@ -2,17 +2,19 @@
 
 ## Recent Changes
 
-### November 13, 2025 - Fixed Lokasi Page Active Filters & Display Issues
+### November 13, 2025 - Fixed Lokasi Page Active Filters & Invalid Province Handling
 **Status**: Completed ✅
 
 **Problem Identified**:
 1. **Missing Active Filter Indicator**: When visiting `/lowongan-kerja/lokasi/bali/`, the province filter (Bali) was automatically applied but the active filter indicator didn't show it. Users couldn't see that a location filter was active and couldn't clear it individually.
 2. **Incorrect Display**: The results header showed "Lokasi: 51 (Provinsi)" instead of "Lokasi: Bali (Provinsi)" because it was displaying the province ID instead of the human-readable name.
+3. **Invalid Province Auto-Select**: When visiting `/lowongan-kerja/lokasi/jakarta/` (not a valid province slug; actual is `dki-jakarta`), the page still tried to auto-select "Jakarta" as a filter, resulting in 0 jobs shown with an invalid filter applied.
 
 **Root Cause Analysis**:
 - The `JobSearchPage` component had logic that excluded `initialLocation` from active filter counts and display (line 532, 868)
 - The lokasi page passed the province ID but not the province name to the component
 - The `removeFilter` function reset the province filter to `initialLocation` instead of clearing it, making the X button non-functional on lokasi pages
+- The `getLocationData` function had fallback logic `location: provinceId || provinceName` that set location to the capitalized slug even when no matching province was found in the API data
 
 **Changes Implemented**:
 
@@ -25,13 +27,23 @@
 
 2. **Updated Lokasi Page** (`app/lowongan-kerja/lokasi/[slug]/page.tsx`):
    - **Added** `initialLocationName={locationName}` prop to pass province name (e.g., "Bali") to JobSearchPage (line 166)
+   - **Fixed** `getLocationData` to only set location if valid province found (line 48: `location: provinceId` instead of `location: provinceId || provinceName`)
+   - **Fixed** `locationName` to only be set if valid province found (line 49: conditional on `provinceId`)
+   - **Added** fallback metadata when province not found (lines 68-73): generic title/description instead of invalid location
+   - **Added** fallback UI when province not found (lines 176-180): shows notice "Lokasi 'jakarta' tidak ditemukan. Menampilkan semua lowongan kerja."
+   - **Updated** breadcrumbs to only show location if valid (lines 157-162)
 
 **User Experience Improvements**:
-- ✅ Active filter chip now appears showing "Provinsi: Bali" when visiting `/lowongan-kerja/lokasi/bali/`
-- ✅ Clicking the X button on the filter chip redirects to `/lowongan-kerja/` (all jobs, no location filter)
-- ✅ Results header displays "Lokasi: Bali (Provinsi)" instead of "Lokasi: 51 (Provinsi)"
-- ✅ "Hapus Semua Filter" button behavior remains consistent (redirects to main page)
-- ✅ Filter removal behavior is now consistent between chip X button and "Hapus Semua Filter"
+- ✅ **Valid Province** (e.g., `/lowongan-kerja/lokasi/bali/`):
+  - Active filter chip appears showing "Provinsi: Bali"
+  - Clicking X button redirects to `/lowongan-kerja/` (all jobs, no location filter)
+  - Results header displays "Lokasi: Bali (Provinsi)" instead of "Lokasi: 51 (Provinsi)"
+  - Filter removal behavior consistent between chip X button and "Hapus Semua Filter"
+- ✅ **Invalid Province** (e.g., `/lowongan-kerja/lokasi/jakarta/`):
+  - No invalid filter auto-selected (shows all jobs instead of 0 jobs)
+  - Clear notice displayed: "Lokasi 'jakarta' tidak ditemukan. Menampilkan semua lowongan kerja."
+  - Generic page title: "Lowongan Kerja Terbaru" instead of location-specific title
+  - Breadcrumb doesn't show invalid location name
 
 **Files Modified**:
 - `components/pages/JobSearchPage.tsx` - Added initialLocationName prop, fixed filter count logic, fixed filter removal navigation, updated display
@@ -44,10 +56,13 @@
 - ✅ Workflow running without errors
 
 **Impact**:
-- ✅ **UX Clarity**: Users can now see which location filter is active on lokasi pages
+- ✅ **UX Clarity**: Users can now see which location filter is active on valid lokasi pages
 - ✅ **Functionality**: Filter removal works correctly, redirecting to main job listing
 - ✅ **Display Accuracy**: Province names shown instead of IDs for better readability
 - ✅ **Consistency**: Filter removal behavior unified across all scenarios
+- ✅ **Invalid Slug Handling**: Invalid province slugs no longer create broken filters showing 0 jobs
+- ✅ **SEO Improvement**: Fallback metadata prevents misleading SEO with invalid location names
+- ✅ **User Communication**: Clear messaging when location is not found
 
 ---
 
