@@ -21,6 +21,7 @@ interface JobSearchPageProps {
   settings: any;
   initialCategory?: string;
   initialLocation?: string;
+  initialLocationName?: string;
   locationType?: 'province' | 'city';
 }
 
@@ -28,6 +29,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   settings, 
   initialCategory, 
   initialLocation,
+  initialLocationName,
   locationType = 'province'
 }) => {
   const router = useRouter();
@@ -529,7 +531,12 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   const getActiveFiltersCount = useMemo(() => {
     let count = 0;
     if (keyword) count++;
-    if (selectedProvince && selectedProvince !== (initialLocation && locationType === 'province' ? initialLocation : '')) count++;
+    
+    if (initialLocation && locationType === 'province') {
+      count++;
+    } else if (selectedProvince) {
+      count++;
+    }
 
     Object.entries(sidebarFilters).forEach(([key, filterArray]) => {
       if (key === 'categories' && initialCategory) {
@@ -865,7 +872,17 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
                 </span>
               )}
 
-              {selectedProvince && selectedProvince !== (initialLocation && locationType === 'province' ? initialLocation : '') && (
+              {initialLocation && locationType === 'province' ? (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary-100 text-primary-800">
+                  Provinsi: {initialLocationName || getProvinceName(initialLocation)}
+                  <button
+                    onClick={() => removeFilter('province')}
+                    className="ml-2 hover:text-primary-900"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              ) : selectedProvince && (
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary-100 text-primary-800">
                   Provinsi: {getProvinceName(selectedProvince)}
                   <button
@@ -941,7 +958,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
                 )}
                 {initialLocation && (
                   <p className="text-gray-600">
-                    Lokasi: <span className="font-medium">{initialLocation}</span>
+                    Lokasi: <span className="font-medium">{initialLocationName || initialLocation}</span>
                     {locationType === 'city' && ' (Kota)'}
                     {locationType === 'province' && ' (Provinsi)'}
                   </p>
