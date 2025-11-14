@@ -60,3 +60,34 @@ export function locationToSlug(location: string): string {
   
   return normalizeSlugForMatching(trimmed);
 }
+
+export interface LocationLookup {
+  provinceName: string;
+  regencyName: string;
+}
+
+export function getLocationNamesFromIds(
+  provinceId: string | null | undefined,
+  regencyId: string | null | undefined,
+  provinces: Array<{ id: string; name: string; post_count?: number }>,
+  regencies: Array<{ id: string; name: string; province_id: string; post_count?: number }>
+): LocationLookup {
+  let provinceName = '';
+  let regencyName = '';
+
+  if (provinceId) {
+    const province = provinces.find(p => p.id === provinceId);
+    if (province) {
+      provinceName = formatLocationName(province.name);
+    }
+  }
+
+  if (regencyId) {
+    const regency = regencies.find(r => r.id === regencyId);
+    if (regency) {
+      regencyName = formatLocationName(regency.name);
+    }
+  }
+
+  return { provinceName, regencyName };
+}
