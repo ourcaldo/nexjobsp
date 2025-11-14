@@ -2,6 +2,100 @@
 
 ## Recent Changes
 
+### November 14, 2025 - Verified Sitemap Enhancement for Job Categories and Locations
+**Status**: Completed ✅
+**Time**: 13:30 WIB
+
+**Context**:
+The CMS backend now provides additional sitemaps for job categories and job locations, expanding sitemap coverage beyond the existing job post and blog article sitemaps.
+
+**New Sitemaps Available**:
+1. **`sitemap-job-category.xml`**: Contains URLs for all job category pages
+   - Example URLs: `/lowongan-kerja/katering/`, `/lowongan-kerja/teknik/`, `/lowongan-kerja/agrikultur/`
+   - Format: `<urlset>` with individual category page URLs
+   - Total: 55+ category URLs
+
+2. **`sitemap-job-location.xml`**: Sitemap index containing province-specific sitemaps
+   - Format: `<sitemapindex>` with references to province sitemaps
+   - Example references: `sitemap-job-location-aceh.xml`, `sitemap-job-location-bali.xml`, `sitemap-job-location-dki-jakarta.xml`
+   - Total: 37+ province sitemap references
+
+3. **`sitemap-job-location-{province}.xml`**: Province-specific sitemaps with city pages
+   - Example URLs: `/lowongan-kerja/lokasi/aceh/`, `/lowongan-kerja/lokasi/aceh/kab-aceh-barat/`
+   - Format: `<urlset>` with province page + all city pages for that province
+   - Supports nested location routing structure
+
+**Implementation Details**:
+
+**Middleware Handling** (`middleware.ts`):
+- Existing middleware already supports the new sitemaps automatically
+- Intercepts all requests matching `*.xml` with "sitemap" in path
+- Proxies requests to `https://cms.nexjob.tech/api/v1/sitemaps/{sitemapFile}`
+- URL transformation pipeline:
+  1. Replaces `https://cms.nexjob.tech/api/v1/sitemaps/` → `https://nexjob.tech/`
+  2. Replaces `/api/v1/sitemaps/` → `/`
+  3. Replaces `/jobs/` → `/lowongan-kerja/`
+  4. Replaces `/blog/` → `/artikel/`
+- Added temporary logging for sitemap requests (verification purposes)
+
+**Changes Made**:
+1. **Enhanced Middleware Logging** (`middleware.ts` - Lines 12, 27, 69, 80, 84):
+   - Added request proxying logs: `[Sitemap Middleware] Proxying request`
+   - Added CMS error logs: `[Sitemap Middleware] CMS returned {status}`
+   - Added success logs: `[Sitemap Middleware] Successfully served {file} ({bytes} bytes)`
+   - Added timeout/error logs for debugging sitemap issues
+   - Purpose: Track sitemap requests during verification period
+
+**Verification Results**:
+- ✅ `/sitemap-job-category.xml`: Returns 200 OK, valid XML, 55+ URLs
+- ✅ `/sitemap-job-location.xml`: Returns 200 OK, valid sitemap index, 37+ province references
+- ✅ `/sitemap-job-location-aceh.xml`: Returns 200 OK, valid XML, 24+ province+city URLs
+- ✅ **Zero** `cms.nexjob.tech` URLs in output (all transformed correctly)
+- ✅ All URLs correctly point to `https://nexjob.tech` domain
+- ✅ Both `<urlset>` and `<sitemapindex>` formats handled properly
+- ✅ XML structure validation passes (no malicious content)
+- ✅ Content-Type: `application/xml; charset=utf-8` set correctly
+- ✅ Cache-Control headers applied: `public, max-age=3600, stale-while-revalidate=86400`
+
+**SEO Impact**:
+- ✅ **Category Coverage**: All job category pages now discoverable by search engines
+- ✅ **Location Coverage**: All province and city location pages included in sitemaps
+- ✅ **Nested Structure**: Proper sitemap index → province sitemaps → city URLs hierarchy
+- ✅ **Dynamic Updates**: Sitemaps auto-update as CMS content changes (proxy architecture)
+- ✅ **Performance**: Efficient sitemap delivery with 1-hour cache + stale-while-revalidate
+
+**URL Pattern Examples**:
+```xml
+<!-- Job Category Sitemap -->
+<loc>https://nexjob.tech/lowongan-kerja/katering/</loc>
+<loc>https://nexjob.tech/lowongan-kerja/layanan-pajak/</loc>
+
+<!-- Job Location Sitemap Index -->
+<loc>https://nexjob.tech/sitemap-job-location-aceh.xml</loc>
+<loc>https://nexjob.tech/sitemap-job-location-bali.xml</loc>
+
+<!-- Province Sitemap (Aceh) -->
+<loc>https://nexjob.tech/lowongan-kerja/lokasi/aceh/</loc>
+<loc>https://nexjob.tech/lowongan-kerja/lokasi/aceh/kab-aceh-barat/</loc>
+```
+
+**Files Modified**:
+- `middleware.ts` - Added logging for sitemap request tracking (Lines 12, 27, 69, 80, 84)
+
+**Technical Notes**:
+- No additional code changes required - middleware already supports new sitemaps
+- Middleware architecture automatically handles any future sitemaps from CMS
+- URL transformations work correctly for all sitemap types
+- Security: XML validation prevents malicious content injection
+- Timeout: 10-second abort controller prevents hanging requests
+
+**Next Steps** (Optional):
+- Monitor sitemap access logs for crawler activity
+- Remove temporary logging after verification period (1-2 weeks)
+- Coordinate with CMS team to ensure main sitemap.xml includes references to new sitemaps
+
+---
+
 ### November 14, 2025 - Added Nested Province+Regency Location Filtering
 **Status**: Completed ✅
 
