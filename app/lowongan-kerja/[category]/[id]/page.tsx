@@ -38,8 +38,8 @@ const getJobData = cache(async (category: string, id: string) => {
       notFound();
     }
 
-    // Enrich job with province/regency names from filter data if not already present
-    if ((!job.lokasi_provinsi || !job.lokasi_kota) && (job.job_province_id || job.job_regency_id)) {
+    // Enrich job with province/regency names from filter data using IDs
+    if (job.job_province_id || job.job_regency_id) {
       const locationNames = getLocationNamesFromIds(
         job.job_province_id,
         job.job_regency_id,
@@ -47,10 +47,13 @@ const getJobData = cache(async (category: string, id: string) => {
         filterData.regencies
       );
       
-      if (!job.lokasi_provinsi && locationNames.provinceName) {
+      // Populate province name if we have an ID but missing the name
+      if (job.job_province_id && !job.lokasi_provinsi && locationNames.provinceName) {
         job.lokasi_provinsi = locationNames.provinceName;
       }
-      if (!job.lokasi_kota && locationNames.regencyName) {
+      
+      // Populate regency name if we have an ID but missing the name
+      if (job.job_regency_id && !job.lokasi_kota && locationNames.regencyName) {
         job.lokasi_kota = locationNames.regencyName;
       }
     }
