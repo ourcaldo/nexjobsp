@@ -9,6 +9,7 @@ import Footer from '@/components/Layout/Footer';
 import JobDetailPage from '@/components/pages/JobDetailPage';
 import { generateJobPostingSchema, generateBreadcrumbSchema } from '@/utils/schemaUtils';
 import { Job } from '@/types/job';
+import { formatLocationName, locationToSlug } from '@/utils/textUtils';
 
 interface JobPageProps {
   params: {
@@ -53,15 +54,42 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
   try {
     const { job, category, id, settings, currentUrl } = await getJobData(params.category, params.id);
 
+    const regencyName = formatLocationName(job.lokasi_kota);
+    const provinceName = formatLocationName(job.lokasi_provinsi);
+    
+    let locationString = '';
+    if (regencyName && provinceName) {
+      locationString = `${regencyName}, ${provinceName}`;
+    } else if (provinceName) {
+      locationString = provinceName;
+    } else if (regencyName) {
+      locationString = regencyName;
+    }
+
     const pageTitle = job.seo_title || `${job.title} - ${job.company_name} | Nexjob`;
-    const pageDescription = job.seo_description || `Lowongan ${job.title} di ${job.company_name}, ${job.lokasi_kota}. Gaji: ${job.gaji}. Lamar sekarang!`;
+    
+    let defaultDescription = `Lowongan ${job.title} di ${job.company_name}`;
+    if (locationString) {
+      defaultDescription += `, ${locationString}`;
+    }
+    defaultDescription += `. Gaji: ${job.gaji}. Lamar sekarang!`;
+    
+    const pageDescription = job.seo_description || defaultDescription;
+    
     const canonicalUrl = `${currentUrl}/lowongan-kerja/${category}/${id}/`;
     const ogImage = settings.default_job_og_image || `${currentUrl}/og-job-default.jpg`;
+
+    const keywordParts = [job.title, job.company_name];
+    if (regencyName) keywordParts.push(regencyName);
+    if (provinceName) keywordParts.push(provinceName);
+    if (job.kategori_pekerjaan) keywordParts.push(job.kategori_pekerjaan);
+    keywordParts.push('lowongan kerja');
+    const keywords = keywordParts.join(', ');
 
     return {
       title: pageTitle,
       description: pageDescription,
-      keywords: `${job.title}, ${job.company_name}, ${job.lokasi_kota}, ${job.kategori_pekerjaan}, lowongan kerja`,
+      keywords,
       authors: [{ name: 'Nexjob' }],
       openGraph: {
         title: pageTitle,
@@ -118,11 +146,33 @@ export default async function JobPage({ params }: JobPageProps) {
   const { job, category, id, settings, currentUrl } = await getJobData(params.category, params.id);
 
   const categoryName = job.job_categories?.[0]?.name || 'Kategori';
+  const provinceName = formatLocationName(job.lokasi_provinsi);
+  const regencyName = formatLocationName(job.lokasi_kota);
+  const provinceSlug = locationToSlug(job.lokasi_provinsi);
+  const regencySlug = locationToSlug(job.lokasi_kota);
+  
   const breadcrumbItems = [
-    { label: 'Lowongan Kerja', href: '/lowongan-kerja/' },
+    { label: 'Lowongan Kerja', href: '/lowongan-kerja/' }
+  ];
+
+  if (provinceName && provinceSlug) {
+    breadcrumbItems.push({
+      label: provinceName,
+      href: `/lowongan-kerja/lokasi/${provinceSlug}/`
+    });
+
+    if (regencyName && regencySlug) {
+      breadcrumbItems.push({
+        label: regencyName,
+        href: `/lowongan-kerja/lokasi/${provinceSlug}/${regencySlug}/`
+      });
+    }
+  }
+
+  breadcrumbItems.push(
     { label: categoryName, href: `/lowongan-kerja/kategori/${category}/` },
     { label: job.title }
-  ];
+  );
 
   const jobSchema = generateJobPostingSchema(job);
   const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
@@ -144,7 +194,7 @@ export default async function JobPage({ params }: JobPageProps) {
       
       <Header />
       <main>
-        <JobDetailPage job={job} jobId={id} settings={settings} />
+        <JobDetailPage job={job} jobId={id} settings={settings} breadcrumbItems={breadcrumbItems} />
       </main>
       <Footer />
     </>

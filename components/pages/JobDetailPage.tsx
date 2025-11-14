@@ -30,14 +30,21 @@ import BookmarkLoginModal from '@/components/ui/BookmarkLoginModal';
 import JobApplicationModal from '@/components/ui/JobApplicationModal';
 import { sanitizeHTML } from '@/lib/utils/sanitize';
 import ShareButton from '@/components/ui/ShareButton';
+import { formatLocationName } from '@/utils/textUtils';
+
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
 
 interface JobDetailPageProps {
   job: Job;
   jobId: string;
   settings: any;
+  breadcrumbItems?: BreadcrumbItem[];
 }
 
-const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings }) => {
+const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, breadcrumbItems: propsBreadcrumbItems }) => {
   const { trackPageView, trackJobApplication, trackBookmark } = useAnalytics();
 
   // State
@@ -196,7 +203,26 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings }) =
     window.open('/signup/', '_blank');
   };
 
-  const breadcrumbItems = [
+  const getFullLocation = () => {
+    const province = formatLocationName(job.lokasi_provinsi);
+    const regency = formatLocationName(job.lokasi_kota);
+    
+    if (province && regency) {
+      return `${province}, ${regency}`;
+    }
+    
+    if (province) {
+      return province;
+    }
+    
+    if (regency) {
+      return regency;
+    }
+    
+    return '';
+  };
+
+  const breadcrumbItems = propsBreadcrumbItems || [
     { label: 'Lowongan Kerja', href: '/lowongan-kerja/' },
     { label: job.title }
   ];
@@ -220,10 +246,12 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings }) =
                     <span className="text-xl font-medium text-primary-600">{job.company_name}</span>
                   </div>
                   <div className="flex flex-wrap gap-4 text-gray-600">
-                    <div className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      {job.lokasi_kota}, {job.lokasi_provinsi}
-                    </div>
+                    {getFullLocation() && (
+                      <div className="flex items-center">
+                        <MapPin className="h-4 w-4 mr-2" />
+                        {getFullLocation()}
+                      </div>
+                    )}
                     <div className="flex items-center">
                       <CalendarDays className="h-4 w-4 mr-2" />
                       {isHydrated ? formatDate(job.created_at) : 'Baru dipublikasikan'}
@@ -321,16 +349,17 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings }) =
                     </div>
                   </div>
 
-                  <div className="border-t border-gray-100 pt-4">
-                    <div className="flex items-center mb-2">
-                      <MapPin className="h-5 w-5 text-gray-400 mr-3" />
-                      <div>
-                        <p className="text-sm text-gray-500">Lokasi Kerja</p>
-                        <p className="font-medium">{job.lokasi_kota}</p>
-                        <p className="text-sm text-gray-600">{job.lokasi_provinsi}</p>
+                  {getFullLocation() && (
+                    <div className="border-t border-gray-100 pt-4">
+                      <div className="flex items-center mb-2">
+                        <MapPin className="h-5 w-5 text-gray-400 mr-3" />
+                        <div>
+                          <p className="text-sm text-gray-500">Lokasi Kerja</p>
+                          <p className="font-medium">{getFullLocation()}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
                   <div className="border-t border-gray-100 pt-4">
                     <div className="flex items-center mb-2">
@@ -458,16 +487,17 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings }) =
                   </div>
                 </div>
 
-                <div className="border-t border-gray-100 pt-4">
-                  <div className="flex items-center mb-2">
-                    <MapPin className="h-5 w-5 text-gray-400 mr-3" />
-                    <div>
-                      <p className="text-sm text-gray-500">Lokasi Kerja</p>
-                      <p className="font-medium">{job.lokasi_kota}</p>
-                      <p className="text-sm text-gray-600">{job.lokasi_provinsi}</p>
+                {getFullLocation() && (
+                  <div className="border-t border-gray-100 pt-4">
+                    <div className="flex items-center mb-2">
+                      <MapPin className="h-5 w-5 text-gray-400 mr-3" />
+                      <div>
+                        <p className="text-sm text-gray-500">Lokasi Kerja</p>
+                        <p className="font-medium">{getFullLocation()}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 <div className="border-t border-gray-100 pt-4">
                   <div className="flex items-center mb-2">

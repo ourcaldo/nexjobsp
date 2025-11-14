@@ -9,6 +9,7 @@ import JobSearchPage from '@/components/pages/JobSearchPage';
 import { generateBreadcrumbSchema } from '@/utils/schemaUtils';
 import { getCurrentDomain } from '@/lib/env';
 import { renderTemplate } from '@/utils/templateUtils';
+import { normalizeSlug, normalizeSlugForMatching } from '@/utils/textUtils';
 
 function JobSearchPageFallback() {
   return (
@@ -35,18 +36,6 @@ interface JobLocationPageProps {
     province: string;
     regency: string;
   };
-}
-
-function normalizeSlug(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function normalizeSlugForMatching(text: string): string {
-  return normalizeSlug(text).replace(/\s+/g, '-');
 }
 
 async function getLocationData(provinceSlug: string, regencySlug: string) {

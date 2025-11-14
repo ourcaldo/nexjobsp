@@ -10,6 +10,7 @@ import { generateBreadcrumbSchema } from '@/utils/schemaUtils';
 import { getCurrentDomain } from '@/lib/env';
 import { wpLocationMappings } from '@/utils/urlUtils';
 import { renderTemplate } from '@/utils/templateUtils';
+import { normalizeSlug, normalizeSlugForMatching } from '@/utils/textUtils';
 
 function JobSearchPageFallback() {
   return (

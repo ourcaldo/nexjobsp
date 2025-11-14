@@ -11,6 +11,7 @@ import { useToast } from '@/components/ui/ToastProvider';
 import BookmarkLoginModal from '@/components/ui/BookmarkLoginModal';
 import { useRouter } from 'next/navigation';
 import { formatRelativeDate, isHotJob, getHoursAgo } from '@/lib/utils/date';
+import { formatLocationName } from '@/utils/textUtils';
 
 interface JobCardProps {
   job: Job;
@@ -201,7 +202,7 @@ const JobCard: React.FC<JobCardProps> = React.memo(({
             </div>
             <div className="flex items-center text-gray-500 text-sm">
               <MapPin className="h-4 w-4 mr-1" />
-              {job.lokasi_provinsi}
+              {formatLocationName(job.lokasi_provinsi)}
             </div>
           </div>
           <div className="text-right">

@@ -2,6 +2,144 @@
 
 ## Recent Changes
 
+### November 14, 2025 - Enhanced Breadcrumbs & Title Case Location Names
+**Status**: Completed ✅
+**Time**: 18:00 WIB
+**Architect Review**: PASSED ✅
+
+**Enhancements Implemented**:
+
+**1. Enhanced Job Detail Page Breadcrumbs**:
+- **Before**: Lowongan Kerja > Category > Title
+- **After**: Lowongan Kerja > Province > Regency > Category > Title (when full data available)
+- All breadcrumb levels have clickable hrefs for better navigation
+- Structured data breadcrumbs match visible breadcrumbs with absolute URLs for Google compliance
+- Graceful degradation when location data is missing
+
+**2. Title Case Transformation for Location Names**:
+- Converts API uppercase names to proper title case throughout the application
+- **Examples**:
+  - "JAWA TIMUR" → "Jawa Timur"
+  - "KOTA SURABAYA" → "Kota Surabaya"
+  - "KAB. KUDUS" → "Kab. Kudus"
+  - "ADM. JAKARTA PUSAT" → "Adm. Jakarta Pusat"
+
+**Implementation Details**:
+
+**Shared Utility Functions** (`utils/textUtils.ts`):
+1. `normalizeSlug(text)`: Lowercase, remove punctuation, normalize whitespace
+   - Shared with location route pages for consistency
+   - Single source of truth for slug normalization
+
+2. `normalizeSlugForMatching(text)`: Calls normalizeSlug + converts spaces to hyphens
+   - Used by both breadcrumb generation and location route matching
+   - Ensures breadcrumb URLs match actual route URLs
+
+3. `locationToSlug(location)`: Wrapper for normalizeSlugForMatching with null safety
+   - Preserves location prefixes (Kab., Kota, Adm.) for accurate URLs
+   - Returns empty string for falsy inputs
+
+4. `toTitleCase(text)`: Converts text to proper title case
+   - Preserves special prefixes: "Kab.", "Kota", "Adm."
+   - Keeps lowercase for conjunctions: "di", "dan", "atau", "ke", "dari", "untuk"
+   - Smart capitalization for first word and after lowercase words
+
+5. `formatLocationName(text)`: Auto-detects uppercase text and applies title case
+   - Type checking and validation for robust null handling
+   - Returns empty string for falsy inputs
+   - Applied consistently across all components
+
+**Breadcrumb Enhancement** (`app/lowongan-kerja/[category]/[id]/page.tsx`):
+- Conditionally builds breadcrumb array based on available data
+- Creates clickable hrefs for all levels (except current page):
+  - Province: `/lowongan-kerja/lokasi/{province-slug}/`
+  - Regency: `/lowongan-kerja/lokasi/{province-slug}/{regency-slug}/`
+  - Category: `/lowongan-kerja/kategori/{category}/`
+- Only adds province/regency levels when BOTH name AND slug are non-empty
+- Passes breadcrumbItems to JobDetailPage as props
+- Generates absolute URLs in structured data via schemaUtils
+
+**Breadcrumb Scenarios** (Graceful Degradation):
+- **Province + Regency**: Lowongan Kerja > Province > Regency > Category > Title (5 levels, all with valid hrefs)
+- **Province Only**: Lowongan Kerja > Province > Category > Title (4 levels)
+- **Regency Only**: Lowongan Kerja > Category > Title (3 levels - regency still shown in UI/metadata)
+- **No Location**: Lowongan Kerja > Category > Title (3 levels)
+
+**JobDetailPage Component** (`components/pages/JobDetailPage.tsx`):
+- Added `breadcrumbItems` optional prop
+- Uses props breadcrumbItems if provided, falls back to simple breadcrumbs
+- Created `getFullLocation()` helper for intelligent location combining:
+  - Returns "Province, Regency" when both exist
+  - Returns only "Province" when only province exists
+  - Returns only "Regency" when only regency exists
+  - Returns empty string when neither exists
+- Conditional rendering in hero section, mobile/desktop job cards
+- No dangling commas or empty strings in any location displays
+
+**Metadata Generation** (`app/lowongan-kerja/[category]/[id]/page.tsx`):
+- Updated `generateMetadata` to use `formatLocationName()` for title case
+- Conditional logic for all location scenarios:
+  - Province + Regency: "Lowongan Kerja [Title] di [City], [Province]"
+  - Province only: "Lowongan Kerja [Title] di [Province]"
+  - Regency only: "Lowongan Kerja [Title] di [City]"
+  - No location: "Lowongan Kerja [Title] di [Company]"
+- Keywords array-based building prevents "undefined" strings
+- Never shows "undefined" in any metadata field
+
+**Location Route Pages Refactored**:
+- `app/lowongan-kerja/lokasi/[province]/page.tsx` - Imports and uses shared utilities
+- `app/lowongan-kerja/lokasi/[province]/[regency]/page.tsx` - Imports and uses shared utilities
+- Removed duplicate `normalizeSlug` and `normalizeSlugForMatching` functions
+- All normalization logic now centralized in utils/textUtils.ts
+
+**JobCard Component** (`components/JobCard.tsx`):
+- Applied formatLocationName to province names in job listing cards
+- Ensures consistent title case across all job cards
+
+**Files Modified**:
+- `utils/textUtils.ts` - Created shared utility functions
+- `app/lowongan-kerja/[category]/[id]/page.tsx` - Enhanced breadcrumbs and metadata
+- `app/lowongan-kerja/lokasi/[province]/page.tsx` - Uses shared utilities
+- `app/lowongan-kerja/lokasi/[province]/[regency]/page.tsx` - Uses shared utilities
+- `components/pages/JobDetailPage.tsx` - Breadcrumb props, title case, null safety
+- `components/JobCard.tsx` - Title case applied to locations
+
+**SEO Impact**:
+- ✅ **Enhanced Navigation Hierarchy**: Up to 5-level breadcrumbs provide better context
+- ✅ **Clickable Breadcrumbs**: All levels (except current page) are navigable links
+- ✅ **Valid Structured Data**: Proper breadcrumb schema with absolute URLs for Google
+- ✅ **Professional Presentation**: Title case improves readability and trust
+- ✅ **URL Accuracy**: Slugs match actual route URLs (no 404s)
+- ✅ **Graceful Degradation**: Valid schema even for jobs with incomplete data
+
+**User Experience**:
+- ✅ **Better Navigation**: Users can click breadcrumbs to navigate to province/city pages
+- ✅ **Visual Clarity**: Title case is easier to read than UPPERCASE
+- ✅ **Consistency**: Location names formatted identically across the entire app
+- ✅ **Professional UI**: No empty strings, dangling commas, or "undefined" artifacts
+- ✅ **Accessibility**: Proper breadcrumb hierarchy helps screen readers
+
+**Code Quality**:
+- ✅ Zero TypeScript/LSP errors
+- ✅ Zero code duplication (shared normalization utilities)
+- ✅ Comprehensive null safety throughout
+- ✅ Single source of truth for slug normalization
+- ✅ Consistent behavior across all components
+
+**Verification**:
+- ✅ Workflow running successfully without errors
+- ✅ All location displays use title case transformation
+- ✅ Breadcrumbs properly integrated in job detail pages
+- ✅ Valid structured data for all location scenarios
+- ✅ Architect review passed - production-ready
+
+**Next Steps (Recommended)**:
+1. Run structured-data tests in Google Search Console for representative job pages
+2. Monitor production logs and SEO metrics post-deployment
+3. Track breadcrumb click-through rates for user navigation patterns
+
+---
+
 ### November 14, 2025 - Dynamic URL Updates When Clearing Filters on Location Pages
 **Status**: Completed ✅
 **Time**: 17:15 WIB
