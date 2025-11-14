@@ -4,9 +4,19 @@
 
 Nexjob is a full-featured job portal platform designed to connect job seekers with opportunities. Built with Next.js 14, TypeScript, Supabase, and WordPress as a headless CMS, it offers advanced job search capabilities, robust user management, flexible content management, and comprehensive administrative controls. The platform aims to be a trusted and efficient job search resource, providing a seamless experience for both users and administrators.
 
-## Recent Changes (October 28, 2025)
+## Recent Changes (November 14, 2025)
 
-**Backend Admin Revamp - Removed Internal CMS & Simplified Configuration (COMPLETED):**
+**Job URL Structure Migration - Slug to ID (COMPLETED):**
+- ✅ Changed job detail URL from `/lowongan-kerja/{category-slug}/{slug}/` to `/lowongan-kerja/{category-slug}/{id}/`
+- ✅ Renamed route directory from `[slug]` to `[id]` for clarity
+- ✅ Updated all URL generation across the application (JobCard, schema utils, sitemap, CMS provider)
+- ✅ Updated page logic to use `getJobById` instead of `getJobBySlug`
+- ✅ Renamed JobDetailPage prop from `slug` to `jobId` for consistency
+- **Files Modified**: `app/lowongan-kerja/[category]/[id]/page.tsx`, `app/lowongan-kerja/[category]/[id]/opengraph-image.tsx`, `components/JobCard.tsx`, `components/pages/JobDetailPage.tsx`, `utils/schemaUtils.ts`, `lib/utils/sitemap.ts`, `lib/cms/providers/tugascms.ts`
+- **Impact**: More consistent URL structure using UUID-based IDs, better alignment with API data structure
+- All changes passed architect review with zero TypeScript/LSP errors
+
+**Backend Admin Revamp - Removed Internal CMS & Simplified Configuration (October 28, 2025):**
 - ✅ Removed CMS menu from admin sidebar (project now uses external TugasCMS at https://cms.nexjob.tech)
 - ✅ Simplified Sitemap Management to only handle robots.txt configuration
 - ✅ Removed Database and Storage Configuration from System Settings (now managed via .env)
