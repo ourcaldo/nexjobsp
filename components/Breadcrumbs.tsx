@@ -29,7 +29,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items, showHome = false }) =>
       
       {items.map((item, index) => (
         <React.Fragment key={index}>
-          <ChevronRight className="h-4 w-4 text-gray-400" />
+          {index > 0 && <ChevronRight className="h-4 w-4 text-gray-400" />}
           {item.href && index < items.length - 1 ? (
             <Link 
               href={item.href} 
