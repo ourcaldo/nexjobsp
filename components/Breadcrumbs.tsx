@@ -9,17 +9,23 @@ interface BreadcrumbItem {
 
 interface BreadcrumbsProps {
   items: BreadcrumbItem[];
+  showHome?: boolean;
 }
 
-const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
+const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items, showHome = false }) => {
   return (
     <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-      <Link 
-        href="/" 
-        className="hover:text-primary-600 transition-colors"
-      >
-        Home
-      </Link>
+      {showHome && (
+        <>
+          <Link 
+            href="/" 
+            className="hover:text-primary-600 transition-colors"
+          >
+            Home
+          </Link>
+          <ChevronRight className="h-4 w-4 text-gray-400" />
+        </>
+      )}
       
       {items.map((item, index) => (
         <React.Fragment key={index}>
