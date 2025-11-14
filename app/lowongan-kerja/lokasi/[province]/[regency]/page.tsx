@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { SupabaseAdminService } from '@/lib/supabase/admin';
 import { jobService } from '@/lib/services/JobService';
@@ -8,6 +9,26 @@ import JobSearchPage from '@/components/pages/JobSearchPage';
 import { generateBreadcrumbSchema } from '@/utils/schemaUtils';
 import { getCurrentDomain } from '@/lib/env';
 import { renderTemplate } from '@/utils/templateUtils';
+
+function JobSearchPageFallback() {
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="animate-pulse">
+        <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="lg:col-span-1 space-y-4">
+            <div className="h-48 bg-gray-200 rounded"></div>
+          </div>
+          <div className="lg:col-span-3 space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-48 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface JobLocationPageProps {
   params: {
@@ -203,15 +224,17 @@ export default async function JobLocationPage({ params }: JobLocationPageProps) 
           </div>
         </div>
 
-        <JobSearchPage 
-          settings={settings} 
-          initialProvinceId={provinceId}
-          initialLocationName={provinceName}
-          initialCityId={regencyId}
-          initialCityName={regencyName}
-          locationType="city"
-          provinceSlug={params.province}
-        />
+        <Suspense fallback={<JobSearchPageFallback />}>
+          <JobSearchPage 
+            settings={settings} 
+            initialProvinceId={provinceId}
+            initialLocationName={provinceName}
+            initialCityId={regencyId}
+            initialCityName={regencyName}
+            locationType="city"
+            provinceSlug={params.province}
+          />
+        </Suspense>
       </main>
       <Footer />
     </>

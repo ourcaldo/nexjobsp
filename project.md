@@ -2,6 +2,64 @@
 
 ## Recent Changes
 
+### November 14, 2025 - Fixed Build Error: Added Suspense Boundaries for Location Pages
+**Status**: Completed ✅
+**Time**: 17:00 WIB
+
+**Problem Identified**:
+- Running `npm run build` was failing with prerendering errors
+- Error: `useSearchParams() should be wrapped in a suspense boundary at page "/lowongan-kerja/lokasi/[province]"`
+- All province location pages (38+ pages) were failing to generate during static build
+- All nested province/regency location pages were also failing to generate
+
+**Root Cause Analysis**:
+- The `JobSearchPage` component is a client component (marked with `'use client'`)
+- It uses the `useSearchParams()` hook from Next.js navigation
+- When Next.js tries to statically generate pages at build time, it encounters this client hook
+- Next.js 14 requires client components using `useSearchParams()` to be wrapped in a Suspense boundary when used in static generation
+- The location pages (`[province]/page.tsx` and `[province]/[regency]/page.tsx`) were rendering `JobSearchPage` without Suspense boundaries
+
+**Changes Implemented**:
+
+1. **Updated Province Location Page** (`app/lowongan-kerja/lokasi/[province]/page.tsx`):
+   - Added `import { Suspense } from 'react'` 
+   - Created `JobSearchPageFallback()` component for loading state with animated skeleton UI
+   - Wrapped `<JobSearchPage />` component in `<Suspense fallback={<JobSearchPageFallback />}>`
+   - Fallback UI displays loading skeleton matching the job search page layout
+
+2. **Updated Nested Regency Location Page** (`app/lowongan-kerja/lokasi/[province]/[regency]/page.tsx`):
+   - Added `import { Suspense } from 'react'`
+   - Created `JobSearchPageFallback()` component for loading state with animated skeleton UI
+   - Wrapped `<JobSearchPage />` component in `<Suspense fallback={<JobSearchPageFallback />}>`
+   - Identical loading skeleton implementation for consistent UX
+
+**Build Verification**:
+- ✅ Build completed successfully: `npm run build` exits with code 0
+- ✅ All 169 static pages generated without errors
+- ✅ Province location pages: 38 pages generated successfully
+- ✅ Nested regency location pages: Dynamic generation enabled
+- ✅ Zero prerendering errors
+- ✅ Only minor warnings remain (React Hook dependencies, Node.js version deprecation)
+
+**Files Modified**:
+- `app/lowongan-kerja/lokasi/[province]/page.tsx` - Added Suspense boundary and loading fallback
+- `app/lowongan-kerja/lokasi/[province]/[regency]/page.tsx` - Added Suspense boundary and loading fallback
+
+**Technical Implementation**:
+- Suspense boundaries allow Next.js to handle client-side hooks during static generation
+- Loading fallback provides smooth UX during page hydration
+- Maintains full static generation capabilities (ISR with 5-minute revalidation)
+- No impact on runtime behavior or user experience
+
+**Impact**:
+- ✅ **Build Success**: Production builds now complete without errors
+- ✅ **SEO Maintained**: All location pages can be statically generated and indexed
+- ✅ **Performance**: Static generation preserved with ISR benefits
+- ✅ **User Experience**: Smooth loading states during page hydration
+- ✅ **Deployment Ready**: Project can now be built and deployed to production
+
+---
+
 ### November 14, 2025 - Verified Sitemap Enhancement for Job Categories and Locations
 **Status**: Completed ✅
 **Time**: 13:30 WIB
