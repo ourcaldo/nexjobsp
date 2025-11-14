@@ -23,6 +23,10 @@ interface JobSearchPageProps {
   initialLocation?: string;
   initialLocationName?: string;
   locationType?: 'province' | 'city';
+  initialProvinceId?: string;
+  initialCityId?: string;
+  initialCityName?: string;
+  provinceSlug?: string;
 }
 
 const JobSearchPage: React.FC<JobSearchPageProps> = ({ 
@@ -30,7 +34,11 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   initialCategory, 
   initialLocation,
   initialLocationName,
-  locationType = 'province'
+  locationType = 'province',
+  initialProvinceId,
+  initialCityId,
+  initialCityName,
+  provinceSlug
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -61,11 +69,14 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
 
   // Main search filters
   const [keyword, setKeyword] = useState('');
-  const [selectedProvince, setSelectedProvince] = useState(initialLocation && locationType === 'province' ? initialLocation : '');
+  const [selectedProvince, setSelectedProvince] = useState(
+    initialProvinceId ||
+    (initialLocation && locationType === 'province' ? initialLocation : '')
+  );
 
   // Sidebar filters
   const [sidebarFilters, setSidebarFilters] = useState({
-    cities: initialLocation && locationType === 'city' ? [initialLocation] : [] as string[],
+    cities: initialCityId ? [initialCityId] : (initialLocation && locationType === 'city' ? [initialLocation] : []) as string[],
     jobTypes: [] as string[],
     experiences: [] as string[],
     educations: [] as string[],
@@ -128,11 +139,12 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
 
   // Get current filters object - memoized to prevent unnecessary recreations
   const getCurrentFilters = useCallback(() => {
-    const locationFilter = initialLocation && locationType === 'province' ? initialLocation : selectedProvince;
+    const locationFilter = selectedProvince || 
+      (initialLocation && locationType === 'province' ? initialLocation : '');
 
     return {
       search: keyword,
-      location: locationType === 'city' ? '' : locationFilter,
+      location: locationFilter,
       sortBy: sortBy,
       ...sidebarFilters
     };
@@ -166,7 +178,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
 
       let initialKeyword = '';
       let initialProvince = selectedProvince;
-      let initialSidebarFilters = { ...sidebarFilters };
+      let initialSidebarFilters = { ...sidebarFilters, cities: initialCityId ? [initialCityId] : sidebarFilters.cities };
 
       if (search) {
         initialKeyword = search;
@@ -189,7 +201,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
       // Build initial filters
       const filters = {
         search: initialKeyword,
-        location: initialLocation && locationType === 'province' ? initialLocation : initialProvince,
+        location: initialProvinceId || (initialLocation && locationType === 'province' ? initialLocation : initialProvince),
         sortBy: 'newest',
         ...initialSidebarFilters
       };
@@ -554,11 +566,27 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     if (filterType === 'keyword') {
       setKeyword('');
     } else if (filterType === 'province') {
-      if (initialLocation && locationType === 'province') {
+      if (initialProvinceId) {
+        // On nested routes (province+city), removing province redirects to main page
+        router.replace('/lowongan-kerja/');
+      } else if (initialLocation && locationType === 'province') {
         router.replace('/lowongan-kerja/');
       } else {
         setSelectedProvince('');
         setSidebarFilters(prev => ({ ...prev, cities: [] }));
+      }
+    } else if (filterType === 'cities' && value) {
+      if (initialCityId && value === initialCityId) {
+        if (provinceSlug) {
+          router.replace(`/lowongan-kerja/lokasi/${provinceSlug}/`);
+        } else {
+          router.replace('/lowongan-kerja/');
+        }
+      } else {
+        setSidebarFilters(prev => ({
+          ...prev,
+          cities: prev.cities.filter(city => city !== value)
+        }));
       }
     } else if (value) {
       setSidebarFilters(prev => ({
@@ -566,7 +594,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
         [filterType]: prev[filterType as keyof typeof prev].filter(item => item !== value)
       }));
     }
-  }, [initialLocation, locationType, router]);
+  }, [initialLocation, locationType, initialProvinceId, initialCityId, router]);
 
   const getProvinceOptions = useMemo(() => {
     if (!filterData) return [];

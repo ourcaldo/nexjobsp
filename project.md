@@ -2,6 +2,90 @@
 
 ## Recent Changes
 
+### November 14, 2025 - Added Nested Province+Regency Location Filtering
+**Status**: Completed ✅
+
+**Feature Implementation**:
+Implemented nested location filtering that allows users to directly access job listings by both province AND city/regency through URL patterns like `/lowongan-kerja/lokasi/{province}/{regency}`.
+
+**Problem Addressed**:
+Previously, location filtering only supported province-level pages (e.g., `/lowongan-kerja/lokasi/jawa-timur/`). Users could not directly access city-specific job listings with both province and city filters auto-selected.
+
+**Changes Implemented**:
+
+1. **Created Nested Route** (`app/lowongan-kerja/lokasi/[province]/[regency]/page.tsx`):
+   - New dynamic route supporting URL pattern: `/lowongan-kerja/lokasi/{province}/{regency}`
+   - Example: `/lowongan-kerja/lokasi/jawa-timur/surabaya`
+   - Fetches both province and regency data from API `/job-posts/filters`
+   - Validates province-regency pairing (ensures regency belongs to specified province)
+   - Redirects to `/lowongan-kerja/` if invalid combination detected
+   - Implements robust slug normalization handling:
+     - Normalizes multiple spaces to single spaces
+     - Strips punctuation consistently
+     - Handles "Kab.", "Kabupaten", and "Kota" prefixes
+     - Matches with/without dashes
+   - Aligned metadata generation with page redirect logic using `isValid` flag
+   - Proper breadcrumb navigation: Lowongan Kerja > Province > Regency
+
+2. **Updated JobSearchPage Component** (`components/pages/JobSearchPage.tsx`):
+   - Added new props: `initialProvinceId`, `initialCityId`, `initialCityName`
+   - Modified state initialization to support simultaneous province and city selection
+   - Updated `removeFilter` function to handle city filter removal on nested routes
+   - When removing locked city filter (from nested route), redirects to `/lowongan-kerja/`
+   - Province filter remains changeable even on nested routes
+
+3. **Renamed Province Route** (`app/lowongan-kerja/lokasi/[province]/page.tsx`):
+   - Renamed from `[slug]` to `[province]` to match nested route convention
+   - Updated all parameter references from `slug` to `province`
+   - Maintains backward compatibility with existing province-only URLs
+
+**URL Patterns**:
+- Province only: `/lowongan-kerja/lokasi/jawa-timur/` - Auto-selects Jawa Timur province
+- Province + City: `/lowongan-kerja/lokasi/jawa-timur/surabaya/` - Auto-selects both Jawa Timur province AND Surabaya city
+
+**API Integration**:
+- Uses existing `/job-posts/filters` endpoint
+- Fetches `provinces` array: `{ id, name, post_count }`
+- Fetches `regencies` array: `{ id, name, province_id, post_count }`
+- Dynamic matching based on API data (no hardcoding)
+
+**User Experience**:
+- ✅ Both province and city filters visible and removable in sidebar
+- ✅ Province filter remains changeable (not locked) on nested routes
+- ✅ Removing city filter redirects to main job listing
+- ✅ Invalid province/regency combinations redirect gracefully
+- ✅ SEO-friendly URLs with proper metadata
+- ✅ Breadcrumb navigation with clickable province link
+
+**Files Modified**:
+- `components/pages/JobSearchPage.tsx` - Added props for simultaneous province+city selection, updated filter removal logic
+- `app/lowongan-kerja/lokasi/[province]/page.tsx` - Renamed from [slug], updated parameter names
+- Created `app/lowongan-kerja/lokasi/[province]/[regency]/page.tsx` - New nested route
+
+**Technical Implementation**:
+- Next.js 14 dynamic routing with nested parameters
+- ISR (Incremental Static Regeneration) with 5-minute revalidation
+- Dynamic params enabled for runtime slug resolution
+- Slug normalization utilities for flexible matching
+- Validation ensures data integrity before rendering
+
+**Verification**:
+- ✅ Zero TypeScript/LSP errors
+- ✅ Application compiled successfully (1157 modules)
+- ✅ Workflow running without errors
+- ✅ Next.js routing conflict resolved (renamed [slug] to [province])
+- ✅ Robust slug matching handles various data formats
+
+**Impact**:
+- ✅ **Enhanced UX**: Users can directly access city-specific job listings via URL
+- ✅ **SEO Improvement**: City-specific landing pages for better search visibility
+- ✅ **Dynamic Filtering**: Both province and city filters work simultaneously
+- ✅ **Flexible Matching**: Handles various regency name formats from CMS
+- ✅ **Graceful Degradation**: Invalid URLs redirect appropriately
+- ✅ **Maintainability**: Clean nested route structure following Next.js conventions
+
+---
+
 ### November 13, 2025 - Fixed Lokasi Page Active Filters & Invalid Province Handling
 **Status**: Completed ✅
 

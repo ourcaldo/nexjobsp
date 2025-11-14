@@ -12,24 +12,24 @@ import { renderTemplate } from '@/utils/templateUtils';
 
 interface JobLocationPageProps {
   params: {
-    slug: string;
+    province: string;
   };
 }
 
-async function getLocationData(slug: string) {
+async function getLocationData(provinceSlug: string) {
   const settings = await SupabaseAdminService.getSettingsServerSide();
   const currentUrl = getCurrentDomain();
   
   let provinceId = '';
-  let provinceName = slug.charAt(0).toUpperCase() + slug.slice(1);
+  let provinceName = provinceSlug.charAt(0).toUpperCase() + provinceSlug.slice(1);
   
   try {
     const filterData = await jobService.getFiltersData();
     if (filterData && filterData.provinces) {
-      const slugNormalized = slug.toLowerCase().replace(/-/g, ' ');
+      const slugNormalized = provinceSlug.toLowerCase().replace(/-/g, ' ');
       const province = filterData.provinces.find((p: any) => 
         p.name.toLowerCase() === slugNormalized ||
-        p.name.toLowerCase().replace(/\s+/g, '-') === slug
+        p.name.toLowerCase().replace(/\s+/g, '-') === provinceSlug
       );
       
       if (province) {
@@ -38,11 +38,11 @@ async function getLocationData(slug: string) {
       }
     }
   } catch (error) {
-    console.error('Error fetching filters:', error);
+    // Error logged server-side
   }
 
   return {
-    slug,
+    provinceSlug,
     location: provinceId,
     locationName: provinceId ? provinceName : '',
     category: '',
@@ -53,7 +53,7 @@ async function getLocationData(slug: string) {
 }
 
 export async function generateMetadata({ params }: JobLocationPageProps): Promise<Metadata> {
-  const { slug, locationName, category, settings, currentUrl } = await getLocationData(params.slug);
+  const { provinceSlug, locationName, category, settings, currentUrl } = await getLocationData(params.province);
 
   // Will redirect if invalid, but need metadata for valid case
   if (!locationName) {
@@ -82,7 +82,7 @@ export async function generateMetadata({ params }: JobLocationPageProps): Promis
       title: pageTitle,
       description: pageDescription,
       type: 'website',
-      url: `${currentUrl}/lowongan-kerja/lokasi/${slug}/`,
+      url: `${currentUrl}/lowongan-kerja/lokasi/${provinceSlug}/`,
       images: [settings.jobs_og_image || `${currentUrl}/og-jobs.jpg`],
     },
     twitter: {
@@ -92,7 +92,7 @@ export async function generateMetadata({ params }: JobLocationPageProps): Promis
       images: [settings.jobs_og_image || `${currentUrl}/og-jobs.jpg`],
     },
     alternates: {
-      canonical: `${currentUrl}/lowongan-kerja/lokasi/${slug}/`,
+      canonical: `${currentUrl}/lowongan-kerja/lokasi/${provinceSlug}/`,
     },
   };
 }
@@ -100,8 +100,8 @@ export async function generateMetadata({ params }: JobLocationPageProps): Promis
 export async function generateStaticParams() {
   // Generate paths for common locations
   const commonLocations = Object.keys(wpLocationMappings);
-  return commonLocations.map(slug => ({
-    slug
+  return commonLocations.map(province => ({
+    province
   }));
 }
 
@@ -109,7 +109,7 @@ export const revalidate = 300; // ISR: Revalidate every 5 minutes
 export const dynamicParams = true; // Enable dynamic params for locations not in static paths
 
 export default async function JobLocationPage({ params }: JobLocationPageProps) {
-  const { slug, location, locationName, category, locationType, settings, currentUrl } = await getLocationData(params.slug);
+  const { provinceSlug, location, locationName, category, locationType, settings, currentUrl } = await getLocationData(params.province);
 
   // Redirect to main job page if province is not found
   if (!locationName) {
