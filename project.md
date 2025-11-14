@@ -2,6 +2,52 @@
 
 ## Recent Changes
 
+### November 14, 2025 - Fixed Production Build TypeScript Error
+**Status**: Completed ✅
+**Time**: 15:55 WIB
+
+**Problem Identified**:
+- Running `npm run build` was failing with TypeScript compilation error
+- Error: `Type error: Argument of type '{ label: string; }' is not assignable to parameter of type '{ label: string; href: string; }'`
+- The breadcrumbItems array in job detail page was missing required `href` property type declaration
+- TypeScript was inferring strict type from initial array elements, requiring `href` in all items
+
+**Root Cause Analysis**:
+- The breadcrumbItems array was initialized without explicit type annotation
+- TypeScript inferred type from first element as `{ label: string; href: string }` (non-optional href)
+- When adding current page breadcrumb (which shouldn't have href), type mismatch occurred
+- The `generateBreadcrumbSchema` function expects `Array<{ label: string; href?: string }>` with optional href
+
+**Changes Implemented**:
+
+1. **Added Explicit Type Annotation** (`app/lowongan-kerja/[category]/[id]/page.tsx` - Line 157):
+   - Changed: `const breadcrumbItems = [...]`
+   - To: `const breadcrumbItems: Array<{ label: string; href?: string }> = [...]`
+   - Explicitly declared array type to allow optional `href` property
+
+2. **Separated Current Page Breadcrumb** (Lines 175-180):
+   - Separated category breadcrumb and current page breadcrumb into distinct push operations
+   - Added clear comment explaining current page has no href
+   - Maintains clean code structure and intent
+
+**Build Verification**:
+- ✅ Build completed successfully: `npm run build` exits with code 0
+- ✅ All 169 static pages generated without errors
+- ✅ Zero TypeScript compilation errors
+- ✅ Only minor warnings remain (React Hook dependencies, Node.js version deprecation)
+- ✅ Production build ready for deployment
+
+**Files Modified**:
+- `app/lowongan-kerja/[category]/[id]/page.tsx` - Added explicit breadcrumb type annotation
+
+**Technical Impact**:
+- ✅ **Production Ready**: Project can now be built and deployed successfully
+- ✅ **Type Safety**: Proper TypeScript typing prevents future breadcrumb-related errors
+- ✅ **Code Clarity**: Explicit types improve code readability and maintainability
+- ✅ **SEO Maintained**: Breadcrumb schema generation works correctly with optional href
+
+---
+
 ### November 14, 2025 - Enhanced Breadcrumbs & Title Case Location Names
 **Status**: Completed ✅
 **Time**: 18:00 WIB

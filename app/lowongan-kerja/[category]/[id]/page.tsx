@@ -151,7 +151,7 @@ export default async function JobPage({ params }: JobPageProps) {
   const provinceSlug = locationToSlug(job.lokasi_provinsi);
   const regencySlug = locationToSlug(job.lokasi_kota);
   
-  const breadcrumbItems = [
+  const breadcrumbItems: Array<{ label: string; href?: string }> = [
     { label: 'Lowongan Kerja', href: '/lowongan-kerja/' }
   ];
 
@@ -170,9 +170,11 @@ export default async function JobPage({ params }: JobPageProps) {
   }
 
   breadcrumbItems.push(
-    { label: categoryName, href: `/lowongan-kerja/kategori/${category}/` },
-    { label: job.title }
+    { label: categoryName, href: `/lowongan-kerja/kategori/${category}/` }
   );
+  
+  // Current page (no href for current page in breadcrumbs)
+  breadcrumbItems.push({ label: job.title });
 
   const jobSchema = generateJobPostingSchema(job);
   const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
