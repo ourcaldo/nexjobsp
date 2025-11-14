@@ -73,6 +73,9 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     initialProvinceId ||
     (initialLocation && locationType === 'province' ? initialLocation : '')
   );
+  
+  // Track previous province to detect changes
+  const previousProvinceRef = useRef<string>(selectedProvince);
 
   // Sidebar filters
   const [sidebarFilters, setSidebarFilters] = useState({
@@ -447,6 +450,40 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
       content_group3: initialLocation || '',
     });
   }, [trackPageView, initialCategory, initialLocation]);
+
+  // Clear invalid city filters when province changes (prevent mismatched province+city queries)
+  useEffect(() => {
+    if (!initialDataLoadedRef.current) {
+      // On initial mount, just store the current province
+      previousProvinceRef.current = selectedProvince;
+      return;
+    }
+
+    // Check if province has actually changed
+    if (selectedProvince !== previousProvinceRef.current) {
+      // Validate city filters against new province
+      if (filterData && sidebarFilters.cities.length > 0) {
+        const validCities = sidebarFilters.cities.filter(cityId => {
+          // Keep cities that belong to the new province (or if no province selected, keep all)
+          if (!selectedProvince) return true;
+          
+          const city = filterData.regencies.find(r => r.id === cityId);
+          return city && city.province_id === selectedProvince;
+        });
+
+        // Only update if we need to remove invalid cities
+        if (validCities.length !== sidebarFilters.cities.length) {
+          setSidebarFilters(prev => ({
+            ...prev,
+            cities: validCities
+          }));
+        }
+      }
+      
+      // Update the ref with new province
+      previousProvinceRef.current = selectedProvince;
+    }
+  }, [selectedProvince, filterData, sidebarFilters.cities]);
 
   // Watch for filter changes (debounced)
   useEffect(() => {
