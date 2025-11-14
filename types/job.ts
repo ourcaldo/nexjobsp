@@ -8,6 +8,8 @@ export interface Job {
   job_categories: Array<{ id: string; name: string; slug: string }>;
   lokasi_provinsi: string;
   lokasi_kota: string;
+  job_province_id?: string;
+  job_regency_id?: string;
   tipe_pekerjaan: string;
   pendidikan: string;
   pengalaman: string;

@@ -211,6 +211,8 @@ export class TugasCMSProvider implements CMSProvider {
       job_categories: cmsJob.job_categories || [],
       lokasi_provinsi: cmsJob.province?.name || '',
       lokasi_kota: cmsJob.regency?.name || '',
+      job_province_id: cmsJob.job_province_id || undefined,
+      job_regency_id: cmsJob.job_regency_id || undefined,
       tipe_pekerjaan: cmsJob.employment_type?.name || 'Full Time',
       pendidikan: cmsJob.education_level?.name || '',
       pengalaman: cmsJob.experience_level?.name || '',

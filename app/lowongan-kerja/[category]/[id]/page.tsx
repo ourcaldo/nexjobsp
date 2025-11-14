@@ -9,7 +9,7 @@ import Footer from '@/components/Layout/Footer';
 import JobDetailPage from '@/components/pages/JobDetailPage';
 import { generateJobPostingSchema, generateBreadcrumbSchema } from '@/utils/schemaUtils';
 import { Job } from '@/types/job';
-import { formatLocationName, locationToSlug } from '@/utils/textUtils';
+import { formatLocationName, locationToSlug, getLocationNamesFromIds } from '@/utils/textUtils';
 
 interface JobPageProps {
   params: {
@@ -21,9 +21,10 @@ interface JobPageProps {
 // Wrap with React cache() to deduplicate API calls between generateMetadata() and page component
 const getJobData = cache(async (category: string, id: string) => {
   try {
-    const [job, settings] = await Promise.all([
+    const [job, settings, filterData] = await Promise.all([
       jobService.getJobById(id),
-      SupabaseAdminService.getSettingsServerSide()
+      SupabaseAdminService.getSettingsServerSide(),
+      jobService.getFiltersData()
     ]);
 
     const currentUrl = getCurrentDomain();
@@ -35,6 +36,23 @@ const getJobData = cache(async (category: string, id: string) => {
     const jobCategorySlug = job.job_categories?.[0]?.slug || 'uncategorized';
     if (jobCategorySlug !== category) {
       notFound();
+    }
+
+    // Enrich job with province/regency names from filter data if not already present
+    if ((!job.lokasi_provinsi || !job.lokasi_kota) && (job.job_province_id || job.job_regency_id)) {
+      const locationNames = getLocationNamesFromIds(
+        job.job_province_id,
+        job.job_regency_id,
+        filterData.provinces,
+        filterData.regencies
+      );
+      
+      if (!job.lokasi_provinsi && locationNames.provinceName) {
+        job.lokasi_provinsi = locationNames.provinceName;
+      }
+      if (!job.lokasi_kota && locationNames.regencyName) {
+        job.lokasi_kota = locationNames.regencyName;
+      }
     }
 
     return {
