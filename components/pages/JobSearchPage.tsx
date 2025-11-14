@@ -572,10 +572,10 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
 
     searchWithFilters(clearedFilters, false);
 
-    if (initialCategory || initialLocation) {
+    if (initialCategory || initialLocation || initialProvinceId || initialCityId) {
       router.replace('/lowongan-kerja/');
     }
-  }, [searchWithFilters, initialCategory, initialLocation, router]);
+  }, [searchWithFilters, initialCategory, initialLocation, initialProvinceId, initialCityId, router]);
 
   const getActiveFiltersCount = useMemo(() => {
     let count = 0;
@@ -631,7 +631,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
         [filterType]: prev[filterType as keyof typeof prev].filter(item => item !== value)
       }));
     }
-  }, [initialLocation, locationType, initialProvinceId, initialCityId, router]);
+  }, [initialLocation, locationType, initialProvinceId, initialCityId, provinceSlug, router]);
 
   const getProvinceOptions = useMemo(() => {
     if (!filterData) return [];

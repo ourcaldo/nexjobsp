@@ -2,6 +2,70 @@
 
 ## Recent Changes
 
+### November 14, 2025 - Dynamic URL Updates When Clearing Filters on Location Pages
+**Status**: Completed ✅
+**Time**: 17:15 WIB
+
+**Problem Identified**:
+- When visiting nested location pages (e.g., `/lowongan-kerja/lokasi/jawa-timur/surabaya/`)
+- Clicking "Hapus Semua Filter" (Clear All Filters) cleared the filters and showed all jobs correctly
+- However, the URL remained at `/lowongan-kerja/lokasi/jawa-timur/surabaya/` instead of updating to `/lowongan-kerja/`
+- This created a mismatch between the URL and the actual filter state
+
+**Root Cause Analysis**:
+- The `clearAllFilters` function in `JobSearchPage.tsx` only checked for `initialCategory` or `initialLocation` props
+- It didn't check for nested route props: `initialProvinceId` and `initialCityId`
+- Nested location pages (province+city) use different props than single-level location pages
+- Result: The navigation logic didn't trigger for nested routes
+
+**Changes Implemented**:
+
+1. **Updated Clear All Filters Function** (`components/pages/JobSearchPage.tsx` - Line 578):
+   - Added `initialProvinceId` and `initialCityId` to the redirect condition
+   - Before: `if (initialCategory || initialLocation)`
+   - After: `if (initialCategory || initialLocation || initialProvinceId || initialCityId)`
+   - Now properly detects all types of location pages (single-level and nested)
+
+2. **Fixed React Hook Dependency Warning** (`components/pages/JobSearchPage.tsx` - Line 637):
+   - Added missing `provinceSlug` dependency to `removeFilter` useCallback
+   - Prevents stale closure issues during filter removal
+   - Ensures correct URL construction when redirecting from nested routes
+
+**User Experience Flow**:
+
+**Before Fix**:
+1. Visit `/lowongan-kerja/lokasi/jawa-timur/surabaya/` → Filters auto-select (Province: Jawa Timur, City: Surabaya)
+2. Click "Hapus Semua Filter" → Shows all jobs ✅
+3. **Bug**: URL stays at `/lowongan-kerja/lokasi/jawa-timur/surabaya/` ❌
+
+**After Fix**:
+1. Visit `/lowongan-kerja/lokasi/jawa-timur/surabaya/` → Filters auto-select (Province: Jawa Timur, City: Surabaya)
+2. Click "Hapus Semua Filter" → Shows all jobs ✅
+3. **Fixed**: URL updates to `/lowongan-kerja/` ✅
+
+**Individual Filter Removal** (Already Working):
+- Remove City filter only → Navigates to `/lowongan-kerja/lokasi/jawa-timur/`
+- Remove Province filter → Navigates to `/lowongan-kerja/`
+- Remove other filters → Stays on same page, updates results
+
+**Files Modified**:
+- `components/pages/JobSearchPage.tsx` - Updated clearAllFilters condition and fixed dependency array
+
+**Verification**:
+- ✅ Zero TypeScript/LSP errors
+- ✅ Workflow compiled successfully with Fast Refresh
+- ✅ No console errors in browser
+- ✅ React Hook dependency warnings resolved
+
+**Impact**:
+- ✅ **URL Consistency**: URL always reflects the actual filter state
+- ✅ **User Trust**: No confusion between URL and displayed content
+- ✅ **SEO**: Search engines won't index filter-cleared states with location URLs
+- ✅ **Browser History**: Back/forward buttons work correctly with filter states
+- ✅ **Shareable URLs**: Users can share URLs that accurately represent the filter state
+
+---
+
 ### November 14, 2025 - Fixed Build Error: Added Suspense Boundaries for Location Pages
 **Status**: Completed ✅
 **Time**: 17:00 WIB
