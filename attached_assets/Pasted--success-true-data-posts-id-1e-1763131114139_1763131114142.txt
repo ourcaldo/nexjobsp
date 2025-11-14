@@ -1,0 +1,2309 @@
+{
+    "success": true,
+    "data": {
+        "posts": [
+            {
+                "id": "1e834c58-760c-453a-b9c5-8153cb80a9ee",
+                "title": "Store Staff",
+                "content": "<p>Tigalapan Indonesia membuka lowongan untuk posisi Store Staff yang bertanggung jawab melayani pelanggan dan memastikan operasional toko berjalan lancar. Kami mencari individu yang ramah, teliti, dan mampu bekerja dalam tim.</p><h2>Tanggung Jawab Pekerjaan:</h2><ul><li>Melayani dan membantu pelanggan di toko</li><li>Memproses pesanan pelanggan dengan cepat dan akurat</li><li>Melakukan pengecekan dan pencatatan stok barang</li><li>Menjaga kerapihan dan kebersihan area toko</li><li>Bekerja sama dengan tim untuk memastikan operasional berjalan lancar</li></ul><h2>Keahlian:</h2><ul><li>Pelayanan pelanggan</li><li>Manajemen stok barang</li><li>Kerja tim dan komunikasi</li></ul><h2>Kualifikasi:</h2><ol><li>Pendidikan minimal SMA sederajat</li><li>Tidak buta warna</li><li>Pengalaman minimal 1 tahun di bidang terkait</li></ol><h2>Waktu Bekerja:</h2><p>08.30 - 16.30, Senin - Minggu, dengan 1 hari libur</p>",
+                "excerpt": "Lowongan Store Staff di CV Tigalapan Sukses Indonesia - Kalimantan Timur. Lamar Sekarang!",
+                "slug": "1e834c58-760c-453a-b9c5-8153cb80a9ee",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:37:45.222Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Store Staff di CV Tigalapan Sukses Indonesia - Kalimantan Timur",
+                "meta_description": "Lowongan Store Staff di CV Tigalapan Sukses Indonesia - Kalimantan Timur. Lamar Sekarang!",
+                "focus_keyword": "Store Staff",
+                "job_company_name": "CV Tigalapan Sukses Indonesia",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15816138",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Pelayanan Pelanggan",
+                    "Manajemen Stok",
+                    "Kerja Tim",
+                    "Komunikasi"
+                ],
+                "job_benefits": [
+                    "Gaji Kompetitif",
+                    "Tunjangan Transportasi",
+                    "Asuransi Kesehatan",
+                    "Lingkungan Kerja Yang Baik"
+                ],
+                "employment_type": {
+                    "id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                    "name": "Contract",
+                    "slug": "contract"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:37:45.312Z",
+                "updated_at": "2025-11-14T14:37:45.312Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15816138",
+                "job_is_salary_negotiable": false,
+                "job_province_id": "64",
+                "job_regency_id": "6472",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal SMA sederajat, Tidak buta warna, Pengalaman minimal 1 tahun",
+                "job_responsibilities": "Melayani pelanggan, Memproses pesanan, Pengecekan stok barang, Menjaga kebersihan toko, Kerja sama dengan tim",
+                "job_education_level_id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                "job_categories": [
+                    {
+                        "id": "ae4f5af6-1fe2-4302-8c23-b041100e5ab5",
+                        "name": "Apparel & Fashion",
+                        "slug": "apparel-fashion"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "061a4805-25e1-40c7-99ef-fbd34b8f196b",
+                        "name": "Sma/smk",
+                        "slug": "sma-smk"
+                    },
+                    {
+                        "id": "545009d8-9062-4c31-8ad4-929c35bd633d",
+                        "name": "Junior / Entry Level",
+                        "slug": "junior-entry-level"
+                    },
+                    {
+                        "id": "cb4cf3f0-17b3-4037-9950-a30ae7aa2d59",
+                        "name": "Asisten Ritel",
+                        "slug": "asisten-ritel"
+                    },
+                    {
+                        "id": "d6663724-4bf7-4873-abf2-832d0aa02bb2",
+                        "name": "Crew Store",
+                        "slug": "crew-store"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "64",
+                    "name": "KALIMANTAN TIMUR"
+                },
+                "regency": {
+                    "id": "6472",
+                    "name": "KOTA SAMARINDA",
+                    "province_id": "64"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                    "name": "SMA/SMK/Sederajat",
+                    "slug": "sma-smk-sederajat"
+                }
+            },
+            {
+                "id": "b259f51c-5447-4e20-bd05-939d4e05e5de",
+                "title": "Store Staff",
+                "content": "<p>Tigalapan Indonesia membuka lowongan untuk posisi Store Staff yang bertanggung jawab melayani pelanggan dan memastikan operasional toko berjalan lancar. Posisi ini membutuhkan individu yang ramah, teliti, dan mampu bekerja dalam tim.</p><h2>Tanggung Jawab Pekerjaan:</h2><ul><li>Melayani dan membantu pelanggan di toko</li><li>Memproses pesanan pelanggan dengan cepat dan akurat</li><li>Melakukan pengecekan dan pencatatan stok barang</li><li>Menjaga kerapihan dan kebersihan area toko</li><li>Bekerja sama dengan tim untuk memastikan operasional berjalan lancar</li></ul><h2>Keahlian:</h2><ul><li>Pelayanan pelanggan</li><li>Manajemen stok barang</li><li>Kerja tim dan komunikasi</li></ul><h2>Kualifikasi:</h2><ol><li>Pendidikan minimal SMA sederajat</li><li>Tidak buta warna</li><li>Pengalaman minimal 1 tahun di bidang terkait</li></ol><h2>Waktu Bekerja:</h2><p>08.30 - 16.30, Senin - Minggu, 1 hari libur</p>",
+                "excerpt": "Lowongan Store Staff di CV Tigalapan Sukses Indonesia - Kalimantan Timur. Lamar Sekarang!",
+                "slug": "b259f51c-5447-4e20-bd05-939d4e05e5de",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:37:27.501Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Store Staff di CV Tigalapan Sukses Indonesia - Kalimantan Timur",
+                "meta_description": "Lowongan Store Staff di CV Tigalapan Sukses Indonesia - Kalimantan Timur. Lamar Sekarang!",
+                "focus_keyword": "Store Staff",
+                "job_company_name": "CV Tigalapan Sukses Indonesia",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15816138",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Pelayanan Pelanggan",
+                    "Manajemen Stok Barang",
+                    "Kerja Tim",
+                    "Komunikasi"
+                ],
+                "job_benefits": [
+                    "Gaji Kompetitif",
+                    "Tunjangan Transportasi",
+                    "Asuransi Kesehatan",
+                    "Lingkungan Kerja Yang Baik"
+                ],
+                "employment_type": {
+                    "id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                    "name": "Contract",
+                    "slug": "contract"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:37:27.587Z",
+                "updated_at": "2025-11-14T14:37:27.587Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15816138",
+                "job_is_salary_negotiable": false,
+                "job_province_id": "64",
+                "job_regency_id": "6472",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal SMA sederajat, Tidak buta warna, Pengalaman minimal 1 tahun",
+                "job_responsibilities": "Melayani pelanggan, Memproses pesanan pelanggan, Pengecekan dan pencatatan stok barang, Menjaga kebersihan toko, Bekerja sama dengan tim",
+                "job_education_level_id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                "job_categories": [
+                    {
+                        "id": "ae4f5af6-1fe2-4302-8c23-b041100e5ab5",
+                        "name": "Apparel & Fashion",
+                        "slug": "apparel-fashion"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "061a4805-25e1-40c7-99ef-fbd34b8f196b",
+                        "name": "Sma/smk",
+                        "slug": "sma-smk"
+                    },
+                    {
+                        "id": "545009d8-9062-4c31-8ad4-929c35bd633d",
+                        "name": "Junior / Entry Level",
+                        "slug": "junior-entry-level"
+                    },
+                    {
+                        "id": "cb4cf3f0-17b3-4037-9950-a30ae7aa2d59",
+                        "name": "Asisten Ritel",
+                        "slug": "asisten-ritel"
+                    },
+                    {
+                        "id": "d6663724-4bf7-4873-abf2-832d0aa02bb2",
+                        "name": "Crew Store",
+                        "slug": "crew-store"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "64",
+                    "name": "KALIMANTAN TIMUR"
+                },
+                "regency": {
+                    "id": "6472",
+                    "name": "KOTA SAMARINDA",
+                    "province_id": "64"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                    "name": "SMA/SMK/Sederajat",
+                    "slug": "sma-smk-sederajat"
+                }
+            },
+            {
+                "id": "ca394a85-dcea-4c1b-acc6-49bb74cf843d",
+                "title": "Store Staff",
+                "content": "<p>Tigalapan Indonesia membuka lowongan untuk posisi Store Staff yang bertanggung jawab melayani pelanggan dan memastikan operasional toko berjalan lancar. Kami mencari individu yang ramah, teliti, dan mampu bekerja dalam tim.</p><h2>Tanggung Jawab:</h2><ul><li>Melayani dan membantu pelanggan di toko</li><li>Memproses pesanan pelanggan dengan cepat dan akurat</li><li>Melakukan pengecekan dan pencatatan stok barang</li><li>Menjaga kerapihan dan kebersihan area toko</li><li>Bekerja sama dengan tim untuk memastikan operasional berjalan lancar</li></ul><h2>Keahlian:</h2><ul><li>Pelayanan pelanggan</li><li>Manajemen stok</li><li>Kerja tim dan komunikasi</li></ul><h2>Kualifikasi:</h2><ol><li>Pendidikan minimal SMA sederajat</li><li>Tidak buta warna</li><li>Pengalaman minimal 1 tahun di bidang terkait</li></ol><h2>Waktu Bekerja:</h2><p>08.30 - 16.30, Senin - Minggu, dengan 1 hari libur</p>",
+                "excerpt": "Lowongan Store Staff di CV Tigalapan Sukses Indonesia - Kalimantan Timur. Lamar Sekarang!",
+                "slug": "ca394a85-dcea-4c1b-acc6-49bb74cf843d",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:37:22.629Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Store Staff di CV Tigalapan Sukses Indonesia - Kalimantan Timur",
+                "meta_description": "Lowongan Store Staff di CV Tigalapan Sukses Indonesia - Kalimantan Timur. Lamar Sekarang!",
+                "focus_keyword": "Store Staff",
+                "job_company_name": "CV Tigalapan Sukses Indonesia",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15816138",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Pelayanan Pelanggan",
+                    "Manajemen Stok",
+                    "Kerja Tim",
+                    "Komunikasi"
+                ],
+                "job_benefits": [
+                    "Gaji Kompetitif",
+                    "Tunjangan Transportasi",
+                    "Asuransi Kesehatan",
+                    "Lingkungan Kerja Yang Baik"
+                ],
+                "employment_type": {
+                    "id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                    "name": "Contract",
+                    "slug": "contract"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:37:22.713Z",
+                "updated_at": "2025-11-14T14:37:22.713Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15816138",
+                "job_is_salary_negotiable": false,
+                "job_province_id": "64",
+                "job_regency_id": "6472",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal SMA sederajat, Tidak buta warna, Pengalaman minimal 1 tahun",
+                "job_responsibilities": "Melayani pelanggan, Memproses pesanan, Pengecekan stok barang, Menjaga kebersihan toko, Kerja sama tim",
+                "job_education_level_id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                "job_categories": [
+                    {
+                        "id": "ae4f5af6-1fe2-4302-8c23-b041100e5ab5",
+                        "name": "Apparel & Fashion",
+                        "slug": "apparel-fashion"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "061a4805-25e1-40c7-99ef-fbd34b8f196b",
+                        "name": "Sma/smk",
+                        "slug": "sma-smk"
+                    },
+                    {
+                        "id": "545009d8-9062-4c31-8ad4-929c35bd633d",
+                        "name": "Junior / Entry Level",
+                        "slug": "junior-entry-level"
+                    },
+                    {
+                        "id": "cb4cf3f0-17b3-4037-9950-a30ae7aa2d59",
+                        "name": "Asisten Ritel",
+                        "slug": "asisten-ritel"
+                    },
+                    {
+                        "id": "d6663724-4bf7-4873-abf2-832d0aa02bb2",
+                        "name": "Crew Store",
+                        "slug": "crew-store"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "64",
+                    "name": "KALIMANTAN TIMUR"
+                },
+                "regency": {
+                    "id": "6472",
+                    "name": "KOTA SAMARINDA",
+                    "province_id": "64"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                    "name": "SMA/SMK/Sederajat",
+                    "slug": "sma-smk-sederajat"
+                }
+            },
+            {
+                "id": "910c6378-0381-4333-993b-82732a09458b",
+                "title": "Kurir",
+                "content": "<p>Vie Catering sedang mencari Kurir untuk mengantarkan produk makanan kepada pelanggan dengan aman dan tepat waktu.</p><h2>Tanggung Jawab:</h2><ol><li>Mengambil dan mengantarkan paket ke alamat pelanggan tepat waktu.</li><li>Menjaga kondisi barang selama pengiriman.</li><li>Berkomunikasi dengan baik dengan pelanggan dan tim.</li><li>Melaporkan status pengiriman secara berkala kepada atasan.</li></ol><h2>Keahlian:</h2><p>Mengetahui area/jalur distribusi dengan baik.</p><h2>Kualifikasi:</h2><ol><li>Pendidikan minimal SMA/SMK sederajat.</li><li>Memiliki SIM C.</li><li>Memiliki kendaraan pribadi lebih diutamakan.</li></ol><h2>Waktu Bekerja:</h2><p>Senin-Sabtu, 09.00-17.00</p>",
+                "excerpt": "Lowongan Kurir di Vie Catering - Jawa Barat. Lamar Sekarang!",
+                "slug": "910c6378-0381-4333-993b-82732a09458b",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:37:13.680Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Kurir di Vie Catering - Jawa Barat",
+                "meta_description": "Lowongan Kurir di Vie Catering - Jawa Barat. Lamar Sekarang!",
+                "focus_keyword": "Kurir",
+                "job_company_name": "Vie Catering",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15815838",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Pengetahuan Area Distribusi",
+                    "Manajemen Waktu",
+                    "Komunikasi Efektif"
+                ],
+                "job_benefits": [
+                    "Uang Transport",
+                    "Gaji Kompetitif",
+                    "Asuransi Kesehatan"
+                ],
+                "employment_type": {
+                    "id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                    "name": "Full Time",
+                    "slug": "full-time"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:37:13.751Z",
+                "updated_at": "2025-11-14T14:37:13.751Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15815838",
+                "job_is_salary_negotiable": true,
+                "job_province_id": "32",
+                "job_regency_id": "3276",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal SMA/SMK, SIM C, Kendaraan pribadi",
+                "job_responsibilities": "Pengantaran paket tepat waktu, Menjaga kondisi barang, Komunikasi dengan pelanggan dan tim, Melaporkan status pengiriman",
+                "job_education_level_id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                "job_categories": [
+                    {
+                        "id": "4b21955a-af06-4df5-a96a-d97d61dcdff1",
+                        "name": "Makanan & Minuman",
+                        "slug": "makanan-minuman"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "061a4805-25e1-40c7-99ef-fbd34b8f196b",
+                        "name": "Sma/smk",
+                        "slug": "sma-smk"
+                    },
+                    {
+                        "id": "40ec040e-3f85-4ae9-b35c-bc651040df8b",
+                        "name": "Kurir",
+                        "slug": "kurir"
+                    },
+                    {
+                        "id": "a63ba18f-50e5-4dbb-93bc-b2dcb934f780",
+                        "name": "Staff / Officer",
+                        "slug": "staff-officer"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "32",
+                    "name": "JAWA BARAT"
+                },
+                "regency": {
+                    "id": "3276",
+                    "name": "KOTA DEPOK",
+                    "province_id": "32"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                    "name": "SMA/SMK/Sederajat",
+                    "slug": "sma-smk-sederajat"
+                }
+            },
+            {
+                "id": "4306b472-1787-45b7-b067-27e0b2c58d4c",
+                "title": "Store Staff",
+                "content": "<p>Tigalapan Indonesia membuka lowongan untuk posisi Store Staff yang bertanggung jawab melayani pelanggan dan memastikan operasional toko berjalan lancar. Kami mencari individu yang ramah, teliti, dan mampu bekerja dalam tim.</p><h2>Tanggung Jawab:</h2><ul><li>Melayani dan membantu pelanggan di toko</li><li>Memproses pesanan pelanggan dengan cepat dan akurat</li><li>Melakukan pengecekan dan pencatatan stok barang</li><li>Menjaga kerapihan dan kebersihan area toko</li><li>Bekerja sama dengan tim untuk memastikan operasional berjalan lancar</li></ul><h2>Keahlian:</h2><ul><li>Pelayanan pelanggan</li><li>Manajemen stok</li><li>Kerja tim dan komunikasi</li></ul><h2>Kualifikasi:</h2><ol><li>Pendidikan minimal SMA sederajat</li><li>Tidak buta warna</li><li>Pengalaman minimal 1 tahun di bidang terkait</li></ol><h2>Waktu Bekerja:</h2><p>08.30 - 16.30, Senin - Minggu, 1 hari libur</p>",
+                "excerpt": "Lowongan Store Staff di CV Tigalapan Sukses Indonesia - Kalimantan Timur. Lamar Sekarang!",
+                "slug": "4306b472-1787-45b7-b067-27e0b2c58d4c",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:37:04.399Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Store Staff di CV Tigalapan Sukses Indonesia - Kalimantan Timur",
+                "meta_description": "Lowongan Store Staff di CV Tigalapan Sukses Indonesia - Kalimantan Timur. Lamar Sekarang!",
+                "focus_keyword": "Store Staff",
+                "job_company_name": "CV Tigalapan Sukses Indonesia",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15816138",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Pelayanan Pelanggan",
+                    "Manajemen Stok",
+                    "Kerja Tim",
+                    "Komunikasi"
+                ],
+                "job_benefits": [
+                    "Gaji Kompetitif",
+                    "Tunjangan Transportasi",
+                    "Asuransi Kesehatan",
+                    "Lingkungan Kerja Yang Baik"
+                ],
+                "employment_type": {
+                    "id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                    "name": "Contract",
+                    "slug": "contract"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:37:04.516Z",
+                "updated_at": "2025-11-14T14:37:04.516Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15816138",
+                "job_is_salary_negotiable": false,
+                "job_province_id": "64",
+                "job_regency_id": "6472",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal SMA sederajat, Tidak buta warna, Pengalaman minimal 1 tahun",
+                "job_responsibilities": "Melayani pelanggan, Memproses pesanan, Pengecekan stok, Menjaga kebersihan toko, Kerja sama dengan tim",
+                "job_education_level_id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                "job_categories": [
+                    {
+                        "id": "ae4f5af6-1fe2-4302-8c23-b041100e5ab5",
+                        "name": "Apparel & Fashion",
+                        "slug": "apparel-fashion"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "061a4805-25e1-40c7-99ef-fbd34b8f196b",
+                        "name": "Sma/smk",
+                        "slug": "sma-smk"
+                    },
+                    {
+                        "id": "545009d8-9062-4c31-8ad4-929c35bd633d",
+                        "name": "Junior / Entry Level",
+                        "slug": "junior-entry-level"
+                    },
+                    {
+                        "id": "cb4cf3f0-17b3-4037-9950-a30ae7aa2d59",
+                        "name": "Asisten Ritel",
+                        "slug": "asisten-ritel"
+                    },
+                    {
+                        "id": "d6663724-4bf7-4873-abf2-832d0aa02bb2",
+                        "name": "Crew Store",
+                        "slug": "crew-store"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "64",
+                    "name": "KALIMANTAN TIMUR"
+                },
+                "regency": {
+                    "id": "6472",
+                    "name": "KOTA SAMARINDA",
+                    "province_id": "64"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                    "name": "SMA/SMK/Sederajat",
+                    "slug": "sma-smk-sederajat"
+                }
+            },
+            {
+                "id": "da28684a-4756-491e-bc04-d30ab0b9bedf",
+                "title": "Kurir",
+                "content": "<p>Vie Catering sedang mencari Kurir untuk mengantarkan produk makanan kepada pelanggan dengan aman dan tepat waktu.</p><h2>Tanggung Jawab:</h2><ol><li>Mengambil dan mengantarkan paket/barang ke alamat pelanggan tepat waktu.</li><li>Memastikan kondisi barang tetap baik selama pengiriman.</li><li>Berkomunikasi dengan baik dengan pelanggan dan tim.</li><li>Melaporkan status pengiriman secara berkala kepada atasan.</li></ol><h2>Keahlian:</h2><p>Mengetahui area/jalur distribusi dengan baik.</p><h2>Kualifikasi:</h2><ol><li>Pendidikan minimal SMA/SMK sederajat.</li><li>Memiliki SIM C.</li><li>Memiliki kendaraan pribadi lebih diutamakan.</li></ol><h2>Waktu Bekerja:</h2><p>Senin-Sabtu, 09.00-17.00</p>",
+                "excerpt": "Lowongan Kurir di Vie Catering - Jawa Barat. Lamar Sekarang!",
+                "slug": "da28684a-4756-491e-bc04-d30ab0b9bedf",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:37:00.568Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Kurir di Vie Catering - Jawa Barat",
+                "meta_description": "Lowongan Kurir di Vie Catering - Jawa Barat. Lamar Sekarang!",
+                "focus_keyword": "Kurir",
+                "job_company_name": "Vie Catering",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15815838",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Pengetahuan Area Distribusi",
+                    "Komunikasi",
+                    "Manajemen Waktu",
+                    "Pengemudian"
+                ],
+                "job_benefits": [
+                    "Uang Transport",
+                    "Gaji Kompetitif",
+                    "Kesempatan Pengembangan Karier"
+                ],
+                "employment_type": {
+                    "id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                    "name": "Full Time",
+                    "slug": "full-time"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:37:00.647Z",
+                "updated_at": "2025-11-14T14:37:00.647Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15815838",
+                "job_is_salary_negotiable": true,
+                "job_province_id": "32",
+                "job_regency_id": "3276",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal SMA/SMK, SIM C, Kendaraan pribadi lebih diutamakan",
+                "job_responsibilities": "Mengantarkan paket tepat waktu, Memastikan kondisi barang baik, Berkomunikasi dengan pelanggan dan tim, Melaporkan status pengiriman",
+                "job_education_level_id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                "job_categories": [
+                    {
+                        "id": "4b21955a-af06-4df5-a96a-d97d61dcdff1",
+                        "name": "Makanan & Minuman",
+                        "slug": "makanan-minuman"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "061a4805-25e1-40c7-99ef-fbd34b8f196b",
+                        "name": "Sma/smk",
+                        "slug": "sma-smk"
+                    },
+                    {
+                        "id": "40ec040e-3f85-4ae9-b35c-bc651040df8b",
+                        "name": "Kurir",
+                        "slug": "kurir"
+                    },
+                    {
+                        "id": "a63ba18f-50e5-4dbb-93bc-b2dcb934f780",
+                        "name": "Staff / Officer",
+                        "slug": "staff-officer"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "32",
+                    "name": "JAWA BARAT"
+                },
+                "regency": {
+                    "id": "3276",
+                    "name": "KOTA DEPOK",
+                    "province_id": "32"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                    "name": "SMA/SMK/Sederajat",
+                    "slug": "sma-smk-sederajat"
+                }
+            },
+            {
+                "id": "b4877b1e-3b6b-4507-b95e-6618f0f8505e",
+                "title": "Marketing",
+                "content": "<p>PT ADERO JASA SETIA, perusahaan penyedia tenaga kerja (outsourcing), membutuhkan staf marketing untuk mengelola dan mencari target pemasaran, mengelola tender, serta membuat database perusahaan/pengguna jasa.</p><h2>Tanggung Jawab Pekerjaan:</h2><ol><li>Mencari target pemasaran perusahaan.</li><li>Mengelola tender dari pengguna jasa.</li><li>Membuat database perusahaan/pengguna jasa tenaga kerja.</li></ol><h2>Keahlian:</h2><ol><li>Menguasai Microsoft Office.</li><li>Dapat membuat quotation, profit, & loss.</li><li>Komunikasi yang baik.</li><li>Menggunakan media sosial di berbagai platform.</li><li>Kemampuan analisis pasar.</li></ol><h2>Kualifikasi:</h2><ol><li>Pendidikan minimal S1.</li><li>Pengalaman di bidang marketing lebih disukai.</li><li>Memiliki kendaraan bermotor.</li></ol><h2>Waktu Bekerja:</h2><p>Senin-Jumat, 08.00-17.00 WIB.</p><h2>Tunjangan:</h2><p>Uang transport, bonus per project.</p>",
+                "excerpt": "Lowongan Marketing di PT Adero Jasa Setia - DKI Jakarta. Lamar Sekarang!",
+                "slug": "b4877b1e-3b6b-4507-b95e-6618f0f8505e",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:36:49.947Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Marketing di PT Adero Jasa Setia - DKI Jakarta",
+                "meta_description": "Lowongan Marketing di PT Adero Jasa Setia - DKI Jakarta. Lamar Sekarang!",
+                "focus_keyword": "Marketing",
+                "job_company_name": "PT Adero Jasa Setia",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15813069",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Microsoft Office",
+                    "Pembuatan Quotation",
+                    "Komunikasi Efektif",
+                    "Media Sosial",
+                    "Analisis Pasar"
+                ],
+                "job_benefits": [
+                    "Uang Transport",
+                    "Bonus Per Project",
+                    "Asuransi Kesehatan"
+                ],
+                "employment_type": {
+                    "id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                    "name": "Contract",
+                    "slug": "contract"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:36:50.031Z",
+                "updated_at": "2025-11-14T14:36:50.031Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15813069",
+                "job_is_salary_negotiable": true,
+                "job_province_id": "31",
+                "job_regency_id": "3172",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal S1, Pengalaman marketing lebih disukai, Memiliki kendaraan bermotor",
+                "job_responsibilities": "Mencari target pemasaran perusahaan, Mengelola tender dari pengguna jasa, Membuat database perusahaan/pengguna jasa tenaga kerja",
+                "job_education_level_id": "be29a5f4-19c7-4b34-abd6-dc436ef78199",
+                "job_categories": [
+                    {
+                        "id": "2d63224b-a71f-4b87-b85c-e20762ef8c25",
+                        "name": "Keamanan & Penegakan Hukum",
+                        "slug": "keamanan-penegakan-hukum"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "a63ba18f-50e5-4dbb-93bc-b2dcb934f780",
+                        "name": "Staff / Officer",
+                        "slug": "staff-officer"
+                    },
+                    {
+                        "id": "aa3c94e7-5820-42cd-8de2-0fd4570ddc4c",
+                        "name": "Komunikasi Pemasaran",
+                        "slug": "komunikasi-pemasaran"
+                    },
+                    {
+                        "id": "ae2e20cc-13c5-44e1-b458-fb71fbb05039",
+                        "name": "Marketing Executive",
+                        "slug": "marketing-executive"
+                    },
+                    {
+                        "id": "bcb6f93b-4926-4275-aef6-8ffe725014a3",
+                        "name": "S1",
+                        "slug": "s1"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "31",
+                    "name": "DKI JAKARTA"
+                },
+                "regency": {
+                    "id": "3172",
+                    "name": "KOTA ADM. JAKARTA UTARA",
+                    "province_id": "31"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "be29a5f4-19c7-4b34-abd6-dc436ef78199",
+                    "name": "S1",
+                    "slug": "s1"
+                }
+            },
+            {
+                "id": "f5b8f61e-14e2-4ab9-8925-d0780684c217",
+                "title": "Kurir",
+                "content": "<p>Vie Catering sedang mencari Kurir untuk mengantarkan produk makanan kepada pelanggan dengan aman dan tepat waktu.</p><h2>Tanggung Jawab:</h2><ol><li>Mengambil dan mengantarkan paket ke alamat pelanggan tepat waktu.</li><li>Menjaga kondisi barang selama pengiriman.</li><li>Berkomunikasi dengan baik dengan pelanggan dan tim.</li><li>Melaporkan status pengiriman secara berkala kepada atasan.</li></ol><h2>Keahlian:</h2><p>Mengetahui area/jalur distribusi dengan baik.</p><h2>Kualifikasi:</h2><ol><li>Pendidikan minimal SMA/SMK sederajat.</li><li>Memiliki SIM C.</li><li>Memiliki kendaraan pribadi lebih diutamakan.</li></ol><h2>Waktu Bekerja:</h2><p>Senin-Sabtu, 09.00-17.00</p>",
+                "excerpt": "Lowongan Kurir di Vie Catering - Jawa Barat. Lamar Sekarang!",
+                "slug": "f5b8f61e-14e2-4ab9-8925-d0780684c217",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:36:47.640Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Kurir di Vie Catering - Jawa Barat",
+                "meta_description": "Lowongan Kurir di Vie Catering - Jawa Barat. Lamar Sekarang!",
+                "focus_keyword": "Kurir",
+                "job_company_name": "Vie Catering",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15815838",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Pengetahuan Area Distribusi",
+                    "Manajemen Waktu",
+                    "Komunikasi Efektif",
+                    "Pelaporan Status"
+                ],
+                "job_benefits": [
+                    "Uang Transport",
+                    "Gaji Kompetitif",
+                    "Kesempatan Pengembangan Karier"
+                ],
+                "employment_type": {
+                    "id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                    "name": "Full Time",
+                    "slug": "full-time"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:36:47.715Z",
+                "updated_at": "2025-11-14T14:36:47.715Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15815838",
+                "job_is_salary_negotiable": true,
+                "job_province_id": "32",
+                "job_regency_id": "3276",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal SMA/SMK, SIM C, Kendaraan pribadi lebih diutamakan",
+                "job_responsibilities": "Mengambil dan mengantarkan paket, Menjaga kondisi barang, Berkomunikasi dengan pelanggan dan tim, Melaporkan status pengiriman",
+                "job_education_level_id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                "job_categories": [
+                    {
+                        "id": "4b21955a-af06-4df5-a96a-d97d61dcdff1",
+                        "name": "Makanan & Minuman",
+                        "slug": "makanan-minuman"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "061a4805-25e1-40c7-99ef-fbd34b8f196b",
+                        "name": "Sma/smk",
+                        "slug": "sma-smk"
+                    },
+                    {
+                        "id": "40ec040e-3f85-4ae9-b35c-bc651040df8b",
+                        "name": "Kurir",
+                        "slug": "kurir"
+                    },
+                    {
+                        "id": "a63ba18f-50e5-4dbb-93bc-b2dcb934f780",
+                        "name": "Staff / Officer",
+                        "slug": "staff-officer"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "32",
+                    "name": "JAWA BARAT"
+                },
+                "regency": {
+                    "id": "3276",
+                    "name": "KOTA DEPOK",
+                    "province_id": "32"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                    "name": "SMA/SMK/Sederajat",
+                    "slug": "sma-smk-sederajat"
+                }
+            },
+            {
+                "id": "8f7bd2a0-c275-497d-922e-52bb0361ae9c",
+                "title": "Kurir",
+                "content": "<p>Vie Catering mencari Kurir untuk mengantarkan produk makanan kepada pelanggan dengan aman dan tepat waktu.</p><h2>Tanggung Jawab:</h2><ol><li>Mengambil dan mengantarkan paket/barang ke alamat pelanggan tepat waktu.</li><li>Menjaga kondisi barang tetap baik selama pengiriman.</li><li>Berkomunikasi dengan baik dengan pelanggan dan tim.</li><li>Melaporkan status pengiriman secara berkala kepada atasan.</li></ol><h2>Keahlian:</h2><p>Mengetahui area/jalur distribusi dengan baik.</p><h2>Kualifikasi:</h2><ol><li>Pendidikan minimal SMA/SMK sederajat.</li><li>Memiliki SIM C.</li><li>Memiliki kendaraan pribadi lebih diutamakan.</li></ol><h2>Waktu Bekerja:</h2><p>Senin-Sabtu, 09.00-17.00</p>",
+                "excerpt": "Lowongan Kurir di Vie Catering - Jawa Barat. Lamar Sekarang!",
+                "slug": "8f7bd2a0-c275-497d-922e-52bb0361ae9c",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:36:45.674Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Kurir di Vie Catering - Jawa Barat",
+                "meta_description": "Lowongan Kurir di Vie Catering - Jawa Barat. Lamar Sekarang!",
+                "focus_keyword": "Kurir",
+                "job_company_name": "Vie Catering",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15815838",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Pengetahuan Area Distribusi",
+                    "Komunikasi Efektif",
+                    "Manajemen Waktu"
+                ],
+                "job_benefits": [
+                    "Tunjangan Transportasi",
+                    "Gaji Kompetitif",
+                    "Kesempatan Pengembangan Karir"
+                ],
+                "employment_type": {
+                    "id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                    "name": "Full Time",
+                    "slug": "full-time"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:36:45.745Z",
+                "updated_at": "2025-11-14T14:36:45.745Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15815838",
+                "job_is_salary_negotiable": true,
+                "job_province_id": "32",
+                "job_regency_id": "3276",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal SMA/SMK, Memiliki SIM C, Memiliki kendaraan pribadi",
+                "job_responsibilities": "Mengantarkan paket tepat waktu, Menjaga kondisi barang, Berkomunikasi dengan pelanggan dan tim, Melaporkan status pengiriman",
+                "job_education_level_id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                "job_categories": [
+                    {
+                        "id": "4b21955a-af06-4df5-a96a-d97d61dcdff1",
+                        "name": "Makanan & Minuman",
+                        "slug": "makanan-minuman"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "061a4805-25e1-40c7-99ef-fbd34b8f196b",
+                        "name": "Sma/smk",
+                        "slug": "sma-smk"
+                    },
+                    {
+                        "id": "40ec040e-3f85-4ae9-b35c-bc651040df8b",
+                        "name": "Kurir",
+                        "slug": "kurir"
+                    },
+                    {
+                        "id": "a63ba18f-50e5-4dbb-93bc-b2dcb934f780",
+                        "name": "Staff / Officer",
+                        "slug": "staff-officer"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "32",
+                    "name": "JAWA BARAT"
+                },
+                "regency": {
+                    "id": "3276",
+                    "name": "KOTA DEPOK",
+                    "province_id": "32"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                    "name": "SMA/SMK/Sederajat",
+                    "slug": "sma-smk-sederajat"
+                }
+            },
+            {
+                "id": "672d89c4-4af9-4e63-b7f4-14ee29be439a",
+                "title": "Marketing",
+                "content": "<p>PT ADERO JASA SETIA, perusahaan penyedia tenaga kerja (Outsourcing), membutuhkan staf marketing.</p><h2>Deskripsi Pekerjaan:</h2><p>Bertanggung jawab untuk mengelola dan mencari target pemasaran, mengelola tender, serta membuat database perusahaan/pengguna jasa tenaga kerja.</p><h2>Tanggung Jawab:</h2><ol><li>Mencari target pemasaran perusahaan</li><li>Mengelola tender dari pengguna jasa</li><li>Membuat database perusahaan/pengguna jasa tenaga kerja</li></ol><h2>Keahlian:</h2><ol><li>Menguasai Microsoft Office</li><li>Mampu membuat quotation, profit, & loss</li><li>Komunikasi yang baik</li><li>Menggunakan Social Media di berbagai platform</li><li>Kemampuan analisis pasar</li></ol><h2>Kualifikasi:</h2><ol><li>Pendidikan minimal S1</li><li>Pengalaman di bidang marketing lebih disukai</li><li>Memiliki kendaraan bermotor</li></ol><h2>Waktu Bekerja:</h2><p>Senin-Jumat, 08.00-17.00 WIB</p>",
+                "excerpt": "Lowongan Marketing di PT Adero Jasa Setia - DKI Jakarta. Lamar Sekarang!",
+                "slug": "672d89c4-4af9-4e63-b7f4-14ee29be439a",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:36:45.434Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Marketing di PT Adero Jasa Setia - DKI Jakarta",
+                "meta_description": "Lowongan Marketing di PT Adero Jasa Setia - DKI Jakarta. Lamar Sekarang!",
+                "focus_keyword": "Marketing",
+                "job_company_name": "PT Adero Jasa Setia",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15813069",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Microsoft Office",
+                    "Quotation",
+                    "Profit & Loss",
+                    "Komunikasi",
+                    "Social Media",
+                    "Analisis Pasar"
+                ],
+                "job_benefits": [
+                    "Uang Transport",
+                    "Bonus Per Project"
+                ],
+                "employment_type": {
+                    "id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                    "name": "Contract",
+                    "slug": "contract"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:36:45.511Z",
+                "updated_at": "2025-11-14T14:36:45.511Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15813069",
+                "job_is_salary_negotiable": true,
+                "job_province_id": "31",
+                "job_regency_id": "3172",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal S1, Pengalaman di bidang marketing lebih disukai, Memiliki kendaraan bermotor",
+                "job_responsibilities": "Mencari target pemasaran perusahaan, Mengelola tender dari pengguna jasa, Membuat database perusahaan/pengguna jasa tenaga kerja",
+                "job_education_level_id": "be29a5f4-19c7-4b34-abd6-dc436ef78199",
+                "job_categories": [
+                    {
+                        "id": "2d63224b-a71f-4b87-b85c-e20762ef8c25",
+                        "name": "Keamanan & Penegakan Hukum",
+                        "slug": "keamanan-penegakan-hukum"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "a63ba18f-50e5-4dbb-93bc-b2dcb934f780",
+                        "name": "Staff / Officer",
+                        "slug": "staff-officer"
+                    },
+                    {
+                        "id": "aa3c94e7-5820-42cd-8de2-0fd4570ddc4c",
+                        "name": "Komunikasi Pemasaran",
+                        "slug": "komunikasi-pemasaran"
+                    },
+                    {
+                        "id": "ae2e20cc-13c5-44e1-b458-fb71fbb05039",
+                        "name": "Marketing Executive",
+                        "slug": "marketing-executive"
+                    },
+                    {
+                        "id": "bcb6f93b-4926-4275-aef6-8ffe725014a3",
+                        "name": "S1",
+                        "slug": "s1"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "31",
+                    "name": "DKI JAKARTA"
+                },
+                "regency": {
+                    "id": "3172",
+                    "name": "KOTA ADM. JAKARTA UTARA",
+                    "province_id": "31"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "be29a5f4-19c7-4b34-abd6-dc436ef78199",
+                    "name": "S1",
+                    "slug": "s1"
+                }
+            },
+            {
+                "id": "72fd56dc-c24a-47b8-b659-efc69a619719",
+                "title": "Marketing",
+                "content": "<p>PT ADERO JASA SETIA, perusahaan penyedia tenaga kerja (outsourcing), membutuhkan staf marketing untuk mengelola dan mencari target pemasaran, mengelola tender, serta membuat database perusahaan/pengguna jasa.</p><h2>Tanggung Jawab Pekerjaan:</h2><ol><li>Mencari target pemasaran perusahaan.</li><li>Mengelola tender dari pengguna jasa.</li><li>Membuat database perusahaan/pengguna jasa tenaga kerja.</li></ol><h2>Keahlian:</h2><ol><li>Menguasai Microsoft Office.</li><li>Dapat membuat quotation, profit, & loss.</li><li>Komunikasi yang baik.</li><li>Menggunakan sosial media di berbagai platform.</li><li>Kemampuan analisis pasar.</li></ol><h2>Kualifikasi:</h2><ol><li>Pendidikan minimal S1.</li><li>Pengalaman di bidang marketing lebih disukai.</li><li>Memiliki kendaraan bermotor.</li></ol><h2>Waktu Bekerja:</h2><p>Senin-Jumat, jam 08.00-17.00.</p><h2>Tunjangan dan Insentif:</h2><ol><li>Uang transport.</li><li>Bonus per project.</li></ol>",
+                "excerpt": "Lowongan Marketing di PT Adero Jasa Setia - DKI Jakarta. Lamar Sekarang!",
+                "slug": "72fd56dc-c24a-47b8-b659-efc69a619719",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:36:44.871Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Marketing di PT Adero Jasa Setia - DKI Jakarta",
+                "meta_description": "Lowongan Marketing di PT Adero Jasa Setia - DKI Jakarta. Lamar Sekarang!",
+                "focus_keyword": "Marketing",
+                "job_company_name": "PT Adero Jasa Setia",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15813069",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Microsoft Office",
+                    "Quotation",
+                    "Komunikasi",
+                    "Sosial Media",
+                    "Analisis Pasar"
+                ],
+                "job_benefits": [
+                    "Uang Transport",
+                    "Bonus Per Project",
+                    "Gaji Kompetitif"
+                ],
+                "employment_type": {
+                    "id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                    "name": "Contract",
+                    "slug": "contract"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:36:44.951Z",
+                "updated_at": "2025-11-14T14:36:44.951Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15813069",
+                "job_is_salary_negotiable": true,
+                "job_province_id": "31",
+                "job_regency_id": "3172",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal S1, Pengalaman di bidang marketing lebih disukai, Memiliki kendaraan bermotor",
+                "job_responsibilities": "Mencari target pemasaran perusahaan, Mengelola tender dari pengguna jasa, Membuat database perusahaan/pengguna jasa tenaga kerja",
+                "job_education_level_id": "be29a5f4-19c7-4b34-abd6-dc436ef78199",
+                "job_categories": [
+                    {
+                        "id": "2d63224b-a71f-4b87-b85c-e20762ef8c25",
+                        "name": "Keamanan & Penegakan Hukum",
+                        "slug": "keamanan-penegakan-hukum"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "a63ba18f-50e5-4dbb-93bc-b2dcb934f780",
+                        "name": "Staff / Officer",
+                        "slug": "staff-officer"
+                    },
+                    {
+                        "id": "aa3c94e7-5820-42cd-8de2-0fd4570ddc4c",
+                        "name": "Komunikasi Pemasaran",
+                        "slug": "komunikasi-pemasaran"
+                    },
+                    {
+                        "id": "ae2e20cc-13c5-44e1-b458-fb71fbb05039",
+                        "name": "Marketing Executive",
+                        "slug": "marketing-executive"
+                    },
+                    {
+                        "id": "bcb6f93b-4926-4275-aef6-8ffe725014a3",
+                        "name": "S1",
+                        "slug": "s1"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "31",
+                    "name": "DKI JAKARTA"
+                },
+                "regency": {
+                    "id": "3172",
+                    "name": "KOTA ADM. JAKARTA UTARA",
+                    "province_id": "31"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "be29a5f4-19c7-4b34-abd6-dc436ef78199",
+                    "name": "S1",
+                    "slug": "s1"
+                }
+            },
+            {
+                "id": "49e23dbf-4e50-45f2-955f-0fb090b1c0aa",
+                "title": "Marketing",
+                "content": "<p>PT ADERO JASA SETIA, perusahaan penyedia tenaga kerja (outsourcing), membutuhkan staf marketing untuk mengelola dan mencari target pemasaran, mengelola tender, serta membuat database perusahaan/pengguna jasa.</p><h2>Tanggung Jawab Pekerjaan:</h2><ol><li>Mencari target pemasaran perusahaan.</li><li>Mengelola tender dari pengguna jasa.</li><li>Membuat database perusahaan/pengguna jasa tenaga kerja.</li></ol><h2>Keahlian:</h2><ol><li>Menguasai Microsoft Office.</li><li>Dapat membuat quotation, profit, & loss.</li><li>Komunikasi yang baik.</li><li>Menggunakan media sosial di berbagai platform.</li><li>Kemampuan analisis pasar.</li></ol><h2>Kualifikasi:</h2><ol><li>Pendidikan minimal S1.</li><li>Pengalaman di bidang marketing lebih disukai.</li><li>Memiliki kendaraan bermotor.</li></ol><h2>Waktu Bekerja:</h2><p>Senin-Jumat, 08.00-17.00 WIB.</p><h2>Tunjangan dan Insentif:</h2><ol><li>Uang transport.</li><li>Bonus per project.</li></ol>",
+                "excerpt": "Lowongan Marketing di PT Adero Jasa Setia - DKI Jakarta. Lamar Sekarang!",
+                "slug": "49e23dbf-4e50-45f2-955f-0fb090b1c0aa",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:36:40.758Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Marketing di PT Adero Jasa Setia - DKI Jakarta",
+                "meta_description": "Lowongan Marketing di PT Adero Jasa Setia - DKI Jakarta. Lamar Sekarang!",
+                "focus_keyword": "Marketing",
+                "job_company_name": "PT Adero Jasa Setia",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15813069",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Microsoft Office",
+                    "Quotation",
+                    "Profit & Loss",
+                    "Komunikasi",
+                    "Media Sosial",
+                    "Analisis Pasar"
+                ],
+                "job_benefits": [
+                    "Uang Transport",
+                    "Bonus Per Project",
+                    "Asuransi Kesehatan"
+                ],
+                "employment_type": {
+                    "id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                    "name": "Contract",
+                    "slug": "contract"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:36:40.840Z",
+                "updated_at": "2025-11-14T14:36:40.840Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15813069",
+                "job_is_salary_negotiable": true,
+                "job_province_id": "31",
+                "job_regency_id": "3172",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal S1, Pengalaman marketing lebih disukai, Memiliki kendaraan bermotor",
+                "job_responsibilities": "Mencari target pemasaran perusahaan, Mengelola tender dari pengguna jasa, Membuat database perusahaan/pengguna jasa tenaga kerja",
+                "job_education_level_id": "be29a5f4-19c7-4b34-abd6-dc436ef78199",
+                "job_categories": [
+                    {
+                        "id": "2d63224b-a71f-4b87-b85c-e20762ef8c25",
+                        "name": "Keamanan & Penegakan Hukum",
+                        "slug": "keamanan-penegakan-hukum"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "a63ba18f-50e5-4dbb-93bc-b2dcb934f780",
+                        "name": "Staff / Officer",
+                        "slug": "staff-officer"
+                    },
+                    {
+                        "id": "aa3c94e7-5820-42cd-8de2-0fd4570ddc4c",
+                        "name": "Komunikasi Pemasaran",
+                        "slug": "komunikasi-pemasaran"
+                    },
+                    {
+                        "id": "ae2e20cc-13c5-44e1-b458-fb71fbb05039",
+                        "name": "Marketing Executive",
+                        "slug": "marketing-executive"
+                    },
+                    {
+                        "id": "bcb6f93b-4926-4275-aef6-8ffe725014a3",
+                        "name": "S1",
+                        "slug": "s1"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "31",
+                    "name": "DKI JAKARTA"
+                },
+                "regency": {
+                    "id": "3172",
+                    "name": "KOTA ADM. JAKARTA UTARA",
+                    "province_id": "31"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "be29a5f4-19c7-4b34-abd6-dc436ef78199",
+                    "name": "S1",
+                    "slug": "s1"
+                }
+            },
+            {
+                "id": "41fa47b6-0018-4c0a-8a55-0270b1030725",
+                "title": "Marketing",
+                "content": "<p>PT ADERO JASA SETIA, perusahaan penyedia tenaga kerja (outsourcing), membutuhkan staf marketing untuk mengelola dan mencari target pemasaran, mengelola tender, serta membuat database perusahaan/pengguna jasa.</p><h2>Tanggung Jawab Pekerjaan:</h2><ol><li>Mencari target pemasaran perusahaan.</li><li>Mengelola tender dari pengguna jasa.</li><li>Membuat database perusahaan/pengguna jasa tenaga kerja.</li></ol><h2>Keahlian:</h2><ol><li>Menguasai Microsoft Office.</li><li>Dapat membuat quotation, profit, & loss.</li><li>Komunikasi yang baik.</li><li>Menggunakan media sosial di berbagai platform.</li><li>Kemampuan analisis pasar.</li></ol><h2>Kualifikasi:</h2><ol><li>Pendidikan minimal S1.</li><li>Pengalaman di bidang marketing diutamakan.</li><li>Memiliki kendaraan bermotor.</li></ol><h2>Waktu Bekerja:</h2><p>Senin-Jumat, 08.00-17.00 WIB.</p><h2>Tunjangan:</h2><p>Uang transport dan bonus per proyek.</p>",
+                "excerpt": "Lowongan Marketing di PT Adero Jasa Setia - DKI Jakarta. Lamar Sekarang!",
+                "slug": "41fa47b6-0018-4c0a-8a55-0270b1030725",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:36:26.608Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Marketing di PT Adero Jasa Setia - DKI Jakarta",
+                "meta_description": "Lowongan Marketing di PT Adero Jasa Setia - DKI Jakarta. Lamar Sekarang!",
+                "focus_keyword": "Marketing",
+                "job_company_name": "PT Adero Jasa Setia",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15813069",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Microsoft Office",
+                    "Quotation",
+                    "Komunikasi",
+                    "Media Sosial",
+                    "Analisis Pasar"
+                ],
+                "job_benefits": [
+                    "Uang Transport",
+                    "Bonus Per Proyek",
+                    "Asuransi Kesehatan"
+                ],
+                "employment_type": {
+                    "id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                    "name": "Contract",
+                    "slug": "contract"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:36:26.684Z",
+                "updated_at": "2025-11-14T14:36:26.684Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15813069",
+                "job_is_salary_negotiable": true,
+                "job_province_id": "31",
+                "job_regency_id": "3172",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal S1, Pengalaman marketing diutamakan, Memiliki kendaraan bermotor",
+                "job_responsibilities": "Mencari target pemasaran perusahaan, Mengelola tender dari pengguna jasa, Membuat database perusahaan/pengguna jasa tenaga kerja",
+                "job_education_level_id": "be29a5f4-19c7-4b34-abd6-dc436ef78199",
+                "job_categories": [
+                    {
+                        "id": "2d63224b-a71f-4b87-b85c-e20762ef8c25",
+                        "name": "Keamanan & Penegakan Hukum",
+                        "slug": "keamanan-penegakan-hukum"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "a63ba18f-50e5-4dbb-93bc-b2dcb934f780",
+                        "name": "Staff / Officer",
+                        "slug": "staff-officer"
+                    },
+                    {
+                        "id": "aa3c94e7-5820-42cd-8de2-0fd4570ddc4c",
+                        "name": "Komunikasi Pemasaran",
+                        "slug": "komunikasi-pemasaran"
+                    },
+                    {
+                        "id": "ae2e20cc-13c5-44e1-b458-fb71fbb05039",
+                        "name": "Marketing Executive",
+                        "slug": "marketing-executive"
+                    },
+                    {
+                        "id": "bcb6f93b-4926-4275-aef6-8ffe725014a3",
+                        "name": "S1",
+                        "slug": "s1"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "31",
+                    "name": "DKI JAKARTA"
+                },
+                "regency": {
+                    "id": "3172",
+                    "name": "KOTA ADM. JAKARTA UTARA",
+                    "province_id": "31"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "be29a5f4-19c7-4b34-abd6-dc436ef78199",
+                    "name": "S1",
+                    "slug": "s1"
+                }
+            },
+            {
+                "id": "b65d7aab-10e1-41e0-92a5-f24ec28c0ac3",
+                "title": "Engineer/Teknisi Gedung",
+                "content": "<p>PT Pengelola Landmark Pluit membuka lowongan untuk posisi Engineer/Teknisi Gedung.</p><h2>Tanggung Jawab Pekerjaan:</h2><ol><li>Melakukan pemeliharaan fasilitas perusahaan.</li><li>Melaksanakan perawatan preventif.</li><li>Membersihkan dan memeriksa peralatan.</li><li>Menangani kerusakan mendadak.</li><li>Memantau penggunaan listrik dan air.</li><li>Melakukan instalasi peralatan baru.</li><li>Memeriksa dan merawat alat pemadam kebakaran dan sistem sprinkler.</li><li>Menyusun jadwal pemeliharaan dan perbaikan.</li><li>Mencatat riwayat perawatan dan perbaikan peralatan.</li></ol><h2>Keahlian:</h2><p>Memiliki kemampuan dasar kelistrikan, penggunaan peralatan teknik, dan pemahaman matematika.</p><h2>Kualifikasi:</h2><ul><li>Pendidikan minimal SMK Kelistrikan.</li><li>Freshgraduate dipersilahkan melamar.</li></ul>",
+                "excerpt": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta. Lamar Sekarang!",
+                "slug": "b65d7aab-10e1-41e0-92a5-f24ec28c0ac3",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:36:21.737Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta",
+                "meta_description": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta. Lamar Sekarang!",
+                "focus_keyword": "Engineer/Teknisi Gedung",
+                "job_company_name": "PT Pengelola Landmark Pluit",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15164993",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Kelistrikan",
+                    "Pemeliharaan Peralatan",
+                    "Matematika",
+                    "Pemecahan Masalah Teknis"
+                ],
+                "job_benefits": [
+                    "Gaji Kompetitif",
+                    "Tunjangan Transportasi",
+                    "Asuransi Kesehatan",
+                    "Kesempatan Pengembangan Karier"
+                ],
+                "employment_type": {
+                    "id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                    "name": "Full Time",
+                    "slug": "full-time"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:36:21.817Z",
+                "updated_at": "2025-11-14T14:36:21.817Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15164993",
+                "job_is_salary_negotiable": true,
+                "job_province_id": "31",
+                "job_regency_id": "3172",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal SMK Kelistrikan, Freshgraduate dipersilahkan melamar",
+                "job_responsibilities": "Pemeliharaan fasilitas perusahaan, Perawatan preventif, Penanganan kerusakan mendadak, Pemantauan penggunaan listrik dan air, Instalasi peralatan baru, Pemeriksaan dan perawatan alat pemadam kebakaran, Penyusunan jadwal pemeliharaan",
+                "job_education_level_id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                "job_categories": [
+                    {
+                        "id": "e168dead-1634-44ee-9beb-67b9a77a2f7b",
+                        "name": "Consumer Service",
+                        "slug": "consumer-service"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "061a4805-25e1-40c7-99ef-fbd34b8f196b",
+                        "name": "Sma/smk",
+                        "slug": "sma-smk"
+                    },
+                    {
+                        "id": "16739797-1080-44ce-a707-06f50cbf52dc",
+                        "name": "Teknisi Gedung",
+                        "slug": "teknisi-gedung"
+                    },
+                    {
+                        "id": "545009d8-9062-4c31-8ad4-929c35bd633d",
+                        "name": "Junior / Entry Level",
+                        "slug": "junior-entry-level"
+                    },
+                    {
+                        "id": "9d52ba92-680c-48ad-be15-03aad7a1d300",
+                        "name": "Pekerja Konstruksi &amp; Tukang",
+                        "slug": "pekerja-konstruksi-amp-tukang"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "31",
+                    "name": "DKI JAKARTA"
+                },
+                "regency": {
+                    "id": "3172",
+                    "name": "KOTA ADM. JAKARTA UTARA",
+                    "province_id": "31"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                    "name": "SMA/SMK/Sederajat",
+                    "slug": "sma-smk-sederajat"
+                }
+            },
+            {
+                "id": "d2e611a5-ca21-41d4-a0c5-25212cae780c",
+                "title": "Engineer/Teknisi Gedung",
+                "content": "<p>PT Pengelola Landmark Pluit membuka lowongan untuk posisi Teknisi Gedung.</p><h2>Tanggung Jawab:</h2><ol><li>Melakukan pemeliharaan fasilitas perusahaan.</li><li>Melaksanakan perawatan preventif.</li><li>Membersihkan dan memeriksa peralatan.</li><li>Menangani kerusakan mendadak.</li><li>Memantau penggunaan listrik dan air.</li><li>Melakukan instalasi peralatan baru.</li><li>Memeriksa dan merawat alat pemadam kebakaran dan sistem sprinkler.</li><li>Menyusun jadwal pemeliharaan dan perbaikan.</li><li>Mencatat riwayat perawatan dan perbaikan peralatan.</li></ol><h2>Keahlian:</h2><p>Memiliki kemampuan dasar kelistrikan, penggunaan peralatan teknik, dan matematika.</p><h2>Kualifikasi:</h2><ul><li>Pendidikan minimal SMK Kelistrikan.</li><li>Fresh graduate dipersilahkan melamar.</li></ul>",
+                "excerpt": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta. Lamar Sekarang!",
+                "slug": "d2e611a5-ca21-41d4-a0c5-25212cae780c",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:36:19.479Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta",
+                "meta_description": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta. Lamar Sekarang!",
+                "focus_keyword": "Engineer/Teknisi Gedung",
+                "job_company_name": "PT Pengelola Landmark Pluit",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15164993",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Kelistrikan",
+                    "Matematika",
+                    "Pemeliharaan Peralatan",
+                    "Pemecahan Masalah Teknis"
+                ],
+                "job_benefits": [
+                    "Gaji Kompetitif",
+                    "Tunjangan Transportasi",
+                    "Asuransi Kesehatan",
+                    "Kesempatan Pengembangan Karir"
+                ],
+                "employment_type": {
+                    "id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                    "name": "Full Time",
+                    "slug": "full-time"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:36:19.553Z",
+                "updated_at": "2025-11-14T14:36:19.553Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15164993",
+                "job_is_salary_negotiable": true,
+                "job_province_id": "31",
+                "job_regency_id": "3172",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal SMK Kelistrikan, Fresh graduate dipersilahkan melamar",
+                "job_responsibilities": "Pemeliharaan fasilitas perusahaan, Perawatan preventif, Penanganan kerusakan mendadak, Pemantauan penggunaan listrik dan air, Instalasi peralatan baru, Pemeriksaan dan perawatan alat pemadam kebakaran, Penyusunan jadwal pemeliharaan, Pencatatan riwayat perawatan peralatan",
+                "job_education_level_id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                "job_categories": [
+                    {
+                        "id": "e168dead-1634-44ee-9beb-67b9a77a2f7b",
+                        "name": "Consumer Service",
+                        "slug": "consumer-service"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "061a4805-25e1-40c7-99ef-fbd34b8f196b",
+                        "name": "Sma/smk",
+                        "slug": "sma-smk"
+                    },
+                    {
+                        "id": "16739797-1080-44ce-a707-06f50cbf52dc",
+                        "name": "Teknisi Gedung",
+                        "slug": "teknisi-gedung"
+                    },
+                    {
+                        "id": "545009d8-9062-4c31-8ad4-929c35bd633d",
+                        "name": "Junior / Entry Level",
+                        "slug": "junior-entry-level"
+                    },
+                    {
+                        "id": "9d52ba92-680c-48ad-be15-03aad7a1d300",
+                        "name": "Pekerja Konstruksi &amp; Tukang",
+                        "slug": "pekerja-konstruksi-amp-tukang"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "31",
+                    "name": "DKI JAKARTA"
+                },
+                "regency": {
+                    "id": "3172",
+                    "name": "KOTA ADM. JAKARTA UTARA",
+                    "province_id": "31"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                    "name": "SMA/SMK/Sederajat",
+                    "slug": "sma-smk-sederajat"
+                }
+            },
+            {
+                "id": "5d1375cb-a206-48ff-a0f7-33bab7175c3b",
+                "title": "Engineer/Teknisi Gedung",
+                "content": "<p>PT Pengelola Landmark Pluit membuka lowongan kerja untuk posisi Engineer/Teknisi Gedung.</p><h2>Tanggung Jawab Pekerjaan:</h2><ol><li>Melakukan pemeliharaan fasilitas perusahaan.</li><li>Melaksanakan perawatan preventif.</li><li>Membersihkan dan memeriksa peralatan.</li><li>Menangani kerusakan mendadak.</li><li>Memantau penggunaan listrik dan air.</li><li>Melakukan instalasi peralatan baru.</li><li>Memeriksa dan merawat alat pemadam kebakaran dan sistem sprinkler.</li><li>Menyusun jadwal pemeliharaan dan perbaikan berkala.</li><li>Mencatat riwayat perawatan dan perbaikan peralatan.</li></ol><h2>Keahlian:</h2><p>Memiliki kemampuan dasar kelistrikan, penggunaan peralatan teknik, dan pemahaman matematika.</p><h2>Kualifikasi:</h2><ul><li>Pendidikan minimal SMK Kelistrikan.</li><li>Freshgraduate dipersilahkan melamar.</li></ul>",
+                "excerpt": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta. Lamar Sekarang!",
+                "slug": "5d1375cb-a206-48ff-a0f7-33bab7175c3b",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:36:16.052Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta",
+                "meta_description": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta. Lamar Sekarang!",
+                "focus_keyword": "Engineer/Teknisi Gedung",
+                "job_company_name": "PT Pengelola Landmark Pluit",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15164993",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Kelistrikan",
+                    "Pemeliharaan Peralatan",
+                    "Matematika",
+                    "Instalasi Peralatan",
+                    "Pemecahan Masalah Teknis"
+                ],
+                "job_benefits": [
+                    "Gaji Kompetitif",
+                    "Tunjangan Transportasi",
+                    "Asuransi Kesehatan",
+                    "Kesempatan Pengembangan Karier"
+                ],
+                "employment_type": {
+                    "id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                    "name": "Full Time",
+                    "slug": "full-time"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:36:16.129Z",
+                "updated_at": "2025-11-14T14:36:16.129Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15164993",
+                "job_is_salary_negotiable": true,
+                "job_province_id": "31",
+                "job_regency_id": "3172",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal SMK Kelistrikan, Kemampuan dasar kelistrikan, Pemahaman matematika",
+                "job_responsibilities": "Pemeliharaan fasilitas perusahaan, Perawatan preventif, Penanganan kerusakan mendadak, Pemantauan penggunaan listrik dan air, Instalasi peralatan baru, Pemeriksaan dan perawatan alat pemadam kebakaran, Penyusunan jadwal pemeliharaan",
+                "job_education_level_id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                "job_categories": [
+                    {
+                        "id": "e168dead-1634-44ee-9beb-67b9a77a2f7b",
+                        "name": "Consumer Service",
+                        "slug": "consumer-service"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "061a4805-25e1-40c7-99ef-fbd34b8f196b",
+                        "name": "Sma/smk",
+                        "slug": "sma-smk"
+                    },
+                    {
+                        "id": "16739797-1080-44ce-a707-06f50cbf52dc",
+                        "name": "Teknisi Gedung",
+                        "slug": "teknisi-gedung"
+                    },
+                    {
+                        "id": "545009d8-9062-4c31-8ad4-929c35bd633d",
+                        "name": "Junior / Entry Level",
+                        "slug": "junior-entry-level"
+                    },
+                    {
+                        "id": "9d52ba92-680c-48ad-be15-03aad7a1d300",
+                        "name": "Pekerja Konstruksi &amp; Tukang",
+                        "slug": "pekerja-konstruksi-amp-tukang"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "31",
+                    "name": "DKI JAKARTA"
+                },
+                "regency": {
+                    "id": "3172",
+                    "name": "KOTA ADM. JAKARTA UTARA",
+                    "province_id": "31"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                    "name": "SMA/SMK/Sederajat",
+                    "slug": "sma-smk-sederajat"
+                }
+            },
+            {
+                "id": "a2ae6c1e-6835-40c2-a7c5-a313057336f3",
+                "title": "Engineer/Teknisi Gedung",
+                "content": "<p>PT Pengelola Landmark Pluit membuka lowongan untuk posisi Engineer/Teknisi Gedung.</p><h2>Tanggung Jawab Pekerjaan:</h2><ol><li>Memelihara fasilitas perusahaan</li><li>Melakukan perawatan preventif</li><li>Membersihkan dan memeriksa peralatan</li><li>Menangani kerusakan mendadak</li><li>Memantau penggunaan listrik dan air</li><li>Melakukan instalasi peralatan baru</li><li>Memeriksa dan merawat alat pemadam kebakaran dan sistem sprinkler</li><li>Menyusun jadwal pemeliharaan dan perbaikan</li><li>Mencatat riwayat perawatan dan perbaikan peralatan</li></ol><h2>Keahlian:</h2><p>Memiliki kemampuan dasar kelistrikan, penggunaan peralatan teknik, dan pemahaman matematika.</p><h2>Kualifikasi:</h2><ul><li>Pendidikan minimal SMK Kelistrikan</li><li>Fresh graduate dipersilahkan melamar</li></ul>",
+                "excerpt": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta. Lamar Sekarang!",
+                "slug": "a2ae6c1e-6835-40c2-a7c5-a313057336f3",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:36:10.183Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta",
+                "meta_description": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta. Lamar Sekarang!",
+                "focus_keyword": "Engineer/Teknisi Gedung",
+                "job_company_name": "PT Pengelola Landmark Pluit",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15164993",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Kelistrikan",
+                    "Pemeliharaan Peralatan",
+                    "Matematika",
+                    "Pemecahan Masalah Teknis"
+                ],
+                "job_benefits": [
+                    "Gaji Kompetitif",
+                    "Tunjangan Transportasi",
+                    "Asuransi Kesehatan",
+                    "Kesempatan Pengembangan Karier"
+                ],
+                "employment_type": {
+                    "id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                    "name": "Full Time",
+                    "slug": "full-time"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:36:10.269Z",
+                "updated_at": "2025-11-14T14:36:10.269Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15164993",
+                "job_is_salary_negotiable": true,
+                "job_province_id": "31",
+                "job_regency_id": "3172",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal SMK Kelistrikan, Fresh graduate diperbolehkan",
+                "job_responsibilities": "Memelihara fasilitas perusahaan, Melakukan perawatan preventif, Membersihkan dan memeriksa peralatan, Menangani kerusakan mendadak, Memantau penggunaan listrik dan air, Melakukan instalasi peralatan baru, Memeriksa dan merawat alat pemadam kebakaran dan sistem sprinkler, Menyusun jadwal pemeliharaan dan perbaikan, Mencatat riwayat perawatan dan perbaikan peralatan",
+                "job_education_level_id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                "job_categories": [
+                    {
+                        "id": "e168dead-1634-44ee-9beb-67b9a77a2f7b",
+                        "name": "Consumer Service",
+                        "slug": "consumer-service"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "061a4805-25e1-40c7-99ef-fbd34b8f196b",
+                        "name": "Sma/smk",
+                        "slug": "sma-smk"
+                    },
+                    {
+                        "id": "16739797-1080-44ce-a707-06f50cbf52dc",
+                        "name": "Teknisi Gedung",
+                        "slug": "teknisi-gedung"
+                    },
+                    {
+                        "id": "545009d8-9062-4c31-8ad4-929c35bd633d",
+                        "name": "Junior / Entry Level",
+                        "slug": "junior-entry-level"
+                    },
+                    {
+                        "id": "9d52ba92-680c-48ad-be15-03aad7a1d300",
+                        "name": "Pekerja Konstruksi &amp; Tukang",
+                        "slug": "pekerja-konstruksi-amp-tukang"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "31",
+                    "name": "DKI JAKARTA"
+                },
+                "regency": {
+                    "id": "3172",
+                    "name": "KOTA ADM. JAKARTA UTARA",
+                    "province_id": "31"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                    "name": "SMA/SMK/Sederajat",
+                    "slug": "sma-smk-sederajat"
+                }
+            },
+            {
+                "id": "3a0cde58-2a44-4834-b1dc-56dc52070f3a",
+                "title": "Engineer/Teknisi Gedung",
+                "content": "<p>PT Pengelola Landmark Pluit membuka lowongan untuk posisi Engineer/Teknisi Gedung.</p><h2>Tanggung Jawab Pekerjaan:</h2><ol><li>Memelihara fasilitas perusahaan</li><li>Melakukan perawatan preventif</li><li>Membersihkan dan memeriksa peralatan</li><li>Menangani kerusakan mendadak</li><li>Memantau penggunaan listrik dan air</li><li>Melakukan instalasi peralatan baru</li><li>Memeriksa dan merawat alat pemadam kebakaran dan sistem sprinkler</li><li>Menyusun jadwal pemeliharaan dan perbaikan</li><li>Mencatat riwayat perawatan dan perbaikan peralatan</li></ol><h2>Keahlian:</h2><p>Memiliki kemampuan dasar kelistrikan, penggunaan peralatan teknik, dan pemahaman matematika.</p><h2>Kualifikasi:</h2><ul><li>Pendidikan minimal SMK Kelistrikan</li><li>Freshgraduate dipersilahkan melamar</li></ul>",
+                "excerpt": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta. Lamar Sekarang!",
+                "slug": "3a0cde58-2a44-4834-b1dc-56dc52070f3a",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:36:02.840Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta",
+                "meta_description": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta. Lamar Sekarang!",
+                "focus_keyword": "Engineer/Teknisi Gedung",
+                "job_company_name": "PT Pengelola Landmark Pluit",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15164993",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Kelistrikan",
+                    "Pemeliharaan Peralatan",
+                    "Matematika",
+                    "Pemecahan Masalah Teknis"
+                ],
+                "job_benefits": [
+                    "Gaji Kompetitif",
+                    "Tunjangan Transportasi",
+                    "Asuransi Kesehatan",
+                    "Kesempatan Pengembangan Karier"
+                ],
+                "employment_type": {
+                    "id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                    "name": "Full Time",
+                    "slug": "full-time"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:36:02.918Z",
+                "updated_at": "2025-11-14T14:36:02.918Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15164993",
+                "job_is_salary_negotiable": true,
+                "job_province_id": "31",
+                "job_regency_id": "3172",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal SMK Kelistrikan, Freshgraduate dipersilahkan melamar",
+                "job_responsibilities": "Memelihara fasilitas perusahaan, Melakukan perawatan preventif, Membersihkan dan memeriksa peralatan, Menangani kerusakan mendadak, Memantau penggunaan listrik dan air, Melakukan instalasi peralatan baru, Memeriksa dan merawat alat pemadam kebakaran dan sistem sprinkler, Menyusun jadwal pemeliharaan dan perbaikan, Mencatat riwayat perawatan dan perbaikan peralatan",
+                "job_education_level_id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                "job_categories": [
+                    {
+                        "id": "e168dead-1634-44ee-9beb-67b9a77a2f7b",
+                        "name": "Consumer Service",
+                        "slug": "consumer-service"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "061a4805-25e1-40c7-99ef-fbd34b8f196b",
+                        "name": "Sma/smk",
+                        "slug": "sma-smk"
+                    },
+                    {
+                        "id": "16739797-1080-44ce-a707-06f50cbf52dc",
+                        "name": "Teknisi Gedung",
+                        "slug": "teknisi-gedung"
+                    },
+                    {
+                        "id": "545009d8-9062-4c31-8ad4-929c35bd633d",
+                        "name": "Junior / Entry Level",
+                        "slug": "junior-entry-level"
+                    },
+                    {
+                        "id": "9d52ba92-680c-48ad-be15-03aad7a1d300",
+                        "name": "Pekerja Konstruksi &amp; Tukang",
+                        "slug": "pekerja-konstruksi-amp-tukang"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "31",
+                    "name": "DKI JAKARTA"
+                },
+                "regency": {
+                    "id": "3172",
+                    "name": "KOTA ADM. JAKARTA UTARA",
+                    "province_id": "31"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                    "name": "SMA/SMK/Sederajat",
+                    "slug": "sma-smk-sederajat"
+                }
+            },
+            {
+                "id": "52d2b409-6334-4607-b004-0bd2a2f4fab0",
+                "title": "Engineer/Teknisi Gedung",
+                "content": "<p>PT Pengelola Landmark Pluit membuka lowongan untuk posisi Teknisi Gedung.</p><h2>Tanggung Jawab:</h2><ol><li>Memelihara fasilitas perusahaan.</li><li>Melakukan perawatan preventif.</li><li>Membersihkan dan memeriksa peralatan.</li><li>Menangani kerusakan mendadak.</li><li>Memantau penggunaan listrik dan air.</li><li>Melakukan instalasi peralatan baru.</li><li>Memeriksa dan merawat alat pemadam kebakaran dan sistem sprinkler.</li><li>Menyusun jadwal pemeliharaan dan perbaikan.</li><li>Mencatat riwayat perawatan dan perbaikan peralatan.</li></ol><h2>Keahlian:</h2><p>Memiliki kemampuan dasar kelistrikan, matematika, dan penggunaan peralatan teknis.</p><h2>Kualifikasi:</h2><ul><li>Pendidikan minimal SMK Kelistrikan.</li><li>Fresh graduate diperbolehkan melamar.</li></ul>",
+                "excerpt": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta. Lamar Sekarang!",
+                "slug": "52d2b409-6334-4607-b004-0bd2a2f4fab0",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:36:02.240Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta",
+                "meta_description": "Lowongan Engineer/Teknisi Gedung di PT Pengelola Landmark Pluit - DKI Jakarta. Lamar Sekarang!",
+                "focus_keyword": "Engineer/Teknisi Gedung",
+                "job_company_name": "PT Pengelola Landmark Pluit",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=15164993",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Kelistrikan",
+                    "Matematika",
+                    "Pemeliharaan Peralatan",
+                    "Pemecahan Masalah Teknis"
+                ],
+                "job_benefits": [
+                    "Gaji Kompetitif",
+                    "Tunjangan Transportasi",
+                    "Asuransi Kesehatan",
+                    "Kesempatan Pengembangan Karier"
+                ],
+                "employment_type": {
+                    "id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                    "name": "Full Time",
+                    "slug": "full-time"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:36:02.324Z",
+                "updated_at": "2025-11-14T14:36:02.324Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=15164993",
+                "job_is_salary_negotiable": true,
+                "job_province_id": "31",
+                "job_regency_id": "3172",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "7d5f08de-6847-4a82-941a-6b65f8931b8d",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal SMK Kelistrikan, Fresh graduate diperbolehkan",
+                "job_responsibilities": "Memelihara fasilitas perusahaan, Melakukan perawatan preventif, Membersihkan dan memeriksa peralatan, Menangani kerusakan mendadak, Memantau penggunaan listrik dan air, Melakukan instalasi peralatan baru, Memeriksa dan merawat alat pemadam kebakaran dan sistem sprinkler, Menyusun jadwal pemeliharaan dan perbaikan, Mencatat riwayat perawatan dan perbaikan peralatan",
+                "job_education_level_id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                "job_categories": [
+                    {
+                        "id": "e168dead-1634-44ee-9beb-67b9a77a2f7b",
+                        "name": "Consumer Service",
+                        "slug": "consumer-service"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "061a4805-25e1-40c7-99ef-fbd34b8f196b",
+                        "name": "Sma/smk",
+                        "slug": "sma-smk"
+                    },
+                    {
+                        "id": "16739797-1080-44ce-a707-06f50cbf52dc",
+                        "name": "Teknisi Gedung",
+                        "slug": "teknisi-gedung"
+                    },
+                    {
+                        "id": "545009d8-9062-4c31-8ad4-929c35bd633d",
+                        "name": "Junior / Entry Level",
+                        "slug": "junior-entry-level"
+                    },
+                    {
+                        "id": "9d52ba92-680c-48ad-be15-03aad7a1d300",
+                        "name": "Pekerja Konstruksi &amp; Tukang",
+                        "slug": "pekerja-konstruksi-amp-tukang"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "31",
+                    "name": "DKI JAKARTA"
+                },
+                "regency": {
+                    "id": "3172",
+                    "name": "KOTA ADM. JAKARTA UTARA",
+                    "province_id": "31"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                    "name": "SMA/SMK/Sederajat",
+                    "slug": "sma-smk-sederajat"
+                }
+            },
+            {
+                "id": "b8042df0-63e6-4e6f-87c2-4ca628249533",
+                "title": "Staff Operator Pressure Reducing System",
+                "content": "<p>PT Perkasa Abdi Bhuana (Prabhu) adalah perusahaan penyedia tenaga kerja dan layanan SDM lainnya. Kami membutuhkan Staff Operator Pressure Reducing System.</p><h2>Tanggung Jawab:</h2><ul><li>Mengontrol dan memantau tekanan dalam sistem distribusi gas CNG.</li><li>Menjalankan prosedur operasional sesuai standar keselamatan dan efisiensi kerja.</li><li>Menyusun laporan harian/mingguan terkait aktivitas operasional dan kondisi peralatan.</li></ul><h2>Keahlian:</h2><ul><li>Mengoperasikan komputer (Microsoft Office 365).</li><li>Bekerja dalam tim.</li><li>Membuat laporan.</li></ul><h2>Kualifikasi:</h2><ul><li>Pendidikan minimal SMA/SMK.</li><li>Bersedia ditempatkan di semua area operasi.</li><li>Bersedia bekerja lembur jika diperlukan.</li><li>Fresh graduate dipersilakan mendaftar.</li><li>Berpengalaman di bidangnya lebih diutamakan.</li></ul><h2>Waktu Bekerja:</h2><p>Senin-Kamis: 08.00-16.00, Jumat: 08.00-16.30</p>",
+                "excerpt": "Lowongan Staff Operator Pressure Reducing System di PT Perkasa Abdi Bhuana - Bali. Lamar Sekarang!",
+                "slug": "b8042df0-63e6-4e6f-87c2-4ca628249533",
+                "featured_image": null,
+                "publish_date": "2025-11-14T14:35:52.994Z",
+                "status": "published",
+                "author_id": "user_33QTHobngBl4hGcnuEjuKnOhlqr",
+                "seo_title": "Lowongan Staff Operator Pressure Reducing System di PT Perkasa Abdi Bhuana - Bali",
+                "meta_description": "Lowongan Staff Operator Pressure Reducing System di PT Perkasa Abdi Bhuana - Bali. Lamar Sekarang!",
+                "focus_keyword": "Staff Operator Pressure Reducing System",
+                "job_company_name": "PT Perkasa Abdi Bhuana",
+                "job_company_logo": null,
+                "job_location": null,
+                "job_location_type": null,
+                "job_salary_min": "3000000",
+                "job_salary_max": "5000000",
+                "job_salary_currency": "IDR",
+                "job_salary_period": "monthly",
+                "job_application_url": "https://www.loker.id/cari-lowongan-kerja?jobid=9679209",
+                "job_application_email": null,
+                "job_deadline": null,
+                "job_skills": [
+                    "Komputer (microsoft Office 365)",
+                    "Kerja Tim",
+                    "Pelaporan"
+                ],
+                "job_benefits": [
+                    "Uang Lembur"
+                ],
+                "employment_type": {
+                    "id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                    "name": "Contract",
+                    "slug": "contract"
+                },
+                "experience_level": {
+                    "id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                    "name": "Mid Level",
+                    "slug": "mid-level",
+                    "years_max": 5,
+                    "years_min": 3
+                },
+                "created_at": "2025-11-14T14:35:53.075Z",
+                "updated_at": "2025-11-14T14:35:53.075Z",
+                "job_company_website": "https://www.loker.id/cari-lowongan-kerja?jobid=9679209",
+                "job_is_salary_negotiable": false,
+                "job_province_id": "51",
+                "job_regency_id": "5171",
+                "job_district_id": null,
+                "job_village_id": null,
+                "job_address_detail": null,
+                "job_is_remote": false,
+                "job_is_hybrid": false,
+                "job_employment_type_id": "ea1df417-3a76-479b-a9f8-21a93338de02",
+                "job_experience_level_id": "d6f9f448-810c-480f-992c-1cc16aa3773a",
+                "job_requirements": "Pendidikan minimal SMA/SMK, Bersedia ditempatkan di semua area operasi, Bersedia bekerja lembur, Fresh graduate dipersilakan mendaftar, Berpengalaman di bidangnya lebih diutamakan",
+                "job_responsibilities": "Mengontrol dan memantau tekanan dalam sistem distribusi gas CNG, Menjalankan prosedur operasional sesuai standar keselamatan dan efisiensi kerja, Menyusun laporan harian/mingguan terkait aktivitas operasional dan kondisi peralatan",
+                "job_education_level_id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                "job_categories": [
+                    {
+                        "id": "f67abe86-6be5-4b75-977a-296d2df24ed0",
+                        "name": "Konsultasi & Layanan Manajemen",
+                        "slug": "konsultasi-layanan-manajemen"
+                    }
+                ],
+                "job_tags": [
+                    {
+                        "id": "061a4805-25e1-40c7-99ef-fbd34b8f196b",
+                        "name": "Sma/smk",
+                        "slug": "sma-smk"
+                    },
+                    {
+                        "id": "545009d8-9062-4c31-8ad4-929c35bd633d",
+                        "name": "Junior / Entry Level",
+                        "slug": "junior-entry-level"
+                    },
+                    {
+                        "id": "75ab2d1a-36e7-47a2-8099-b0442da302c9",
+                        "name": "Operator Mesin",
+                        "slug": "operator-mesin"
+                    },
+                    {
+                        "id": "dd3e5d11-cc2c-49b7-9730-1502eeaf60cd",
+                        "name": "On-site Working",
+                        "slug": "on-site-working"
+                    }
+                ],
+                "province": {
+                    "id": "51",
+                    "name": "BALI"
+                },
+                "regency": {
+                    "id": "5171",
+                    "name": "KOTA DENPASAR",
+                    "province_id": "51"
+                },
+                "district": null,
+                "village": null,
+                "education_level": {
+                    "id": "95d83b5f-8c09-481c-8269-5925925276c8",
+                    "name": "SMA/SMK/Sederajat",
+                    "slug": "sma-smk-sederajat"
+                }
+            }
+        ],
+        "pagination": {
+            "page": 1,
+            "limit": 20,
+            "total": 2663,
+            "totalPages": 134,
+            "hasNextPage": true,
+            "hasPrevPage": false
+        },
+        "filters": {
+            "search": null,
+            "status": null,
+            "job_company_name": null,
+            "employment_type": null,
+            "experience_level": null,
+            "education_level": null,
+            "job_category": null,
+            "job_tag": null,
+            "job_salary_min": null,
+            "job_salary_max": null,
+            "job_salary_currency": null,
+            "job_salary_period": null,
+            "job_is_salary_negotiable": null,
+            "job_province_id": null,
+            "job_regency_id": null,
+            "job_district_id": null,
+            "job_village_id": null,
+            "job_is_remote": null,
+            "job_is_hybrid": null,
+            "work_policy": null,
+            "skill": null,
+            "benefit": null,
+            "job_deadline_before": null,
+            "job_deadline_after": null
+        }
+    },
+    "cached": false
+}

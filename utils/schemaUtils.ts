@@ -127,7 +127,7 @@ export const generateJobPostingSchema = (job: Job) => {
     "qualifications": job.pendidikan,
     "experienceRequirements": job.pengalaman,
     "workHours": job.kebijakan_kerja,
-    "url": `${baseUrl}/lowongan-kerja/${job.job_categories?.[0]?.slug || 'uncategorized'}/${job.slug}/`,
+    "url": `${baseUrl}/lowongan-kerja/${job.job_categories?.[0]?.slug || 'uncategorized'}/${job.id}/`,
     "applicationContact": {
       "@type": "ContactPoint",
       "url": job.link
@@ -262,7 +262,7 @@ export const generateJobListingSchema = (jobs: Job[]) => {
           }
         },
         "baseSalary": extractSalaryInfo(job.gaji),
-        "url": `${baseUrl}/lowongan-kerja/${job.job_categories?.[0]?.slug || 'uncategorized'}/${job.slug}/`
+        "url": `${baseUrl}/lowongan-kerja/${job.job_categories?.[0]?.slug || 'uncategorized'}/${job.id}/`
       }
     }))
   };

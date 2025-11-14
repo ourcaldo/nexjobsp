@@ -135,9 +135,9 @@ const JobCard: React.FC<JobCardProps> = React.memo(({
     const target = e.target as HTMLElement;
     if (!target.closest('button') && !target.closest('a')) {
       const categorySlug = job.job_categories?.[0]?.slug || 'uncategorized';
-      window.open(`/lowongan-kerja/${categorySlug}/${job.slug}/`, '_blank');
+      window.open(`/lowongan-kerja/${categorySlug}/${job.id}/`, '_blank');
     }
-  }, [job.slug, job.job_categories]);
+  }, [job.id, job.job_categories]);
 
   const handleLoginModalLogin = useCallback(() => {
     setShowLoginModal(false);
@@ -295,7 +295,7 @@ const JobCard: React.FC<JobCardProps> = React.memo(({
               <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''} ${isPending ? 'animate-pulse' : ''}`} />
             </button>
             <Link
-              href={`/lowongan-kerja/${job.job_categories?.[0]?.slug || 'uncategorized'}/${job.slug}/`}
+              href={`/lowongan-kerja/${job.job_categories?.[0]?.slug || 'uncategorized'}/${job.id}/`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"

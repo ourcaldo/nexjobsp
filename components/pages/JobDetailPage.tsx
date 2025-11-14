@@ -33,11 +33,11 @@ import ShareButton from '@/components/ui/ShareButton';
 
 interface JobDetailPageProps {
   job: Job;
-  slug: string;
+  jobId: string;
   settings: any;
 }
 
-const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, slug, settings }) => {
+const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings }) => {
   const { trackPageView, trackJobApplication, trackBookmark } = useAnalytics();
 
   // State

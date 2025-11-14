@@ -227,7 +227,7 @@ export class TugasCMSProvider implements CMSProvider {
       industry: cmsJob.job_categories?.[0]?.name || '',
       link: cmsJob.job_application_url || cmsJob.job_application_email ? 
         (cmsJob.job_application_url || `mailto:${cmsJob.job_application_email}`) : 
-        `https://nexjob.tech/lowongan-kerja/${cmsJob.job_categories?.[0]?.slug || 'uncategorized'}/${cmsJob.slug}`,
+        `https://nexjob.tech/lowongan-kerja/${cmsJob.job_categories?.[0]?.slug || 'uncategorized'}/${cmsJob.id}`,
       sumber_lowongan: 'Nexjob',
       created_at: cmsJob.created_at,
       seo_title: cmsJob.seo_title || cmsJob.title,

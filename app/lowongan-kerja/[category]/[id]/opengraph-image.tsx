@@ -9,9 +9,9 @@ export const size = {
 };
 export const contentType = 'image/png';
 
-export default async function Image({ params }: { params: { category: string; slug: string } }) {
+export default async function Image({ params }: { params: { category: string; id: string } }) {
   try {
-    const job = await jobService.getJobBySlug(params.slug);
+    const job = await jobService.getJobById(params.id);
 
     if (!job) {
       return new ImageResponse(

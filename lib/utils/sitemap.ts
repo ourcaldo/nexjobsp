@@ -293,7 +293,7 @@ class SitemapService {
     const sitemapItems: SitemapItem[] = jobs.map(job => {
       const categorySlug = job.job_categories?.[0]?.slug || 'uncategorized';
       return {
-        url: `${baseUrl}/lowongan-kerja/${categorySlug}/${job.slug}/`,
+        url: `${baseUrl}/lowongan-kerja/${categorySlug}/${job.id}/`,
         lastmod: this.formatDateForSitemap(job.created_at || new Date().toISOString()),
         changefreq: 'weekly',
         priority: '0.7'

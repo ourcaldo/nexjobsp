@@ -13,15 +13,15 @@ import { Job } from '@/types/job';
 interface JobPageProps {
   params: {
     category: string;
-    slug: string;
+    id: string;
   };
 }
 
 // Wrap with React cache() to deduplicate API calls between generateMetadata() and page component
-const getJobData = cache(async (category: string, slug: string) => {
+const getJobData = cache(async (category: string, id: string) => {
   try {
     const [job, settings] = await Promise.all([
-      jobService.getJobBySlug(slug),
+      jobService.getJobById(id),
       SupabaseAdminService.getSettingsServerSide()
     ]);
 
@@ -39,7 +39,7 @@ const getJobData = cache(async (category: string, slug: string) => {
     return {
       job,
       category,
-      slug,
+      id,
       settings,
       currentUrl
     };
@@ -51,11 +51,11 @@ const getJobData = cache(async (category: string, slug: string) => {
 
 export async function generateMetadata({ params }: JobPageProps): Promise<Metadata> {
   try {
-    const { job, category, slug, settings, currentUrl } = await getJobData(params.category, params.slug);
+    const { job, category, id, settings, currentUrl } = await getJobData(params.category, params.id);
 
     const pageTitle = job.seo_title || `${job.title} - ${job.company_name} | Nexjob`;
     const pageDescription = job.seo_description || `Lowongan ${job.title} di ${job.company_name}, ${job.lokasi_kota}. Gaji: ${job.gaji}. Lamar sekarang!`;
-    const canonicalUrl = `${currentUrl}/lowongan-kerja/${category}/${slug}/`;
+    const canonicalUrl = `${currentUrl}/lowongan-kerja/${category}/${id}/`;
     const ogImage = settings.default_job_og_image || `${currentUrl}/og-job-default.jpg`;
 
     return {
@@ -102,7 +102,7 @@ export async function generateStaticParams() {
       const categorySlug = job.job_categories?.[0]?.slug || 'uncategorized';
       return {
         category: categorySlug,
-        slug: job.slug
+        id: job.id
       };
     });
   } catch (error) {
@@ -115,7 +115,7 @@ export const revalidate = 300; // ISR: Revalidate every 5 minutes
 export const dynamicParams = true; // Enable dynamic params for jobs not in static paths
 
 export default async function JobPage({ params }: JobPageProps) {
-  const { job, category, slug, settings, currentUrl } = await getJobData(params.category, params.slug);
+  const { job, category, id, settings, currentUrl } = await getJobData(params.category, params.id);
 
   const categoryName = job.job_categories?.[0]?.name || 'Kategori';
   const breadcrumbItems = [
@@ -144,7 +144,7 @@ export default async function JobPage({ params }: JobPageProps) {
       
       <Header />
       <main>
-        <JobDetailPage job={job} slug={slug} settings={settings} />
+        <JobDetailPage job={job} jobId={id} settings={settings} />
       </main>
       <Footer />
     </>
