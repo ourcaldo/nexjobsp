@@ -7,6 +7,7 @@ export async function middleware(request: NextRequest) {
   if (pathname.endsWith('.xml') && pathname.includes('sitemap')) {
     try {
       const sitemapFile = pathname.replace(/^\//, '');
+      console.log(`[Sitemap Middleware] Proxying request: ${pathname} → https://cms.nexjob.tech/api/v1/sitemaps/${sitemapFile}`);
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -21,6 +22,7 @@ export async function middleware(request: NextRequest) {
       clearTimeout(timeoutId);
       
       if (!response.ok) {
+        console.error(`[Sitemap Middleware] CMS returned ${response.status} for ${sitemapFile}`);
         return NextResponse.next();
       }
 
@@ -61,6 +63,8 @@ export async function middleware(request: NextRequest) {
       xml = xml.replace(/\/jobs\//g, '/lowongan-kerja/');
       xml = xml.replace(/\/blog\//g, '/artikel/');
 
+      console.log(`[Sitemap Middleware] Successfully served ${sitemapFile} (${xml.length} bytes)`);
+
       return new NextResponse(xml, {
         headers: {
           'Content-Type': 'application/xml; charset=utf-8',
@@ -70,9 +74,11 @@ export async function middleware(request: NextRequest) {
       });
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
+        console.error(`[Sitemap Middleware] Timeout fetching ${pathname}`);
         return NextResponse.next();
       }
       
+      console.error(`[Sitemap Middleware] Error processing ${pathname}:`, error);
       return NextResponse.next();
     }
   }
