@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Reset --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #111827;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* --- Main Container --- */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 1rem;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        /* --- Image Styling --- */
+        .image-container {
+            margin-bottom: 2rem;
+            width: 300px;
+            height: 300px;
+        }
+
+        .illustration {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* Subtle float animation */
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* --- Typography --- */
+        .error-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .error-subtext {
+            font-size: 1.1rem;
+            color: #6b7280;
+            margin-bottom: 2.5rem;
+        }
+
+        /* --- Buttons --- */
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        /* Primary Button */
+        .btn-primary {
+            background-color: #f3f4f6;
+            color: #1f2937;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary:hover {
+            background-color: #e5e7eb;
+            transform: translateY(-2px);
+        }
+
+        /* Secondary Button */
+        .btn-secondary {
+            background-color: transparent;
+            color: #6b7280;
+            border: 1px solid transparent;
+        }
+
+        .btn-secondary:hover {
+            color: #111827;
+            background-color: #f9fafb;
+        }
+
+        /* --- Mobile Adjustments --- */
+        @media (max-width: 600px) {
+            .error-title { font-size: 1.75rem; }
+            .image-container { width: 240px; height: 240px; }
+            .btn-group { flex-direction: column; width: 100%; align-items: center; }
+            .btn { width: 100%; max-width: 300px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        
+        <div class="image-container">
+            <img src="https://nexjob.b-cdn.net/404.png" 
+                 alt="404 Illustration" 
+                 class="illustration">
+        </div>
+
+        <h1 class="error-title">Uh-oh... I think I took<br>a wrong turn.</h1>
+        
+        <p class="error-subtext">Let's get you back to where everything makes sense.</p>
+
+        <div class="btn-group">
+            <a href="/" class="btn btn-primary">Go home</a>
+            <button onclick="history.back()" class="btn btn-secondary">Go back</button>
+        </div>
+
+    </div>
+
+</body>
+</html>
