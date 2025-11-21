@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { SupabaseAdminService } from '@/lib/supabase/admin';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
@@ -77,6 +78,24 @@ export async function generateStaticParams() {
 export const revalidate = 300; // ISR: Revalidate every 5 minutes
 export const dynamicParams = true; // Enable dynamic params for categories not in static paths
 
+function JobSearchPageFallback() {
+  return (
+    <div className="animate-pulse space-y-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="h-12 bg-gray-200 rounded w-1/4"></div>
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-1 space-y-4">
+          <div className="h-64 bg-gray-200 rounded"></div>
+        </div>
+        <div className="lg:col-span-3 space-y-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-48 bg-gray-200 rounded"></div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default async function JobCategoryPage({ params }: JobCategoryPageProps) {
   const { slug, category, location, settings, currentUrl } = await getCategoryData(params.slug);
 
@@ -135,11 +154,13 @@ export default async function JobCategoryPage({ params }: JobCategoryPageProps) 
         </div>
 
         {/* Job Search Content */}
-        <JobSearchPage 
-          settings={settings} 
-          initialCategory={category}
-          initialLocation={location}
-        />
+        <Suspense fallback={<JobSearchPageFallback />}>
+          <JobSearchPage 
+            settings={settings} 
+            initialCategory={category}
+            initialLocation={location}
+          />
+        </Suspense>
       </main>
       <Footer />
     </>

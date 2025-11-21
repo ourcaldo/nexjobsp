@@ -13,8 +13,6 @@ import ArticleSidebar from '@/components/ArticleSidebar';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import Image from 'next/image';
 
-export const fetchCache = 'force-no-store';
-
 interface ArticleDetailPageProps {
   params: {
     category: string;
