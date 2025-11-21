@@ -9,6 +9,7 @@
 **Updated**: 14:52 WIB - Increased bottom padding for buttons
 **Updated**: 14:55 WIB - Added 3rem bottom margin to button container for proper spacing
 **Updated**: 14:56 WIB - Added 3rem top margin to image container for top spacing
+**Updated**: 14:57 WIB - Reduced image bottom margin from 2rem to 1rem for tighter spacing
 
 **Implementation Goals**:
 - Replace previous branded 404 page with user's custom minimalist design

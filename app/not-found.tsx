@@ -29,7 +29,7 @@ export default function NotFound() {
         
         <div style={{
           marginTop: '3rem',
-          marginBottom: '2rem',
+          marginBottom: '1rem',
           width: '300px',
           height: '300px'
         }}>
