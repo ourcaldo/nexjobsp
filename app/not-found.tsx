@@ -66,7 +66,8 @@ export default function NotFound() {
           display: 'flex',
           gap: '1rem',
           justifyContent: 'center',
-          flexWrap: 'wrap'
+          flexWrap: 'wrap',
+          marginBottom: '3rem'
         }}>
           <Link 
             href="/" 
