@@ -22,7 +22,7 @@ export default function NotFound() {
         flexDirection: 'column',
         alignItems: 'center',
         textAlign: 'center',
-        padding: '2rem 1rem',
+        padding: '2rem 1rem 4rem 1rem',
         maxWidth: '600px',
         width: '100%'
       }}>
