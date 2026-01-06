@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { env } from '@/lib/env';
+import { env } from '@/lib/config';
 
 interface AnalyticsEvent {
   action: string;

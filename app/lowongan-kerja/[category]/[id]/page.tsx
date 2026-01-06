@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { jobService } from '@/lib/services/JobService';
-import { SupabaseAdminService } from '@/lib/supabase/admin';
-import { getCurrentDomain } from '@/lib/env';
+import { getCurrentDomain } from '@/lib/config';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobDetailPage from '@/components/pages/JobDetailPage';
@@ -21,11 +20,16 @@ interface JobPageProps {
 // Wrap with React cache() to deduplicate API calls between generateMetadata() and page component
 const getJobData = cache(async (category: string, id: string) => {
   try {
-    const [job, settings, filterData] = await Promise.all([
+    const [job, filterData] = await Promise.all([
       jobService.getJobById(id),
-      SupabaseAdminService.getSettingsServerSide(),
       jobService.getFiltersData()
     ]);
+
+    // Hardcoded settings - no admin panel
+    const settings = {
+      site_title: 'Nexjob',
+      default_job_og_image: '/og-job-default.jpg'
+    };
 
     const currentUrl = getCurrentDomain();
 

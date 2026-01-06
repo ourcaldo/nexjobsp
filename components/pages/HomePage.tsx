@@ -6,9 +6,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Search, TrendingUp, ArrowRight, Users, Building, Code, Heart, Calculator, Truck, Briefcase } from 'lucide-react';
 import { FilterData } from '@/lib/cms/interface';
-import { userBookmarkService } from '@/lib/api/user-bookmarks';
-import { supabase } from '@/lib/supabase';
-import { adminService } from '@/lib/utils/admin-legacy';
 import SearchableSelect from '@/components/SearchableSelect';
 import SchemaMarkup from '@/components/SEO/SchemaMarkup';
 import { generateWebsiteSchema, generateOrganizationSchema } from '@/utils/schemaUtils';
@@ -32,7 +29,6 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
   const [jobCategories, setJobCategories] = useState<string[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userBookmarks, setUserBookmarks] = useState<Set<string>>(new Set());
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -105,14 +101,8 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
   }, []);
 
   const handleBookmarkChange = useCallback((jobId: string, isBookmarked: boolean) => {
-    const newBookmarks = new Set(userBookmarks);
-    if (isBookmarked) {
-      newBookmarks.add(jobId);
-    } else {
-      newBookmarks.delete(jobId);
-    }
-    setUserBookmarks(newBookmarks);
-  }, [userBookmarks]);
+    // No bookmark system
+  }, []);
 
   // Generic icon component for categories
   const CategoryIcon = () => (
@@ -138,48 +128,27 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
   };
 
   const loadUserBookmarks = useCallback(async (userId: string) => {
-    try {
-      const bookmarks = await userBookmarkService.getUserBookmarks(userId);
-      const bookmarkSet = new Set(bookmarks.map(b => b.job_id));
-      setUserBookmarks(bookmarkSet);
-    } catch (error) {
-      console.error('Error loading user bookmarks:', error);
-    }
+    // No bookmark system
   }, []);
 
   const initializeAuth = useCallback(async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      if (user) {
-        await loadUserBookmarks(user.id);
-      }
+      // No authentication system
+      setUser(null);
     } catch (error) {
       console.error('Error checking user:', error);
     }
-  }, [loadUserBookmarks]);
+  }, []);
 
   useEffect(() => {
     loadData();
     initializeAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        setUser(session.user);
-        await loadUserBookmarks(session.user.id);
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setUserBookmarks(new Set());
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [initializeAuth, loadUserBookmarks]);
+  }, [initializeAuth]);
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Schema Markup */}
-      <SchemaMarkup schema={generateWebsiteSchema(settings)} />
+      <SchemaMarkup schema={generateWebsiteSchema()} />
       <SchemaMarkup schema={generateOrganizationSchema()} />
 
       {/* Hero Section */}
@@ -305,8 +274,6 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
               <JobCard 
                 key={job.id} 
                 job={job} 
-                isBookmarked={userBookmarks.has(job.id)}
-                onBookmarkChange={handleBookmarkChange}
               />
             ))
           )}

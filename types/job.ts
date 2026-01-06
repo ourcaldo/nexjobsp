@@ -69,16 +69,7 @@ export interface AdminSettings {
   site_url?: string;
   ga_id?: string;
   gtm_id?: string;
-  // Supabase Database Configuration
-  database_supabase_url?: string;
-  database_supabase_anon_key?: string;
-  database_supabase_service_role_key?: string;
-  // Supabase Storage Configuration (editable from admin)
-  supabase_bucket_name?: string;
-  supabase_storage_endpoint?: string;
-  supabase_storage_region?: string;
-  supabase_storage_access_key?: string;
-  supabase_storage_secret_key?: string;
+  // Database Configuration (removed Supabase)
   // CMS API Configuration (editable from admin)
   cms_endpoint?: string;
   cms_token?: string;

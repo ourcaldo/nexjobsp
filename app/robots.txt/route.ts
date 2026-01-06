@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { tugasCMSProvider } from '@/lib/cms/providers/tugascms'
+import { TugasCMSProvider } from '@/lib/cms/providers/tugascms'
 
 // Enable ISR with 1 hour revalidation
 export const revalidate = 3600 // 1 hour in seconds
@@ -9,7 +9,8 @@ export async function GET(request: NextRequest) {
     console.log('Fetching robots.txt from TugasCMS...')
     
     // Fetch robots.txt from TugasCMS backend
-    const robotsContent = await tugasCMSProvider.getRobotsTxt()
+    const cmsProvider = new TugasCMSProvider()
+    const robotsContent = await cmsProvider.getRobotsTxt()
     
     if (!robotsContent) {
       console.warn('No robots.txt content from CMS, using fallback')

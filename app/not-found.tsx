@@ -1,7 +1,9 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { MouseEvent } from 'react';
 
 export default function NotFound() {
   const router = useRouter();
@@ -33,9 +35,11 @@ export default function NotFound() {
           width: '300px',
           height: '300px'
         }}>
-          <img 
+          <Image 
             src="https://nexjob.b-cdn.net/404.png" 
             alt="404 Illustration" 
+            width={300}
+            height={300}
             style={{
               width: '100%',
               height: '100%',
@@ -84,11 +88,11 @@ export default function NotFound() {
               color: '#1f2937',
               border: '1px solid transparent'
             }}
-            onMouseEnter={(e) => {
+            onMouseEnter={(e: MouseEvent<HTMLAnchorElement>) => {
               e.currentTarget.style.backgroundColor = '#e5e7eb';
               e.currentTarget.style.transform = 'translateY(-2px)';
             }}
-            onMouseLeave={(e) => {
+            onMouseLeave={(e: MouseEvent<HTMLAnchorElement>) => {
               e.currentTarget.style.backgroundColor = '#f3f4f6';
               e.currentTarget.style.transform = 'translateY(0)';
             }}
@@ -108,11 +112,11 @@ export default function NotFound() {
               color: '#6b7280',
               border: '1px solid transparent'
             }}
-            onMouseEnter={(e) => {
+            onMouseEnter={(e: MouseEvent<HTMLButtonElement>) => {
               e.currentTarget.style.color = '#111827';
               e.currentTarget.style.backgroundColor = '#f9fafb';
             }}
-            onMouseLeave={(e) => {
+            onMouseLeave={(e: MouseEvent<HTMLButtonElement>) => {
               e.currentTarget.style.color = '#6b7280';
               e.currentTarget.style.backgroundColor = 'transparent';
             }}

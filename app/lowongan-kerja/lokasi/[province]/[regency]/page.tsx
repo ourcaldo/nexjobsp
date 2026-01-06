@@ -1,13 +1,12 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
-import { SupabaseAdminService } from '@/lib/supabase/admin';
 import { jobService } from '@/lib/services/JobService';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobSearchPage from '@/components/pages/JobSearchPage';
 import { generateBreadcrumbSchema } from '@/utils/schemaUtils';
-import { getCurrentDomain } from '@/lib/env';
+import { getCurrentDomain } from '@/lib/config';
 import { renderTemplate } from '@/utils/templateUtils';
 import { normalizeSlug, normalizeSlugForMatching } from '@/utils/textUtils';
 
@@ -39,7 +38,15 @@ interface JobLocationPageProps {
 }
 
 async function getLocationData(provinceSlug: string, regencySlug: string) {
-  const settings = await SupabaseAdminService.getSettingsServerSide();
+  // Hardcoded settings - no admin panel
+  const settings = {
+    site_title: 'Nexjob',
+    jobs_title: 'Lowongan Kerja {{lokasi}} {{kategori}} - {{site_title}}',
+    jobs_description: 'Temukan lowongan kerja terbaru {{lokasi}} {{kategori}} di Indonesia. Lamar sekarang!',
+    location_page_title_template: 'Lowongan Kerja di {{lokasi}} - {{site_title}}',
+    location_page_description_template: 'Temukan lowongan kerja terbaru di {{lokasi}} dari berbagai perusahaan terpercaya.',
+    jobs_og_image: '/og-jobs.jpg'
+  };
   const currentUrl = getCurrentDomain();
   
   let provinceId = '';

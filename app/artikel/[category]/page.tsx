@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { articleService } from '@/lib/services/ArticleService';
 import { categoryService } from '@/lib/services/CategoryService';
-import { getCurrentDomain } from '@/lib/env';
+import { getCurrentDomain } from '@/lib/config';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import { generateArticleListingSchema, generateBreadcrumbSchema } from '@/utils/schemaUtils';

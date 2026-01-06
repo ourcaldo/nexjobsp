@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { SupabaseAdminService } from '@/lib/supabase/admin';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobSearchPage from '@/components/pages/JobSearchPage';
 import { generateBreadcrumbSchema } from '@/utils/schemaUtils';
-import { getCurrentDomain } from '@/lib/env';
+import { getCurrentDomain } from '@/lib/config';
 import { wpCategoryMappings } from '@/utils/urlUtils';
 import { renderTemplate } from '@/utils/templateUtils';
 
@@ -18,7 +17,15 @@ interface JobCategoryPageProps {
 async function getCategoryData(slug: string) {
   const category = wpCategoryMappings[slug] || slug.charAt(0).toUpperCase() + slug.slice(1);
   const location = '';
-  const settings = await SupabaseAdminService.getSettingsServerSide();
+  // Hardcoded settings - no admin panel
+  const settings = {
+    site_title: 'Nexjob',
+    jobs_title: 'Lowongan Kerja {{lokasi}} {{kategori}} - {{site_title}}',
+    jobs_description: 'Temukan lowongan kerja terbaru {{lokasi}} {{kategori}} di Indonesia. Lamar sekarang!',
+    category_page_title_template: 'Lowongan Kerja {{kategori}} - {{site_title}}',
+    category_page_description_template: 'Temukan lowongan kerja {{kategori}} terbaru dari berbagai perusahaan terpercaya. Dapatkan pekerjaan impian Anda di bidang {{kategori}}.',
+    jobs_og_image: '/og-jobs.jpg'
+  };
   const currentUrl = getCurrentDomain();
 
   return {

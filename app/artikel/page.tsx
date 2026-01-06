@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import { articleService } from '@/lib/services/ArticleService';
 import { categoryService } from '@/lib/services/CategoryService';
-import { supabaseAdminService } from '@/lib/supabase/admin';
-import { getCurrentDomain } from '@/lib/env';
+import { getCurrentDomain } from '@/lib/config';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import { generateArticleListingSchema, generateBreadcrumbSchema } from '@/utils/schemaUtils';
@@ -11,11 +10,18 @@ import ArticleListPage from '@/components/pages/ArticleListPage';
 
 async function getArticleData() {
   try {
-    const [articlesResponse, categoriesResponse, seoSettings] = await Promise.all([
+    const [articlesResponse, categoriesResponse] = await Promise.all([
       articleService.getArticles(1, 20),
-      categoryService.getCategories(),
-      supabaseAdminService.getSettings()
+      categoryService.getCategories()
     ]);
+
+    // Default SEO settings since we don't have an admin system
+    const seoSettings = {
+      site_title: 'Nexjob',
+      site_description: 'Platform pencarian kerja terpercaya di Indonesia',
+      articles_title: 'Artikel - Tips Karir dan Berita Kerja Terbaru - {{site_title}}',
+      articles_description: 'Baca artikel terbaru seputar tips karir, berita kerja, dan panduan mencari pekerjaan di Indonesia. Dapatkan insight berharga untuk mengembangkan karir Anda.'
+    };
 
     const articles = articlesResponse.success ? articlesResponse.data.posts : [];
     const categories = categoriesResponse.success ? categoriesResponse.data.categories : [];

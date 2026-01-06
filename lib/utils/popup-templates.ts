@@ -1,120 +1,46 @@
-import { supabase } from '@/lib/supabase';
-import { PopupTemplate } from '@/lib/supabase';
+// Placeholder popup template service - no authentication system
+interface PopupTemplate {
+  id: string;
+  template_key: string;
+  title: string;
+  content: string;
+  button_text: string;
+  created_at: string;
+  updated_at: string;
+}
 
 class PopupTemplateService {
-  // Get popup template by key
+  // Get popup template by key - placeholder implementation
   async getTemplate(templateKey: string): Promise<PopupTemplate | null> {
-    try {
-      const { data, error } = await supabase
-        .from('popup_templates')
-        .select('*')
-        .eq('template_key', templateKey)
-        .single();
-
-      if (error) {
-        console.error('Error fetching popup template:', error);
-        return null;
-      }
-
-      return data;
-    } catch (error) {
-      console.error('Error fetching popup template:', error);
-      return null;
-    }
+    console.log('getTemplate called - no authentication system');
+    return null;
   }
 
-  // Get all popup templates (admin only)
+  // Get all popup templates - placeholder implementation
   async getAllTemplates(): Promise<PopupTemplate[]> {
-    try {
-      const { data, error } = await supabase
-        .from('popup_templates')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching popup templates:', error);
-        return [];
-      }
-
-      return data || [];
-    } catch (error) {
-      console.error('Error fetching popup templates:', error);
-      return [];
-    }
+    console.log('getAllTemplates called - no authentication system');
+    return [];
   }
 
-  // Update popup template (admin only)
+  // Update popup template - placeholder implementation
   async updateTemplate(
     templateKey: string, 
     updates: Partial<Pick<PopupTemplate, 'title' | 'content' | 'button_text'>>
   ): Promise<{ success: boolean; error?: string }> {
-    try {
-      const { error } = await supabase
-        .from('popup_templates')
-        .update({
-          ...updates,
-          updated_at: new Date().toISOString()
-        })
-        .eq('template_key', templateKey);
-
-      if (error) {
-        console.error('Error updating popup template:', error);
-        return { success: false, error: error.message };
-      }
-
-      return { success: true };
-    } catch (error) {
-      console.error('Error updating popup template:', error);
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Failed to update template' 
-      };
-    }
+    console.log('updateTemplate called - no authentication system');
+    return { success: false, error: 'No authentication system' };
   }
 
-  // Create new popup template (admin only)
+  // Create new popup template - placeholder implementation
   async createTemplate(template: Omit<PopupTemplate, 'id' | 'created_at' | 'updated_at'>): Promise<{ success: boolean; error?: string }> {
-    try {
-      const { error } = await supabase
-        .from('popup_templates')
-        .insert(template);
-
-      if (error) {
-        console.error('Error creating popup template:', error);
-        return { success: false, error: error.message };
-      }
-
-      return { success: true };
-    } catch (error) {
-      console.error('Error creating popup template:', error);
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Failed to create template' 
-      };
-    }
+    console.log('createTemplate called - no authentication system');
+    return { success: false, error: 'No authentication system' };
   }
 
-  // Delete popup template (admin only)
+  // Delete popup template - placeholder implementation
   async deleteTemplate(templateKey: string): Promise<{ success: boolean; error?: string }> {
-    try {
-      const { error } = await supabase
-        .from('popup_templates')
-        .delete()
-        .eq('template_key', templateKey);
-
-      if (error) {
-        console.error('Error deleting popup template:', error);
-        return { success: false, error: error.message };
-      }
-
-      return { success: true };
-    } catch (error) {
-      console.error('Error deleting popup template:', error);
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Failed to delete template' 
-      };
-    }
+    console.log('deleteTemplate called - no authentication system');
+    return { success: false, error: 'No authentication system' };
   }
 }
 

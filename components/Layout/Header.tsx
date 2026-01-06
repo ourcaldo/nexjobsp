@@ -3,102 +3,23 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { Search, User, Bookmark, Menu, X, LogOut, Settings } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
-import { useToast } from '@/components/ui/ToastProvider';
-import { userBookmarkService } from '@/lib/api/user-bookmarks';
-import BookmarkLoginModal from '@/components/ui/BookmarkLoginModal';
+import { Search, User, Menu, X, LogOut } from 'lucide-react';
 
 const Header: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
-  const [bookmarkCount, setBookmarkCount] = useState(0);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showBookmarkModal, setShowBookmarkModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadBookmarkCount = useCallback(async (userId: string) => {
-    try {
-      const count = await userBookmarkService.getBookmarkCount(userId);
-      setBookmarkCount(count);
-    } catch (error) {
-      console.error('Error loading bookmark count:', error);
-    }
+  const initializeAuth = useCallback(async () => {
+    // No authentication system
+    setUser(null);
+    setIsInitialized(true);
+    setIsLoading(false);
   }, []);
-
-  // Listen for bookmark changes from other components
-  useEffect(() => {
-    const handleBookmarkUpdate = async () => {
-      if (user) {
-        await loadBookmarkCount(user.id);
-      }
-    };
-
-    // Listen for custom bookmark events
-    window.addEventListener('bookmarkUpdated', handleBookmarkUpdate);
-
-    // Listen for storage changes (cross-tab updates)
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'nexjob_bookmarks' && user) {
-        loadBookmarkCount(user.id);
-      }
-    };
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('bookmarkUpdated', handleBookmarkUpdate);
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, [user, loadBookmarkCount]);
-
-  const initializeAuth = useCallback(async (forceRefresh = false) => {
-    try {
-      // Don't show loading if we already have a user and this isn't a forced refresh
-      if (!forceRefresh && user && isInitialized) {
-        return;
-      }
-      
-      // Only set loading for initial load or forced refresh
-      if (!isInitialized || forceRefresh) {
-        setIsLoading(true);
-      }
-      
-      // Use cached auth state for better performance
-      const { getCachedAuthState } = await import('@/lib/supabase');
-      const { session, error } = await getCachedAuthState();
-      
-      if (error) {
-        console.error('Error getting session:', error);
-        setUser(null);
-        setBookmarkCount(0);
-      } else if (session?.user) {
-        setUser(session.user);
-        // Only load bookmark count if we don't already have it or user changed
-        if (!user || user.id !== session.user.id) {
-          await loadBookmarkCount(session.user.id);
-        }
-      } else {
-        setUser(null);
-        setBookmarkCount(0);
-      }
-      
-      if (!isInitialized) {
-        setIsInitialized(true);
-      }
-    } catch (error) {
-      console.error('Error initializing auth:', error);
-      setUser(null);
-      setBookmarkCount(0);
-    } finally {
-      // Only set loading false if we were actually loading
-      if (!isInitialized || forceRefresh) {
-        setIsLoading(false);
-      }
-    }
-  }, [loadBookmarkCount, isInitialized, user]);
 
   useEffect(() => {
     let mounted = true;
@@ -106,71 +27,17 @@ const Header: React.FC = () => {
     // Initialize auth state
     initializeAuth();
 
-    // Listen for custom auth events from _app.tsx
-    const handleAuthInitialized = (event: Event) => {
-      if (!mounted) return;
-      initializeAuth(true);
-    };
-
-    const handleAuthStateChanged = async (event: Event) => {
-      if (!mounted) return;
-      const customEvent = event as CustomEvent;
-      const { event: authEvent, session } = customEvent.detail;
-
-      if (authEvent === 'SIGNED_IN' && session?.user) {
-        setUser(session.user);
-        await loadBookmarkCount(session.user.id);
-        setIsLoading(false);
-      } else if (authEvent === 'SIGNED_OUT') {
-        setUser(null);
-        setBookmarkCount(0);
-        setIsLoading(false);
-      } else if (authEvent === 'TOKEN_REFRESHED' && session?.user) {
-        setUser(session.user);
-        setIsLoading(false);
-      }
-    };
-
-    // Listen for auth changes (backup)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!mounted) return;
-
-      if (event === 'SIGNED_IN' && session?.user) {
-        setUser(session.user);
-        await loadBookmarkCount(session.user.id);
-        setIsLoading(false);
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setBookmarkCount(0);
-        setIsLoading(false);
-      } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-        setUser(session.user);
-        setIsLoading(false);
-      }
-    });
-
-    // Add event listeners
-    if (typeof window !== 'undefined') {
-      window.addEventListener('authInitialized', handleAuthInitialized);
-      window.addEventListener('authStateChanged', handleAuthStateChanged);
-    }
-
     return () => {
       mounted = false;
-      subscription.unsubscribe();
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('authInitialized', handleAuthInitialized);
-        window.removeEventListener('authStateChanged', handleAuthStateChanged);
-      }
     };
-  }, [initializeAuth, loadBookmarkCount]);
+  }, [initializeAuth]);
 
   // Re-check auth state on route changes (App Router - using pathname)
   useEffect(() => {
     // Only re-check auth if we don't have a user or if going to profile page
     if (!user || pathname?.includes('/profile')) {
       const timer = setTimeout(() => {
-        initializeAuth(false); // Don't force refresh unless necessary
+        initializeAuth();
       }, 100);
       
       return () => clearTimeout(timer);
@@ -179,44 +46,13 @@ const Header: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      // Placeholder logout - no authentication system
       setShowUserMenu(false);
       setShowMobileMenu(false);
       router.push('/');
     } catch (error) {
       console.error('Error logging out:', error);
     }
-  };
-
-  const handleBookmarkClick = async () => {
-    // Use current user state if available, otherwise check cached session
-    let currentUser = user;
-    if (!currentUser && !isLoading) {
-      try {
-        const { getCachedAuthState } = await import('@/lib/supabase');
-        const { session } = await getCachedAuthState();
-        currentUser = session?.user;
-      } catch (error) {
-        console.error('Error checking auth state:', error);
-      }
-    }
-
-    if (currentUser) {
-      router.push('/profile/');
-    } else {
-      setShowBookmarkModal(true);
-    }
-    setShowMobileMenu(false);
-  };
-
-  const handleBookmarkModalLogin = () => {
-    setShowBookmarkModal(false);
-    router.push('/login/');
-  };
-
-  const handleBookmarkModalSignup = () => {
-    setShowBookmarkModal(false);
-    router.push('/signup/');
   };
 
   const handleMobileNavClick = () => {
@@ -300,114 +136,13 @@ const Header: React.FC = () => {
               </Link>
             </nav>
 
-            {/* Desktop Right Side */}
+            {/* Desktop Right Side - No authentication system */}
             <div className="hidden md:flex items-center space-x-4">
-              {/* Bookmarks - Always visible */}
-              <button
-                onClick={handleBookmarkClick}
-                className={`relative p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
-                  user && isActive('/profile/')
-                    ? 'text-primary-600 bg-primary-50'
-                    : 'text-gray-600 hover:text-primary-600 hover:bg-primary-50'
-                }`}
-                aria-label={`Lowongan tersimpan${bookmarkCount > 0 ? `, ${bookmarkCount} lowongan` : ''}`}
-                title="Lowongan Tersimpan"
-              >
-                <Bookmark className="h-5 w-5" aria-hidden="true" />
-                {bookmarkCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center" aria-hidden="true">
-                    {bookmarkCount > 99 ? '99+' : bookmarkCount}
-                  </span>
-                )}
-              </button>
-
-              {(isLoading && !user) ? (
-                /* Loading state - only show when actually loading and no user */
-                <div className="flex items-center space-x-2 p-2">
-                  <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
-                  <div className="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
-                </div>
-              ) : user ? (
-                /* Desktop User Menu */
-                <div className="relative">
-                  <button
-                    onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-                    aria-label="Menu pengguna"
-                    aria-expanded={showUserMenu}
-                    aria-haspopup="true"
-                  >
-                    <div className="w-8 h-8 bg-primary-600 rounded-full flex items-center justify-center">
-                      <User className="h-5 w-5 text-white" aria-hidden="true" />
-                    </div>
-                    <span className="text-gray-700 font-medium">
-                      {user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'}
-                    </span>
-                  </button>
-
-                  {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50" role="menu" aria-label="Menu pengguna">
-                      <Link
-                        href="/profile/"
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors focus:outline-none focus:bg-gray-100"
-                        onClick={() => setShowUserMenu(false)}
-                        role="menuitem"
-                      >
-                        <User className="h-4 w-4 inline mr-2" aria-hidden="true" />
-                        Profil Saya
-                      </Link>
-                      <button
-                        onClick={handleLogout}
-                        className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors focus:outline-none focus:bg-gray-100"
-                        role="menuitem"
-                      >
-                        <LogOut className="h-4 w-4 inline mr-2" aria-hidden="true" />
-                        Logout
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                /* Desktop Login/Signup buttons */
-                <>
-                  <Link
-                    href="/login/"
-                    className="text-gray-700 hover:text-primary-600 font-medium transition-colors"
-                  >
-                    Masuk
-                  </Link>
-                  <Link
-                    href="/signup/"
-                    className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 transition-colors font-medium"
-                  >
-                    Daftar
-                  </Link>
-                </>
-              )}
+              {/* Nothing here - no auth system */}
             </div>
 
-            {/* Mobile Right Side */}
-            <div className="flex md:hidden items-center space-x-2">
-              {/* Mobile Bookmarks */}
-              <button
-                onClick={handleBookmarkClick}
-                className={`relative p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
-                  user && isActive('/profile/')
-                    ? 'text-primary-600 bg-primary-50'
-                    : 'text-gray-600 hover:text-primary-600 hover:bg-primary-50'
-                }`}
-                aria-label={`Lowongan tersimpan${bookmarkCount > 0 ? `, ${bookmarkCount} lowongan` : ''}`}
-                title="Lowongan Tersimpan"
-              >
-                <Bookmark className="h-5 w-5" aria-hidden="true" />
-                {bookmarkCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center" aria-hidden="true">
-                    {bookmarkCount > 99 ? '99+' : bookmarkCount}
-                  </span>
-                )}
-              </button>
-
-              {/* Mobile Menu Button */}
+            {/* Mobile Menu Button */}
+            <div className="flex md:hidden">
               <button
                 onClick={() => setShowMobileMenu(!showMobileMenu)}
                 className="p-2 rounded-lg text-gray-600 hover:text-primary-600 hover:bg-primary-50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
@@ -508,77 +243,13 @@ const Header: React.FC = () => {
               </div>
             </nav>
 
-            {/* User Section */}
+            {/* User Section - No authentication system */}
             <div className="p-4 border-t border-gray-200">
-              {(isLoading && !user) ? (
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-3 px-4 py-3 bg-gray-50 rounded-lg">
-                    <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
-                    <div className="flex-1 space-y-2">
-                      <div className="w-24 h-4 bg-gray-200 rounded animate-pulse"></div>
-                      <div className="w-32 h-3 bg-gray-200 rounded animate-pulse"></div>
-                    </div>
-                  </div>
-                </div>
-              ) : user ? (
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-3 px-4 py-3 bg-gray-50 rounded-lg">
-                    <div className="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center">
-                      <User className="h-6 w-6 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900">
-                        {user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'}
-                      </p>
-                      <p className="text-sm text-gray-500">{user.email}</p>
-                    </div>
-                  </div>
-                  <Link
-                    href="/profile/"
-                    onClick={handleMobileNavClick}
-                    className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    <User className="h-5 w-5 mr-3" />
-                    Profil Saya
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                  >
-                    <LogOut className="h-5 w-5 mr-3" />
-                    Logout
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <Link
-                    href="/login/"
-                    onClick={handleMobileNavClick}
-                    className="block w-full text-center px-4 py-3 text-gray-700 hover:text-primary-600 font-medium border border-gray-300 rounded-lg hover:border-primary-300 transition-colors"
-                  >
-                    Masuk
-                  </Link>
-                  <Link
-                    href="/signup/"
-                    onClick={handleMobileNavClick}
-                    className="block w-full text-center px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
-                  >
-                    Daftar
-                  </Link>
-                </div>
-              )}
+              {/* Nothing here - no auth system */}
             </div>
           </div>
         </div>
       </div>
-
-      {/* Bookmark Login Modal */}
-      <BookmarkLoginModal
-        isOpen={showBookmarkModal}
-        onClose={() => setShowBookmarkModal(false)}
-        onLogin={handleBookmarkModalLogin}
-        onSignup={handleBookmarkModalSignup}
-      />
     </>
   );
 };

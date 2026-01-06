@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { SupabaseAdminService } from '@/lib/supabase/admin';
-import { getCurrentDomain } from '@/lib/env';
+import { getCurrentDomain } from '@/lib/config';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobSearchPage from '@/components/pages/JobSearchPage';
@@ -9,7 +8,13 @@ import { generateBreadcrumbSchema } from '@/utils/schemaUtils';
 import { renderTemplate } from '@/utils/templateUtils';
 
 async function getJobsData() {
-  const settings = await SupabaseAdminService.getSettingsServerSide();
+  // Hardcoded settings - no admin panel
+  const settings = {
+    site_title: 'Nexjob',
+    jobs_title: 'Lowongan Kerja {{lokasi}} {{kategori}} - {{site_title}}',
+    jobs_description: 'Temukan lowongan kerja terbaru {{lokasi}} {{kategori}} di Indonesia. Lamar sekarang!',
+    jobs_og_image: '/og-jobs.jpg'
+  };
   const currentUrl = getCurrentDomain();
 
   return {

@@ -21,12 +21,9 @@ import {
 } from 'lucide-react';
 import { Job } from '@/types/job';
 import { bookmarkService } from '@/lib/utils/bookmarks';
-import { userBookmarkService } from '@/lib/api/user-bookmarks';
-import { supabase } from '@/lib/supabase';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import JobCard from '@/components/JobCard';
-import BookmarkLoginModal from '@/components/ui/BookmarkLoginModal';
 import JobApplicationModal from '@/components/ui/JobApplicationModal';
 import { sanitizeHTML } from '@/lib/utils/sanitize';
 import ShareButton from '@/components/ui/ShareButton';
@@ -116,30 +113,8 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, bre
   }, []);
 
   const handleBookmarkToggle = async () => {
-    // Check if user is authenticated by checking session directly
-    const { data: { session } } = await supabase.auth.getSession();
-    const currentUser = session?.user;
-
-    if (!currentUser) {
-      setShowBookmarkModal(true);
-      return;
-    }
-
-    setIsBookmarkLoading(true);
-
-    try {
-      const result = await userBookmarkService.toggleBookmark(job.id);
-
-      if (result.success) {
-        setIsBookmarked(result.isBookmarked);
-      } else {
-        console.error('Failed to toggle bookmark:', result.error);
-      }
-    } catch (error) {
-      console.error('Error toggling bookmark:', error);
-    } finally {
-      setIsBookmarkLoading(false);
-    }
+    // No authentication system - show modal
+    setShowBookmarkModal(true);
   };
 
   const handleApplyClick = () => {
@@ -553,14 +528,6 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, bre
           </div>
         </div>
       </div>
-
-      {/* Bookmark Login Modal */}
-      <BookmarkLoginModal
-        isOpen={showBookmarkModal}
-        onClose={() => setShowBookmarkModal(false)}
-        onLogin={handleBookmarkModalLogin}
-        onSignup={handleBookmarkModalSignup}
-      />
 
       {/* Job Application Modal */}
       <JobApplicationModal

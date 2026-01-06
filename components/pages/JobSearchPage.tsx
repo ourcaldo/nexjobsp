@@ -5,8 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, Filter, X, Loader2, AlertCircle } from 'lucide-react';
 import { Job } from '@/types/job';
 import { FilterData } from '@/lib/cms/interface';
-import { userBookmarkService } from '@/lib/api/user-bookmarks';
-import { supabase } from '@/lib/supabase';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import JobCard from '@/components/JobCard';
 import JobSidebar from '@/components/JobSidebar';
@@ -250,7 +248,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [searchParams, selectedProvince, sidebarFilters, initialLocation, locationType, initialCategory, calculateSalaryRange]);
+  }, [searchParams, selectedProvince, sidebarFilters, initialLocation, locationType, initialCategory, calculateSalaryRange, initialCityId, initialProvinceId]);
 
   // Search with filters
   const searchWithFilters = useCallback(async (filters: any, isManualSearch = false) => {
@@ -403,43 +401,26 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   }, [currentPage, hasMore, loadingMore, getCurrentFilters, calculateSalaryRange]);
 
   const loadUserBookmarks = useCallback(async (userId: string) => {
-    try {
-      const bookmarks = await userBookmarkService.getUserBookmarks(userId);
-      const bookmarkSet = new Set(bookmarks.map(b => b.job_id));
-      setUserBookmarks(bookmarkSet);
-    } catch (error) {
-      console.error('Error loading user bookmarks:', error);
-    }
+    // No bookmark system
   }, []);
 
   const initializeAuth = useCallback(async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      if (user) {
-        await loadUserBookmarks(user.id);
-      }
+      // Since we removed Supabase, we'll assume no user authentication for now
+      // This can be replaced with your new auth system later
+      setUser(null);
     } catch (error) {
       console.error('Error checking user:', error);
     }
-  }, [loadUserBookmarks]);
+  }, []);
 
   useEffect(() => {
     loadInitialData();
     initializeAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        setUser(session.user);
-        loadUserBookmarks(session.user.id);
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setUserBookmarks(new Set());
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [initializeAuth, loadUserBookmarks, loadInitialData]);
+    // Since we removed Supabase auth, we'll skip the auth state change listener
+    // This can be replaced with your new auth system later
+  }, [initializeAuth, loadInitialData]);
 
   // Track page view on mount
   useEffect(() => {
@@ -1062,8 +1043,6 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
                     <JobCard 
                       key={job.id} 
                       job={job} 
-                      isBookmarked={userBookmarks.has(job.id)}
-                      onBookmarkChange={handleBookmarkChange}
                     />
                   ))}
                 </div>

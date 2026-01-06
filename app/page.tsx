@@ -88,6 +88,10 @@ export default async function Home() {
         <HomePage 
           initialArticles={articles} 
           initialFilterData={filterData}
+          settings={{
+            site_title: 'Nexjob',
+            siteDescription: 'Platform pencarian kerja terpercaya di Indonesia'
+          }}
         />
       </main>
       <Footer />
