@@ -896,4 +896,20 @@ export class TugasCMSProvider implements CMSProvider {
       return null;
     }
   }
+
+  async getRobotsTxt(): Promise<string | null> {
+    await this.ensureInitialized();
+    
+    try {
+      console.log('Fetching robots.txt from CMS API...');
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/robots.txt`);
+      const robotsContent = await response.text();
+      
+      console.log('Successfully fetched robots.txt from CMS');
+      return robotsContent;
+    } catch (error) {
+      console.error('Error fetching robots.txt from CMS:', error);
+      return null;
+    }
+  }
 }

@@ -62,46 +62,6 @@ export async function middleware(request: NextRequest) {
     });
   }
 
-  // Handle robots.txt requests
-  if (pathname === '/robots.txt') {
-    try {
-      // Fetch robots.txt from CMS
-      const response = await fetch(`${appConfig.cms.endpoint}/api/v1/robots.txt`, {
-        signal: AbortSignal.timeout(appConfig.cms.timeout),
-      });
-
-      if (response.ok) {
-        const robotsTxt = await response.text();
-        return new NextResponse(robotsTxt, {
-          headers: {
-            'Content-Type': 'text/plain',
-            'Cache-Control': `public, max-age=${appConfig.cache.sitemapTtl / 1000}`,
-          },
-        });
-      }
-    } catch (error) {
-      console.error('Error fetching robots.txt from CMS:', error);
-    }
-
-    // Fallback: return basic robots.txt
-    const fallbackRobots = `User-agent: *
-Allow: /
-
-# Allow specific important pages
-Allow: /lowongan-kerja/
-Allow: /artikel/
-
-# Sitemaps
-Sitemap: ${appConfig.site.url}/sitemap.xml`;
-
-    return new NextResponse(fallbackRobots, {
-      headers: {
-        'Content-Type': 'text/plain',
-        'Cache-Control': 'public, max-age=300',
-      },
-    });
-  }
-
   // Handle other sitemap files (existing functionality)
   if (pathname.endsWith('.xml') && pathname.includes('sitemap')) {
     try {
@@ -189,5 +149,5 @@ Sitemap: ${appConfig.site.url}/sitemap.xml`;
 }
 
 export const config = {
-  matcher: ['/sitemap.xml', '/robots.txt', '/:path*.xml'],
+  matcher: ['/sitemap.xml', '/:path*.xml'],
 };
