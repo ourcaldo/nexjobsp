@@ -2,18 +2,15 @@ import type { Metadata } from 'next';
 import { FilterData } from '@/lib/cms/interface';
 import { articleService } from '@/lib/services/ArticleService';
 import { jobService } from '@/lib/services/JobService';
-import { SupabaseAdminService } from '@/lib/supabase/admin';
-import { getCurrentDomain } from '@/lib/env';
+import { config } from '@/lib/config';
+import { seoTemplates } from '@/lib/seo-templates';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import HomePage from '@/components/pages/HomePage';
 import { generateWebsiteSchema, generateOrganizationSchema } from '@/utils/schemaUtils';
-import { renderTemplate } from '@/utils/templateUtils';
 
 async function getHomeData() {
   try {
-    const settings = await SupabaseAdminService.getSettingsServerSide();
-
     // Fetch data
     const [articlesResponse, filterData] = await Promise.all([
       articleService.getArticles(1, 3),
@@ -25,38 +22,21 @@ async function getHomeData() {
 
     return {
       articles,
-      filterData,
-      settings
+      filterData
     };
   } catch (error) {
     console.error('Error fetching home data:', error);
 
     return {
       articles: [],
-      filterData: null,
-      settings: await SupabaseAdminService.getSettingsServerSide()
+      filterData: null
     };
   }
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { settings } = await getHomeData();
-  const currentUrl = getCurrentDomain();
-  
-  // Prepare template variables
-  const templateVars = {
-    site_title: settings?.site_title || 'Nexjob',
-    site_tagline: settings?.site_tagline || 'Find Your Dream Job',
-    lokasi: '',
-    kategori: ''
-  };
-
-  // Get SEO settings with template rendering
-  const rawSeoTitle = settings?.site_title ? `${settings.site_title} - ${settings.site_tagline || 'Find Your Dream Job'}` : 'Nexjob - Find Your Dream Job';
-  const rawSeoDescription = settings?.site_description || 'Platform pencarian kerja terpercaya di Indonesia. Temukan lowongan kerja terbaru dari berbagai perusahaan terkemuka.';
-
-  const pageTitle = renderTemplate(rawSeoTitle, templateVars);
-  const pageDescription = renderTemplate(rawSeoDescription, templateVars);
+  const pageTitle = `${config.site.name} - ${config.site.description}`;
+  const pageDescription = config.site.description;
 
   return {
     title: pageTitle,
@@ -65,17 +45,17 @@ export async function generateMetadata(): Promise<Metadata> {
       title: pageTitle,
       description: pageDescription,
       type: 'website',
-      url: `${currentUrl}/`,
-      images: [settings.home_og_image || `${currentUrl}/og-home.jpg`],
+      url: `${config.site.url}/`,
+      images: [seoTemplates.ogImages.home],
     },
     twitter: {
       card: 'summary_large_image',
       title: pageTitle,
       description: pageDescription,
-      images: [settings.home_og_image || `${currentUrl}/og-home.jpg`],
+      images: [seoTemplates.ogImages.home],
     },
     alternates: {
-      canonical: `${currentUrl}/`,
+      canonical: `${config.site.url}/`,
     },
   };
 }
@@ -83,9 +63,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export const revalidate = 86400; // ISR: Revalidate every 24 hours
 
 export default async function Home() {
-  const { articles, filterData, settings } = await getHomeData();
+  const { articles, filterData } = await getHomeData();
 
-  const websiteSchema = generateWebsiteSchema(settings);
+  const websiteSchema = generateWebsiteSchema();
   const organizationSchema = generateOrganizationSchema();
 
   return (
@@ -108,7 +88,6 @@ export default async function Home() {
         <HomePage 
           initialArticles={articles} 
           initialFilterData={filterData}
-          settings={settings}
         />
       </main>
       <Footer />

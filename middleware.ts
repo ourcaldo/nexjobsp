@@ -1,29 +1,127 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { config as appConfig } from '@/lib/config';
 
 export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
+  const { pathname } = request.nextUrl;
   
+  // Handle sitemap.xml requests
+  if (pathname === '/sitemap.xml') {
+    try {
+      // Fetch sitemap from CMS
+      const response = await fetch(`${appConfig.cms.endpoint}/api/v1/sitemap.xml`, {
+        headers: {
+          'Authorization': `Bearer ${appConfig.cms.token}`,
+        },
+        signal: AbortSignal.timeout(appConfig.cms.timeout),
+      });
+
+      if (response.ok) {
+        const sitemapXml = await response.text();
+        return new NextResponse(sitemapXml, {
+          headers: {
+            'Content-Type': 'application/xml; charset=utf-8',
+            'Cache-Control': `public, max-age=${appConfig.cache.sitemapTtl / 1000}`,
+            'X-Content-Type-Options': 'nosniff',
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching sitemap from CMS:', error);
+    }
+
+    // Fallback: return basic sitemap
+    const basicSitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${appConfig.site.url}</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${appConfig.site.url}/lowongan-kerja</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${appConfig.site.url}/artikel</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>`;
+
+    return new NextResponse(basicSitemap, {
+      headers: {
+        'Content-Type': 'application/xml; charset=utf-8',
+        'Cache-Control': 'public, max-age=300',
+        'X-Content-Type-Options': 'nosniff',
+      },
+    });
+  }
+
+  // Handle robots.txt requests
+  if (pathname === '/robots.txt') {
+    try {
+      // Fetch robots.txt from CMS
+      const response = await fetch(`${appConfig.cms.endpoint}/api/v1/robots.txt`, {
+        signal: AbortSignal.timeout(appConfig.cms.timeout),
+      });
+
+      if (response.ok) {
+        const robotsTxt = await response.text();
+        return new NextResponse(robotsTxt, {
+          headers: {
+            'Content-Type': 'text/plain',
+            'Cache-Control': `public, max-age=${appConfig.cache.sitemapTtl / 1000}`,
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching robots.txt from CMS:', error);
+    }
+
+    // Fallback: return basic robots.txt
+    const fallbackRobots = `User-agent: *
+Allow: /
+
+# Allow specific important pages
+Allow: /lowongan-kerja/
+Allow: /artikel/
+
+# Sitemaps
+Sitemap: ${appConfig.site.url}/sitemap.xml`;
+
+    return new NextResponse(fallbackRobots, {
+      headers: {
+        'Content-Type': 'text/plain',
+        'Cache-Control': 'public, max-age=300',
+      },
+    });
+  }
+
+  // Handle other sitemap files (existing functionality)
   if (pathname.endsWith('.xml') && pathname.includes('sitemap')) {
     try {
       const sitemapFile = pathname.replace(/^\//, '');
-      // TODO: Remove this temporary logging after sitemap verification period (1-2 weeks) - Added Nov 14, 2025
-      console.log(`[Sitemap Middleware] Proxying request: ${pathname} → https://cms.nexjob.tech/api/v1/sitemaps/${sitemapFile}`);
+      console.log(`[Sitemap Middleware] Proxying request: ${pathname} → ${appConfig.cms.endpoint}/api/v1/sitemaps/${sitemapFile}`);
       
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const timeoutId = setTimeout(() => controller.abort(), appConfig.cms.timeout);
       
-      const response = await fetch(`https://cms.nexjob.tech/api/v1/sitemaps/${sitemapFile}`, {
+      const response = await fetch(`${appConfig.cms.endpoint}/api/v1/sitemaps/${sitemapFile}`, {
         signal: controller.signal,
         headers: {
           'Accept': 'application/xml, text/xml',
+          'Authorization': `Bearer ${appConfig.cms.token}`,
         },
       });
       
       clearTimeout(timeoutId);
       
       if (!response.ok) {
-        // TODO: Remove temporary logging - see comment above
         console.error(`[Sitemap Middleware] CMS returned ${response.status} for ${sitemapFile}`);
         return NextResponse.next();
       }
@@ -43,6 +141,7 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next();
       }
 
+      // Security: Check for malicious patterns
       const maliciousPatterns = [
         /<script[^>]*>/i,
         /javascript:/i,
@@ -60,29 +159,27 @@ export async function middleware(request: NextRequest) {
         }
       }
 
-      xml = xml.replace(/https:\/\/cms\.nexjob\.tech\/api\/v1\/sitemaps\//g, 'https://nexjob.tech/');
+      // URL transformations
+      xml = xml.replace(/https:\/\/cms\.nexjob\.tech\/api\/v1\/sitemaps\//g, `${appConfig.site.url}/`);
       xml = xml.replace(/\/api\/v1\/sitemaps\//g, '/');
       xml = xml.replace(/\/jobs\//g, '/lowongan-kerja/');
       xml = xml.replace(/\/blog\//g, '/artikel/');
 
-      // TODO: Remove temporary logging - see comment above
       console.log(`[Sitemap Middleware] Successfully served ${sitemapFile} (${xml.length} bytes)`);
 
       return new NextResponse(xml, {
         headers: {
           'Content-Type': 'application/xml; charset=utf-8',
-          'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
+          'Cache-Control': `public, max-age=${appConfig.cache.sitemapTtl / 1000}, stale-while-revalidate=86400`,
           'X-Content-Type-Options': 'nosniff',
         },
       });
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
-        // TODO: Remove temporary logging - see comment above
         console.error(`[Sitemap Middleware] Timeout fetching ${pathname}`);
         return NextResponse.next();
       }
       
-      // TODO: Remove temporary logging - see comment above
       console.error(`[Sitemap Middleware] Error processing ${pathname}:`, error);
       return NextResponse.next();
     }
@@ -92,5 +189,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: '/:path*.xml',
+  matcher: ['/sitemap.xml', '/robots.txt', '/:path*.xml'],
 };

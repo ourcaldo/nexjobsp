@@ -1,3 +1,5 @@
+import { cmsSettingsService } from '@/lib/services/cms-settings';
+
 export interface AdvertisementConfig {
   // Other ad types remain the same
   sidebar_archive_ad_code?: string;
@@ -30,34 +32,22 @@ class AdvertisementService {
     }
 
     try {
-      const response = await fetch('/api/public/advertisements/', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        console.error('Failed to fetch advertisement config:', response.status);
-        return {};
-      }
-
-      const result = await response.json();
-      const settings = result.data || {};
+      // Use CMS settings service instead of API call
+      const settings = await cmsSettingsService.getAdvertisementSettings();
 
       this.adConfig = {
-        sidebar_archive_ad_code: settings?.sidebar_archive_ad_code || '',
-        sidebar_single_ad_code: settings?.sidebar_single_ad_code || '',
-        single_top_ad_code: settings?.single_top_ad_code || '',
-        single_bottom_ad_code: settings?.single_bottom_ad_code || '',
-        single_middle_ad_code: settings?.single_middle_ad_code || '',
+        sidebar_archive_ad_code: settings?.ad_codes?.sidebar_archive || '',
+        sidebar_single_ad_code: settings?.ad_codes?.sidebar_single || '',
+        single_top_ad_code: settings?.ad_codes?.single_top || '',
+        single_bottom_ad_code: settings?.ad_codes?.single_bottom || '',
+        single_middle_ad_code: settings?.ad_codes?.single_middle || '',
 
         // New popup ad settings
-        popup_ad_url: settings?.popup_ad_url || '',
-        popup_ad_enabled: settings?.popup_ad_enabled || false,
-        popup_ad_load_settings: settings?.popup_ad_load_settings || ['all_pages'],
-        popup_ad_max_executions: settings?.popup_ad_max_executions || 1,
-        popup_ad_device: settings?.popup_ad_device || 'all'
+        popup_ad_url: settings?.popup_ad?.url || '',
+        popup_ad_enabled: settings?.popup_ad?.enabled || false,
+        popup_ad_load_settings: settings?.popup_ad?.load_settings || ['all_pages'],
+        popup_ad_max_executions: settings?.popup_ad?.max_executions || 1,
+        popup_ad_device: settings?.popup_ad?.device || 'all'
       };
       
       this.configLoaded = true;

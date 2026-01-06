@@ -1,46 +1,41 @@
 import { Job } from '@/types/job';
-import { AdminSettings } from '@/lib/supabase';
-import { getCurrentDomain } from '@/lib/env';
+import { config } from '@/lib/config';
 
-export const generateWebsiteSchema = (settings: AdminSettings) => {
-  const baseUrl = getCurrentDomain();
-
+export const generateWebsiteSchema = () => {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": settings.site_title,
-    "description": settings.site_description,
-    "url": baseUrl,
+    "name": config.site.name,
+    "description": config.site.description,
+    "url": config.site.url,
     "potentialAction": {
       "@type": "SearchAction",
       "target": {
         "@type": "EntryPoint",
-        "urlTemplate": `${baseUrl}/lowongan-kerja/?search={search_term_string}`
+        "urlTemplate": `${config.site.url}/lowongan-kerja/?search={search_term_string}`
       },
       "query-input": "required name=search_term_string"
     },
     "publisher": {
       "@type": "Organization",
-      "name": settings.site_title,
-      "url": baseUrl,
+      "name": config.site.name,
+      "url": config.site.url,
       "logo": {
         "@type": "ImageObject",
-        "url": `${baseUrl}/logo.png`
+        "url": `${config.site.url}/logo.png`
       }
     }
   };
 };
 
 export const generateOrganizationSchema = () => {
-  const baseUrl = getCurrentDomain();
-
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Nexjob",
-    "url": baseUrl,
-    "logo": `${baseUrl}/logo.png`,
-    "description": "Platform pencarian kerja terpercaya di Indonesia dengan ribuan lowongan dari perusahaan terbaik",
+    "name": config.site.name,
+    "url": config.site.url,
+    "logo": `${config.site.url}/logo.png`,
+    "description": config.site.description,
     "foundingDate": "2024",
     "contactPoint": {
       "@type": "ContactPoint",
@@ -90,8 +85,6 @@ const extractSalaryInfo = (gaji: string) => {
 };
 
 export const generateJobPostingSchema = (job: Job) => {
-  const baseUrl = getCurrentDomain();
-
   // Calculate valid through date (30 days from posting date)
   const postedDate = new Date(job.created_at || Date.now());
   const validThrough = new Date(postedDate.getTime() + 30 * 24 * 60 * 60 * 1000);
@@ -112,7 +105,7 @@ export const generateJobPostingSchema = (job: Job) => {
     "hiringOrganization": {
       "@type": "Organization",
       "name": job.company_name,
-      "sameAs": baseUrl
+      "sameAs": config.site.url
     },
     "jobLocation": {
       "@type": "Place",
@@ -127,7 +120,7 @@ export const generateJobPostingSchema = (job: Job) => {
     "qualifications": job.pendidikan,
     "experienceRequirements": job.pengalaman,
     "workHours": job.kebijakan_kerja,
-    "url": `${baseUrl}/lowongan-kerja/${job.job_categories?.[0]?.slug || 'uncategorized'}/${job.id}/`,
+    "url": `${config.site.url}/lowongan-kerja/${job.job_categories?.[0]?.slug || 'uncategorized'}/${job.id}/`,
     "applicationContact": {
       "@type": "ContactPoint",
       "url": job.link
@@ -136,13 +129,11 @@ export const generateJobPostingSchema = (job: Job) => {
 };
 
 export const generateBreadcrumbSchema = (items: Array<{ label: string; href?: string }>) => {
-  const baseUrl = getCurrentDomain();
-
   const itemListElement = items.map((item, index) => ({
     "@type": "ListItem",
     "position": index + 1,
     "name": item.label,
-    ...(item.href && { "item": `${baseUrl}${item.href}` })
+    ...(item.href && { "item": `${config.site.url}${item.href}` })
   }));
 
   return {
@@ -153,7 +144,7 @@ export const generateBreadcrumbSchema = (items: Array<{ label: string; href?: st
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": baseUrl + "/"
+        "item": config.site.url + "/"
       },
       ...itemListElement
     ]
@@ -161,8 +152,6 @@ export const generateBreadcrumbSchema = (items: Array<{ label: string; href?: st
 };
 
 export const generateArticleSchema = (article: any) => {
-  const baseUrl = getCurrentDomain();
-
   // Handle both WordPress articles and CMS articles
   const isWordPressArticle = article.title?.rendered !== undefined;
 
@@ -173,28 +162,28 @@ export const generateArticleSchema = (article: any) => {
       "@type": "BlogPosting",
       "headline": article.title.rendered,
       "description": article.seo_description || article.excerpt.rendered.replace(/<[^>]*>/g, '').substring(0, 160),
-      "image": article.featured_media_url || `${baseUrl}/default-article-image.jpg`,
+      "image": article.featured_media_url || `${config.site.url}/default-article-image.jpg`,
       "author": {
         "@type": "Person",
         "name": article.author_info?.display_name || article.author_info?.name || "Nexjob Team"
       },
       "publisher": {
         "@type": "Organization",
-        "name": "Nexjob",
+        "name": config.site.name,
         "logo": {
           "@type": "ImageObject",
-          "url": `${baseUrl}/logo.png`
+          "url": `${config.site.url}/logo.png`
         }
       },
       "datePublished": article.date,
       "dateModified": article.modified || article.date,
       "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": `${baseUrl}/artikel/${article.slug}/`
+        "@id": `${config.site.url}/artikel/${article.slug}/`
       },
       "articleSection": article.categories_info?.[0]?.name || "Career Tips",
       "keywords": article.tags_info?.map((tag: any) => tag.name).join(", ") || "",
-      "url": `${baseUrl}/artikel/${article.slug}/`
+      "url": `${config.site.url}/artikel/${article.slug}/`
     };
   } else {
     // CMS article structure (NxdbArticle)
@@ -203,41 +192,39 @@ export const generateArticleSchema = (article: any) => {
       "@type": "BlogPosting",
       "headline": article.title,
       "description": article.meta_description || article.excerpt || article.content?.replace(/<[^>]*>/g, '').substring(0, 160) || "",
-      "image": article.featured_image || `${baseUrl}/default-article-image.jpg`,
+      "image": article.featured_image || `${config.site.url}/default-article-image.jpg`,
       "author": {
         "@type": "Person",
         "name": article.author?.full_name || article.author?.email || "Nexjob Team"
       },
       "publisher": {
         "@type": "Organization",
-        "name": "Nexjob",
+        "name": config.site.name,
         "logo": {
           "@type": "ImageObject",
-          "url": `${baseUrl}/logo.png`
+          "url": `${config.site.url}/logo.png`
         }
       },
       "datePublished": article.published_at || article.post_date,
       "dateModified": article.updated_at,
       "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": `${baseUrl}/artikel/${article.categories?.[0]?.slug || 'uncategorized'}/${article.slug}/`
+        "@id": `${config.site.url}/artikel/${article.categories?.[0]?.slug || 'uncategorized'}/${article.slug}/`
       },
       "articleSection": article.categories?.[0]?.name || "Career Tips",
       "keywords": article.tags?.map((tag: any) => tag.name).join(", ") || "",
-      "url": `${baseUrl}/artikel/${article.categories?.[0]?.slug || 'uncategorized'}/${article.slug}/`
+      "url": `${config.site.url}/artikel/${article.categories?.[0]?.slug || 'uncategorized'}/${article.slug}/`
     };
   }
 };
 
 export const generateJobListingSchema = (jobs: Job[]) => {
-  const baseUrl = getCurrentDomain();
-
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "name": "Job Listings",
     "description": "Latest job opportunities available on Nexjob",
-    "url": `${baseUrl}/lowongan-kerja/`,
+    "url": `${config.site.url}/lowongan-kerja/`,
     "numberOfItems": jobs.length,
     "itemListElement": jobs.slice(0, 10).map((job, index) => ({
       "@type": "ListItem",
@@ -262,21 +249,19 @@ export const generateJobListingSchema = (jobs: Job[]) => {
           }
         },
         "baseSalary": extractSalaryInfo(job.gaji),
-        "url": `${baseUrl}/lowongan-kerja/${job.job_categories?.[0]?.slug || 'uncategorized'}/${job.id}/`
+        "url": `${config.site.url}/lowongan-kerja/${job.job_categories?.[0]?.slug || 'uncategorized'}/${job.id}/`
       }
     }))
   };
 };
 
 export const generateArticleListingSchema = (articles: any[]) => {
-  const baseUrl = getCurrentDomain();
-
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "name": "Career Articles",
     "description": "Latest career tips and guidance articles",
-    "url": `${baseUrl}/artikel/`,
+    "url": `${config.site.url}/artikel/`,
     "numberOfItems": Array.isArray(articles) ? articles.length : 0,
     "itemListElement": Array.isArray(articles) ? articles.slice(0, 10).map((article, index) => ({
       "@type": "ListItem",
@@ -290,25 +275,23 @@ export const generateArticleListingSchema = (articles: any[]) => {
           "name": article.author_info?.display_name || article.author_info?.name || "Nexjob Team"
         },
         "datePublished": article.date,
-        "url": `${baseUrl}/artikel/${article.slug}/`
+        "url": `${config.site.url}/artikel/${article.slug}/`
       }
     })) : [],
   };
 };
 
 export const generateAuthorSchema = (author: any) => {
-  const baseUrl = getCurrentDomain();
-
   return {
     "@context": "https://schema.org",
     "@type": "Person",
     "name": author.display_name || author.name,
     "description": author.description || "Content writer at Nexjob",
-    "url": `${baseUrl}/author/${author.slug}/`,
-    "image": author.avatar_urls?.['96'] || `${baseUrl}/default-avatar.png`,
+    "url": `${config.site.url}/author/${author.slug}/`,
+    "image": author.avatar_urls?.['96'] || `${config.site.url}/default-avatar.png`,
     "worksFor": {
       "@type": "Organization",
-      "name": "Nexjob"
+      "name": config.site.name
     }
   };
 };

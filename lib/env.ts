@@ -4,24 +4,19 @@ export const env = {
   SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || 'https://nexjob.tech',
   
   // CMS API
-  CMS_ENDPOINT: process.env.NEXT_PUBLIC_CMS_ENDPOINT || 'https://cms.tugasin.me',
+  CMS_ENDPOINT: process.env.NEXT_PUBLIC_CMS_ENDPOINT || 'https://cms.nexjob.tech',
   CMS_TOKEN: process.env.CMS_TOKEN || '',
   CMS_TIMEOUT: process.env.CMS_TIMEOUT || '10000',
   
-  // Supabase
-  SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+  // Storage Configuration (if needed)
+  STORAGE_ACCESS_KEY: process.env.STORAGE_ACCESS_KEY || '',
+  STORAGE_SECRET_KEY: process.env.STORAGE_SECRET_KEY || '',
+  STORAGE_ENDPOINT: process.env.STORAGE_ENDPOINT || '',
+  STORAGE_REGION: process.env.STORAGE_REGION || 'ap-southeast-1',
   
-  // Supabase Storage S3-Compatible Configuration
-  SUPABASE_STORAGE_ACCESS_KEY: process.env.SUPABASE_STORAGE_ACCESS_KEY || '',
-  SUPABASE_STORAGE_SECRET_KEY: process.env.SUPABASE_STORAGE_SECRET_KEY || '',
-  SUPABASE_STORAGE_ENDPOINT: process.env.SUPABASE_STORAGE_ENDPOINT || '',
-  SUPABASE_STORAGE_REGION: process.env.SUPABASE_STORAGE_REGION || 'ap-southeast-1',
-  
-  // SEO (now handled by database settings)
-  SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME || '',
-  SITE_DESCRIPTION: process.env.NEXT_PUBLIC_SITE_DESCRIPTION || '',
+  // SEO
+  SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME || 'Nexjob',
+  SITE_DESCRIPTION: process.env.NEXT_PUBLIC_SITE_DESCRIPTION || 'Platform pencarian kerja terpercaya di Indonesia',
   
   // Analytics
   GA_ID: process.env.NEXT_PUBLIC_GA_ID,
@@ -37,19 +32,15 @@ export const env = {
 export const validateEnv = () => {
   const missing: string[] = [];
   
-  // Check client-side required variables using the env object (not process.env directly)
-  if (!env.SUPABASE_URL) {
-    missing.push('NEXT_PUBLIC_SUPABASE_URL');
+  // Check required variables
+  if (!env.CMS_ENDPOINT) {
+    missing.push('NEXT_PUBLIC_CMS_ENDPOINT');
   }
-  if (!env.SUPABASE_ANON_KEY) {
-    missing.push('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  if (!env.CMS_TOKEN) {
+    missing.push('CMS_TOKEN');
   }
-  
-  // Check server-side only variables (only if on server)
-  if (typeof window === 'undefined') {
-    if (!env.SUPABASE_SERVICE_ROLE_KEY) {
-      missing.push('SUPABASE_SERVICE_ROLE_KEY');
-    }
+  if (!env.SITE_URL) {
+    missing.push('NEXT_PUBLIC_SITE_URL');
   }
   
   if (missing.length > 0) {
@@ -67,19 +58,9 @@ export const validateEnv = () => {
     return false;
   }
   
-  // Validate Supabase URL format
-  if (env.SUPABASE_URL && !env.SUPABASE_URL.startsWith('https://')) {
-    const errorMessage = 'NEXT_PUBLIC_SUPABASE_URL must be a valid HTTPS URL';
-    if (env.IS_PRODUCTION) {
-      throw new Error(errorMessage);
-    }
-    console.warn(`Warning: ${errorMessage}`);
-    return false;
-  }
-  
-  // Validate Supabase keys are not empty
-  if (env.SUPABASE_ANON_KEY && env.SUPABASE_ANON_KEY.length < 10) {
-    const errorMessage = 'NEXT_PUBLIC_SUPABASE_ANON_KEY appears to be invalid (too short)';
+  // Validate CMS endpoint format
+  if (env.CMS_ENDPOINT && !env.CMS_ENDPOINT.startsWith('https://')) {
+    const errorMessage = 'NEXT_PUBLIC_CMS_ENDPOINT must be a valid HTTPS URL';
     if (env.IS_PRODUCTION) {
       throw new Error(errorMessage);
     }

@@ -1,6 +1,5 @@
 import { Job } from '@/types/job';
-import { supabaseAdminService } from '@/lib/supabase/admin';
-import { env } from '@/lib/env';
+import { config } from '@/lib/config';
 import { CMSProvider, FilterData, JobsResponse } from '../interface';
 import { transformCMSPageToPage } from '@/lib/cms/utils/transformers';
 
@@ -75,12 +74,12 @@ export class TugasCMSProvider implements CMSProvider {
   private initializationPromise: Promise<void> | null = null;
 
   private filterDataCache: { data: FilterData; timestamp: number } | null = null;
-  private readonly FILTER_CACHE_TTL = parseInt(process.env.FILTER_CACHE_TTL || '3600000');
+  private readonly FILTER_CACHE_TTL = config.cache.filterTtl;
 
   constructor() {
-    this.baseUrl = env.CMS_ENDPOINT || 'https://cms.nexjob.tech';
-    this.timeout = parseInt(env.CMS_TIMEOUT || '10000');
-    this.authToken = env.CMS_TOKEN || '';
+    this.baseUrl = config.cms.endpoint;
+    this.timeout = config.cms.timeout;
+    this.authToken = config.cms.token;
   }
 
   private async ensureInitialized(): Promise<void> {
@@ -98,27 +97,13 @@ export class TugasCMSProvider implements CMSProvider {
 
   private async loadSettingsFromDatabase(): Promise<void> {
     try {
-      const settings = await supabaseAdminService.getSettings();
-      
-      if (!settings) {
-        this.settingsInitialized = true;
-        return;
-      }
-
-      if (settings.cms_endpoint) {
-        this.baseUrl = settings.cms_endpoint;
-      }
-      if (settings.cms_token) {
-        this.authToken = settings.cms_token;
-      }
-      if (settings.cms_timeout) {
-        this.timeout = typeof settings.cms_timeout === 'number' 
-          ? settings.cms_timeout 
-          : parseInt(String(settings.cms_timeout));
-      }
-
+      // Use configuration from environment variables instead of database
+      this.baseUrl = config.cms.endpoint;
+      this.authToken = config.cms.token;
+      this.timeout = config.cms.timeout;
       this.settingsInitialized = true;
     } catch (error) {
+      console.error('Error loading CMS settings:', error);
       this.settingsInitialized = true;
     }
   }
