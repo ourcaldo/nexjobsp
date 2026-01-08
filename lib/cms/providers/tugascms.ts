@@ -912,4 +912,45 @@ export class TugasCMSProvider implements CMSProvider {
       return null;
     }
   }
+
+  async getAdvertisements(): Promise<any> {
+    await this.ensureInitialized();
+
+    try {
+      const response = await this.fetchWithTimeout(
+        `${this.baseUrl}/api/v1/settings/advertisements`,
+        {
+          headers: {
+            'Authorization': `Bearer ${this.authToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching advertisements from CMS:', error);
+      // Return default empty advertisements
+      return {
+        success: true,
+        data: {
+          popup_ad: {
+            enabled: false,
+            url: '',
+            load_settings: [],
+            max_executions: 0,
+            device: 'all'
+          },
+          ad_codes: {
+            sidebar_archive: '',
+            sidebar_single: '',
+            single_top: '',
+            single_bottom: '',
+            single_middle: ''
+          }
+        }
+      };
+    }
+  }
 }

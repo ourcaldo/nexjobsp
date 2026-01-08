@@ -86,6 +86,8 @@ export interface CMSProvider {
   getSitemapXML(sitemapPath: string): Promise<string | null>;
   getRobotsTxt(): Promise<string | null>;
   
+  getAdvertisements(): Promise<any>;
+  
   testConnection(): Promise<{ success: boolean; data?: any; error?: string }>;
   clearFilterCache(): void;
 }
