@@ -6,15 +6,13 @@ export const revalidate = 3600 // 1 hour in seconds
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Fetching robots.txt from TugasCMS...')
-    
     // Fetch robots.txt from TugasCMS backend
     const cmsProvider = new TugasCMSProvider()
     const robotsContent = await cmsProvider.getRobotsTxt()
-    
+
     if (!robotsContent) {
       console.warn('No robots.txt content from CMS, using fallback')
-      
+
       // Fallback robots.txt if CMS fails
       const fallbackRobots = `User-agent: *
 Allow: /
@@ -50,8 +48,6 @@ Crawl-delay: 1`
       })
     }
 
-    console.log('Successfully fetched robots.txt from CMS')
-    
     return new NextResponse(robotsContent, {
       status: 200,
       headers: {
@@ -64,13 +60,13 @@ Crawl-delay: 1`
     })
   } catch (error) {
     console.error('Error fetching robots.txt:', error)
-    
+
     // Emergency fallback robots.txt
     const emergencyRobots = `User-agent: *
 Allow: /
 Sitemap: ${process.env.NEXT_PUBLIC_SITE_URL || 'https://nexjob.tech'}/sitemap.xml
 Crawl-delay: 1`
-    
+
     return new NextResponse(emergencyRobots, {
       status: 200,
       headers: {

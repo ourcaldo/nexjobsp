@@ -59,35 +59,65 @@ export interface ArticlesResponse {
   hasMore: boolean;
 }
 
+export interface AdvertisementSettings {
+  popup_ad: {
+    enabled: boolean;
+    url: string;
+    load_settings: string[];
+    max_executions: number;
+    device: 'all' | 'mobile' | 'desktop';
+  };
+  ad_codes: {
+    sidebar_archive: string;
+    sidebar_single: string;
+    single_top: string;
+    single_bottom: string;
+    single_middle: string;
+  };
+}
+
+export interface Page {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt?: string;
+  featured_image?: string | null;
+  status: string;
+  seo_title?: string | null;
+  meta_description?: string | null;
+}
+
 export interface CMSProvider {
-  getJobs(filters?: any, page?: number, perPage?: number): Promise<JobsResponse>;
+  getJobs(filters?: JobFilters, page?: number, perPage?: number): Promise<JobsResponse>;
   getJobById(id: string): Promise<Job | null>;
   getJobBySlug(slug: string): Promise<Job | null>;
   getJobsByIds(jobIds: string[]): Promise<Job[]>;
   getRelatedJobs(jobId: string, limit?: number): Promise<Job[]>;
   getAllJobsForSitemap(): Promise<Job[]>;
-  
-  getArticles(page?: number, limit?: number, category?: string, search?: string): Promise<any>;
-  getArticleBySlug(slug: string): Promise<any>;
-  getRelatedArticles(articleSlug: string, limit?: number): Promise<any>;
-  
+
+  getArticles(page?: number, limit?: number, category?: string, search?: string): Promise<ArticlesResponse>;
+  getArticleBySlug(slug: string): Promise<Article | null>;
+  getRelatedArticles(articleSlug: string, limit?: number): Promise<Article[]>;
+
   getFiltersData(): Promise<FilterData>;
-  
-  getCategories(page?: number, limit?: number, search?: string): Promise<any>;
-  getTags(page?: number, limit?: number, search?: string): Promise<any>;
-  getCategoryWithPosts(idOrSlug: string, page?: number, limit?: number): Promise<any>;
-  getTagWithPosts(idOrSlug: string, page?: number, limit?: number): Promise<any>;
-  
-  getPages(page?: number, limit?: number, category?: string, tag?: string, search?: string): Promise<any>;
-  getPageBySlug(slug: string): Promise<any>;
-  getAllPagesForSitemap(): Promise<any>;
-  
-  getSitemaps(): Promise<any>;
+
+  getCategories(page?: number, limit?: number, search?: string): Promise<{ categories: Category[]; total: number }>;
+  getTags(page?: number, limit?: number, search?: string): Promise<{ tags: Tag[]; total: number }>;
+  getCategoryWithPosts(idOrSlug: string, page?: number, limit?: number): Promise<{ category: Category; articles: Article[] } | null>;
+  getTagWithPosts(idOrSlug: string, page?: number, limit?: number): Promise<{ tag: Tag; articles: Article[] } | null>;
+
+  getPages(page?: number, limit?: number, category?: string, tag?: string, search?: string): Promise<{ pages: Page[]; total: number }>;
+  getPageBySlug(slug: string): Promise<Page | null>;
+  getAllPagesForSitemap(): Promise<Page[]>;
+
+  getSitemaps(): Promise<string[]>;
   getSitemapXML(sitemapPath: string): Promise<string | null>;
   getRobotsTxt(): Promise<string | null>;
-  
-  getAdvertisements(): Promise<any>;
-  
-  testConnection(): Promise<{ success: boolean; data?: any; error?: string }>;
+
+  getAdvertisements(): Promise<AdvertisementSettings | null>;
+
+  testConnection(): Promise<{ success: boolean; message?: string; error?: string }>;
   clearFilterCache(): void;
 }
+

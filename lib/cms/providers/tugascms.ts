@@ -154,9 +154,9 @@ export class TugasCMSProvider implements CMSProvider {
     const formatSalary = (min: string | null, max: string | null, currency: string | null, period: string | null): string => {
       const minNum = min ? parseInt(min) : null;
       const maxNum = max ? parseInt(max) : null;
-      
+
       if (!minNum && !maxNum) return 'Negosiasi';
-      
+
       const currencySymbol = currency === 'IDR' ? 'Rp ' : currency === 'USD' ? '$' : '';
       const formatNumber = (num: number) => {
         if (num >= 1000000) {
@@ -176,7 +176,7 @@ export class TugasCMSProvider implements CMSProvider {
       } else if (maxNum) {
         return `Up to ${currencySymbol}${formatNumber(maxNum)}${period ? '/' + period : ''}`;
       }
-      
+
       return 'Negosiasi';
     };
 
@@ -212,8 +212,8 @@ export class TugasCMSProvider implements CMSProvider {
       ),
       kebijakan_kerja: cmsJob.job_is_remote ? 'Remote Working' : cmsJob.job_is_hybrid ? 'Hybrid Working' : 'On-site',
       industry: cmsJob.job_categories?.[0]?.name || '',
-      link: cmsJob.job_application_url || cmsJob.job_application_email ? 
-        (cmsJob.job_application_url || `mailto:${cmsJob.job_application_email}`) : 
+      link: cmsJob.job_application_url || cmsJob.job_application_email ?
+        (cmsJob.job_application_url || `mailto:${cmsJob.job_application_email}`) :
         `https://nexjob.tech/lowongan-kerja/${cmsJob.job_categories?.[0]?.slug || 'uncategorized'}/${cmsJob.id}`,
       sumber_lowongan: 'Nexjob',
       created_at: cmsJob.created_at,
@@ -238,7 +238,7 @@ export class TugasCMSProvider implements CMSProvider {
     if (filters.location) {
       params.set('province', filters.location);
     }
-    
+
     if (filters.cities && filters.cities.length > 0) {
       params.set('city', filters.cities[0]);
     }
@@ -393,7 +393,7 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getFiltersData(): Promise<FilterData> {
     await this.ensureInitialized();
-    
+
     try {
       if (this.isFilterCacheValid() && this.filterDataCache) {
         return this.filterDataCache.data;
@@ -427,22 +427,22 @@ export class TugasCMSProvider implements CMSProvider {
 
   async testConnection(): Promise<{ success: boolean; data?: any; error?: string }> {
     await this.ensureInitialized();
-    
+
     try {
       const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/job-posts?limit=1`);
       const data: CMSResponse<{ posts: CMSJobPost[] }> = await response.json();
       return { success: true, data: data.data.posts[0] || null };
     } catch (error) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
       };
     }
   }
 
   async getJobsByIds(jobIds: string[]): Promise<Job[]> {
     if (jobIds.length === 0) return [];
-    
+
     await this.ensureInitialized();
 
     try {
@@ -463,7 +463,7 @@ export class TugasCMSProvider implements CMSProvider {
 
       const results = await Promise.allSettled(promises);
       return results
-        .filter((result): result is PromiseFulfilledResult<Job> => 
+        .filter((result): result is PromiseFulfilledResult<Job> =>
           result.status === 'fulfilled' && result.value !== null
         )
         .map(result => result.value);
@@ -474,7 +474,7 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getJobs(filters?: any, page: number = 1, perPage: number = 24): Promise<JobsResponse> {
     await this.ensureInitialized();
-    
+
     try {
       const url = this.buildJobsUrl(filters, page, perPage);
 
@@ -509,14 +509,14 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getJobBySlug(slug: string): Promise<Job | null> {
     await this.ensureInitialized();
-    
+
     try {
       const params = new URLSearchParams({
         slug: slug,
         status: 'published',
         limit: '1'
       });
-      
+
       const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/job-posts?${params.toString()}`);
       const data: CMSResponse<{ posts: CMSJobPost[]; pagination: PaginationMeta }> = await response.json();
 
@@ -532,12 +532,12 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getJobById(id: string): Promise<Job | null> {
     await this.ensureInitialized();
-    
+
     try {
       const params = new URLSearchParams({
         status: 'published'
       });
-      
+
       const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/job-posts/${id}?${params.toString()}`);
       const data: CMSResponse<CMSJobPost> = await response.json();
 
@@ -581,7 +581,7 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getArticles(page: number = 1, limit: number = 20, category?: string, search?: string) {
     await this.ensureInitialized();
-    
+
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -605,7 +605,7 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getArticleBySlug(slug: string) {
     await this.ensureInitialized();
-    
+
     try {
       const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/posts/${slug}`);
       const data = await response.json();
@@ -617,7 +617,7 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getCategories(page: number = 1, limit: number = 50, search?: string) {
     await this.ensureInitialized();
-    
+
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -638,7 +638,7 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getTags(page: number = 1, limit: number = 50, search?: string) {
     await this.ensureInitialized();
-    
+
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -659,7 +659,7 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getCategoryWithPosts(idOrSlug: string, page: number = 1, limit: number = 20) {
     await this.ensureInitialized();
-    
+
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -678,7 +678,7 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getTagWithPosts(idOrSlug: string, page: number = 1, limit: number = 20) {
     await this.ensureInitialized();
-    
+
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -697,19 +697,19 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getRelatedJobs(jobId: string, limit: number = 5): Promise<Job[]> {
     await this.ensureInitialized();
-    
+
     try {
       const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/job-posts/${jobId}`);
       const data: CMSResponse<CMSJobPost> = await response.json();
-      
+
       if (!data.success || !data.data.job_categories || data.data.job_categories.length === 0) {
         return [];
       }
 
       const categoryId = data.data.job_categories[0].id;
-      
+
       const relatedResponse = await this.getJobs({ categories: [categoryId] }, 1, limit + 1);
-      
+
       return relatedResponse.jobs
         .filter(job => job.id !== jobId)
         .slice(0, limit);
@@ -720,30 +720,30 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getRelatedArticles(articleSlug: string, limit: number = 5) {
     await this.ensureInitialized();
-    
+
     try {
       const articleResponse = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/posts/${articleSlug}`);
       const articleData = await articleResponse.json();
-      
+
       if (!articleData.success || !articleData.data.categories || articleData.data.categories.length === 0) {
         const response = await this.getArticles(1, limit + 5);
-        
+
         if (!response.success || !response.data.posts) {
           return { success: false, data: [] };
         }
-        
-        return { 
-          success: true, 
+
+        return {
+          success: true,
           data: response.data.posts
             .filter((article: any) => article.slug !== articleSlug)
-            .slice(0, limit) 
+            .slice(0, limit)
         };
       }
 
       const categoryId = articleData.data.categories[0].id;
-      
+
       const relatedResponse = await this.getArticles(1, limit + 5, categoryId);
-      
+
       if (!relatedResponse.success || !relatedResponse.data.posts) {
         return { success: false, data: [] };
       }
@@ -760,7 +760,7 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getPages(page: number = 1, limit: number = 20, category?: string, tag?: string, search?: string) {
     await this.ensureInitialized();
-    
+
     try {
       const params = new URLSearchParams({
         page: page.toString(),
@@ -799,7 +799,7 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getPageBySlug(slug: string) {
     await this.ensureInitialized();
-    
+
     try {
       const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/pages/${slug}`);
       const data = await response.json();
@@ -823,7 +823,7 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getAllPagesForSitemap() {
     await this.ensureInitialized();
-    
+
     try {
       const allPages: any[] = [];
       let page = 1;
@@ -860,7 +860,7 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getSitemaps() {
     await this.ensureInitialized();
-    
+
     try {
       const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/sitemaps`);
       const data = await response.json();
@@ -873,23 +873,23 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getSitemapXML(sitemapPath: string): Promise<string | null> {
     await this.ensureInitialized();
-    
+
     try {
       const response = await this.fetchWithTimeout(`${this.baseUrl}${sitemapPath}`);
       let xmlContent = await response.text();
-      
+
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nexjob.tech';
-      
+
       xmlContent = xmlContent.replace(
         /\/api\/v1\/sitemaps\//g,
         '/'
       );
-      
+
       xmlContent = xmlContent.replace(
         /https?:\/\/cms\.nexjob\.tech\//g,
         `${siteUrl}/`
       );
-      
+
       return xmlContent;
     } catch (error) {
       console.error('Error fetching sitemap XML:', error);
@@ -899,13 +899,10 @@ export class TugasCMSProvider implements CMSProvider {
 
   async getRobotsTxt(): Promise<string | null> {
     await this.ensureInitialized();
-    
+
     try {
-      console.log('Fetching robots.txt from CMS API...');
       const response = await this.fetchWithTimeout(`${this.baseUrl}/api/v1/robots.txt`);
       const robotsContent = await response.text();
-      
-      console.log('Successfully fetched robots.txt from CMS');
       return robotsContent;
     } catch (error) {
       console.error('Error fetching robots.txt from CMS:', error);

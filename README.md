@@ -1,35 +1,33 @@
 
 # 🚀 Nexjob - Modern Job Portal Platform
 
-[![Next.js](https://img.shields.io/badge/Next.js-14.2.30-black)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)](https://www.typescriptlang.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-Database-green)](https://supabase.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.1-38B2AC)](https://tailwindcss.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-blue)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC)](https://tailwindcss.com/)
 
-A modern, full-featured job portal platform built with Next.js, Supabase, and WordPress as a headless CMS. Features advanced job search, user management, and comprehensive admin controls.
+A modern, full-featured job portal platform built with Next.js 16, React 19, and TugasCMS (Neon PostgreSQL backend). Features advanced job search, content management, and comprehensive SEO optimization.
 
 ## 🌟 Features
 
 ### Core Features
 - 🔍 **Advanced Job Search** - Filter by location, category, salary, experience level
 - 📝 **Job Management** - Complete CRUD operations with rich content editor
-- 👤 **User Authentication** - Secure signup/login with email verification
 - 📚 **Article System** - Career tips and guides with categories
 - 🔖 **Bookmark System** - Save favorite jobs for later
 - 📱 **Responsive Design** - Mobile-first approach with Tailwind CSS
 
-### Admin Features
+### Admin Features (via TugasCMS)
 - 🎛️ **Comprehensive Admin Panel** - Full control over site settings
 - 🔧 **SEO Management** - Dynamic meta tags, sitemaps, and schema markup
 - 📊 **Analytics Integration** - Google Analytics and Tag Manager support
 - 💰 **Advertisement Management** - Popup and sidebar ad configurations
-- 🔄 **WordPress Integration** - Headless CMS for content management
-- 👥 **User Management** - Role-based access control
+- 👥 **User Management** - Clerk-based authentication with role-based access
 
 ### Technical Features
 - ⚡ **SSG/ISR** - Static generation with incremental regeneration
 - 🔄 **Auto Sitemap Generation** - Dynamic XML sitemaps for SEO
-- 🖼️ **Image Optimization** - Next.js Image component with Supabase storage
+- 🖼️ **Image Optimization** - Next.js Image component with Appwrite storage
 - 📈 **Performance Optimized** - Lazy loading, skeleton screens, infinite scroll
 - 🚀 **Production Ready** - PM2 cluster mode, Nginx configuration included
 
@@ -37,11 +35,11 @@ A modern, full-featured job portal platform built with Next.js, Supabase, and Wo
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Next.js App   │◄──►│   Supabase DB   │◄──►│  WordPress CMS  │
-│                 │    │                 │    │                 │
-│ • SSG/ISR Pages │    │ • User Auth     │    │ • Job Content   │
-│ • API Routes    │    │ • Job Storage   │    │ • Article Mgmt  │
-│ • Admin Panel   │    │ • File Storage  │    │ • Meta Fields   │
+│   Next.js App   │◄──►│   TugasCMS      │◄──►│  Neon PostgreSQL│
+│   (nexjobsp)    │    │ (tugasincms)    │    │                 │
+│ • SSG/ISR Pages │    │ • Clerk Auth    │    │ • Jobs Data     │
+│ • API Proxy     │    │ • REST API v1   │    │ • Articles      │
+│ • SEO/Analytics │    │ • Redis Cache   │    │ • Settings      │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
@@ -50,8 +48,7 @@ A modern, full-featured job portal platform built with Next.js, Supabase, and Wo
 ### Prerequisites
 - Node.js 18+ 
 - npm 8+
-- Supabase account
-- WordPress installation (optional)
+- TugasCMS backend running
 
 ### Installation
 

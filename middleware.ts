@@ -4,7 +4,7 @@ import { config as appConfig } from '@/lib/config';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
+
   // Handle sitemap.xml requests
   if (pathname === '/sitemap.xml') {
     try {
@@ -66,11 +66,10 @@ export async function middleware(request: NextRequest) {
   if (pathname.endsWith('.xml') && pathname.includes('sitemap')) {
     try {
       const sitemapFile = pathname.replace(/^\//, '');
-      console.log(`[Sitemap Middleware] Proxying request: ${pathname} → ${appConfig.cms.endpoint}/api/v1/sitemaps/${sitemapFile}`);
-      
+
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), appConfig.cms.timeout);
-      
+
       const response = await fetch(`${appConfig.cms.endpoint}/api/v1/sitemaps/${sitemapFile}`, {
         signal: controller.signal,
         headers: {
@@ -78,9 +77,9 @@ export async function middleware(request: NextRequest) {
           'Authorization': `Bearer ${appConfig.cms.token}`,
         },
       });
-      
+
       clearTimeout(timeoutId);
-      
+
       if (!response.ok) {
         console.error(`[Sitemap Middleware] CMS returned ${response.status} for ${sitemapFile}`);
         return NextResponse.next();
@@ -92,7 +91,7 @@ export async function middleware(request: NextRequest) {
       }
 
       let xml = await response.text();
-      
+
       if (!xml || xml.trim().length === 0) {
         return NextResponse.next();
       }
@@ -125,8 +124,6 @@ export async function middleware(request: NextRequest) {
       xml = xml.replace(/\/jobs\//g, '/lowongan-kerja/');
       xml = xml.replace(/\/blog\//g, '/artikel/');
 
-      console.log(`[Sitemap Middleware] Successfully served ${sitemapFile} (${xml.length} bytes)`);
-
       return new NextResponse(xml, {
         headers: {
           'Content-Type': 'application/xml; charset=utf-8',
@@ -139,12 +136,12 @@ export async function middleware(request: NextRequest) {
         console.error(`[Sitemap Middleware] Timeout fetching ${pathname}`);
         return NextResponse.next();
       }
-      
+
       console.error(`[Sitemap Middleware] Error processing ${pathname}:`, error);
       return NextResponse.next();
     }
   }
-  
+
   return NextResponse.next();
 }
 
