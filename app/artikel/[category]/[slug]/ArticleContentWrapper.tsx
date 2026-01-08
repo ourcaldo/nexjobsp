@@ -3,11 +3,41 @@
 import React, { useState, useEffect } from 'react';
 import ArticleTableOfContents from '@/components/ArticleTableOfContents';
 import AdDisplay from '@/components/Advertisement/AdDisplay';
-import { advertisementService } from '@/lib/utils/advertisements';
 
 interface ArticleContentWrapperProps {
   content: string;
 }
+
+// Helper function to insert middle ad into content
+const insertMiddleAd = (htmlContent: string, adCode: string): string => {
+  if (!adCode || !htmlContent) return htmlContent;
+  
+  if (typeof DOMParser === 'undefined') return htmlContent;
+  
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlContent, 'text/html');
+    const headings = doc.querySelectorAll('h2');
+    
+    if (headings.length === 0) return htmlContent;
+    
+    const middleIndex = Math.floor(headings.length / 2);
+    const targetHeading = headings[middleIndex];
+    
+    const adContainer = doc.createElement('div');
+    adContainer.className = 'advertisement-middle my-6';
+    adContainer.innerHTML = `
+      <div class="text-xs text-gray-500 mb-2 text-center">Advertisement</div>
+      ${adCode}
+    `;
+    
+    targetHeading.parentNode?.insertBefore(adContainer, targetHeading);
+    
+    return doc.body.innerHTML;
+  } catch (error) {
+    return htmlContent;
+  }
+};
 
 const ArticleContentWrapper: React.FC<ArticleContentWrapperProps> = ({ content }) => {
   const [processedContent, setProcessedContent] = useState('');
@@ -15,9 +45,13 @@ const ArticleContentWrapper: React.FC<ArticleContentWrapperProps> = ({ content }
   useEffect(() => {
     const processContentWithAds = async () => {
       try {
-        const middleAdCode = await advertisementService.getAdCode('single_middle_ad_code');
-        if (middleAdCode) {
-          const withAds = advertisementService.insertMiddleAd(content, middleAdCode);
+        // Fetch from proxy API route instead of direct CMS call
+        const response = await fetch('/api/advertisements');
+        const data = await response.json();
+        
+        if (data.success && data.data && data.data.ad_codes && data.data.ad_codes.single_middle) {
+          const middleAdCode = data.data.ad_codes.single_middle;
+          const withAds = insertMiddleAd(content, middleAdCode);
           setProcessedContent(withAds);
         } else {
           setProcessedContent(content);

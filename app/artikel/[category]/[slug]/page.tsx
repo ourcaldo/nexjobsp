@@ -14,10 +14,10 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import Image from 'next/image';
 
 interface ArticleDetailPageProps {
-  params: {
+  params: Promise<{
     category: string;
     slug: string;
-  };
+  }>;
 }
 
 // Wrap with React cache() to deduplicate API calls between generateMetadata() and page component
@@ -54,7 +54,7 @@ const getArticleData = cache(async (categorySlug: string, slug: string) => {
 
     const hasCategory = article.categories?.some((cat: any) => cat.slug === categorySlug);
     const isUncategorized = categorySlug === 'uncategorized' && (!article.categories || article.categories.length === 0);
-    
+
     if (!hasCategory && !isUncategorized) {
       return null;
     }
@@ -82,7 +82,7 @@ export async function generateStaticParams() {
     // Fetch articles in batches using pagination
     while (hasMorePages) {
       const articlesResponse = await articleService.getArticles(currentPage, limitPerPage);
-      
+
       if (!articlesResponse.success || !articlesResponse.data.posts.length) {
         break;
       }
@@ -92,7 +92,7 @@ export async function generateStaticParams() {
         category: article.categories?.[0]?.slug || 'uncategorized',
         slug: article.slug
       }));
-      
+
       allParams.push(...pageParams);
 
       // Check if there are more pages
@@ -114,8 +114,9 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: ArticleDetailPageProps): Promise<Metadata> {
-  const data = await getArticleData(params.category, params.slug);
-  
+  const resolvedParams = await params;
+  const data = await getArticleData(resolvedParams.category, resolvedParams.slug);
+
   if (!data) {
     return {
       title: 'Article Not Found',
@@ -160,7 +161,8 @@ export const revalidate = 3600;
 export const dynamicParams = true;
 
 export default async function ArticleDetailPage({ params }: ArticleDetailPageProps) {
-  const data = await getArticleData(params.category, params.slug);
+  const resolvedParams = await params;
+  const data = await getArticleData(resolvedParams.category, resolvedParams.slug);
 
   if (!data) {
     notFound();
@@ -327,7 +329,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
 
             {/* Sidebar - 1/3 width */}
             <div className="lg:col-span-1">
-              <ArticleSidebar 
+              <ArticleSidebar
                 relatedArticles={[]}
                 isArchive={false}
               />

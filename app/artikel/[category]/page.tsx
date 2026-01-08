@@ -12,9 +12,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 interface ArticleCategoryPageProps {
-  params: {
+  params: Promise<{
     category: string;
-  };
+  }>;
 }
 
 async function getCategoryData(categorySlug: string) {
@@ -32,7 +32,7 @@ async function getCategoryData(categorySlug: string) {
     }
 
     const articlesResponse = await articleService.getArticles(1, 100, category.id);
-    
+
     if (!articlesResponse.success) {
       return null;
     }
@@ -97,8 +97,9 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: ArticleCategoryPageProps): Promise<Metadata> {
-  const data = await getCategoryData(params.category);
-  
+  const resolvedParams = await params;
+  const data = await getCategoryData(resolvedParams.category);
+
   if (!data) {
     return {
       title: 'Category Not Found',
@@ -134,7 +135,8 @@ export async function generateMetadata({ params }: ArticleCategoryPageProps): Pr
 export const revalidate = 3600;
 
 export default async function ArticleCategoryPage({ params }: ArticleCategoryPageProps) {
-  const data = await getCategoryData(params.category);
+  const resolvedParams = await params;
+  const data = await getCategoryData(resolvedParams.category);
 
   if (!data) {
     notFound();
@@ -159,9 +161,9 @@ export default async function ArticleCategoryPage({ params }: ArticleCategoryPag
     }))
   );
 
-  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems.map(item => ({ 
-    label: item.name, 
-    href: item.href 
+  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems.map(item => ({
+    label: item.name,
+    href: item.href
   })));
 
   return (

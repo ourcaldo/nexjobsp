@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { advertisementService } from '@/lib/utils/advertisements';
 
 interface AdDisplayProps {
   position: 'popup_ad_code' | 'sidebar_archive_ad_code' | 'sidebar_single_ad_code' | 'single_top_ad_code' | 'single_bottom_ad_code' | 'single_middle_ad_code' | 'popup' | 'sidebar_archive' | 'sidebar_single' | 'single_top' | 'single_bottom' | 'single_middle';
@@ -21,8 +20,22 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '' }) => {
           adPosition = `${position}_ad_code` as any;
         }
         
-        const code = await advertisementService.getAdCode(adPosition as any);
-        setAdCode(code);
+        // Fetch from proxy API route instead of direct CMS call
+        const response = await fetch('/api/advertisements');
+        const data = await response.json();
+        
+        if (data.success && data.data && data.data.ad_codes) {
+          // Map position to ad_codes field
+          const positionMap: Record<string, string> = {
+            'sidebar_archive_ad_code': data.data.ad_codes.sidebar_archive || '',
+            'sidebar_single_ad_code': data.data.ad_codes.sidebar_single || '',
+            'single_top_ad_code': data.data.ad_codes.single_top || '',
+            'single_bottom_ad_code': data.data.ad_codes.single_bottom || '',
+            'single_middle_ad_code': data.data.ad_codes.single_middle || '',
+          };
+          
+          setAdCode(positionMap[adPosition] || '');
+        }
       } catch (error) {
         console.error('Error loading advertisement:', error);
       } finally {

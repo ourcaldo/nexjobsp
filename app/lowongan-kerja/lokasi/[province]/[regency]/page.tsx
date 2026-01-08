@@ -31,10 +31,10 @@ function JobSearchPageFallback() {
 }
 
 interface JobLocationPageProps {
-  params: {
+  params: Promise<{
     province: string;
     regency: string;
-  };
+  }>;
 }
 
 async function getLocationData(provinceSlug: string, regencySlug: string) {
@@ -48,13 +48,13 @@ async function getLocationData(provinceSlug: string, regencySlug: string) {
     jobs_og_image: '/og-jobs.jpg'
   };
   const currentUrl = getCurrentDomain();
-  
+
   let provinceId = '';
   let provinceName = '';
   let regencyId = '';
   let regencyName = '';
   let isValid = false;
-  
+
   try {
     const filterData = await jobService.getFiltersData();
     if (filterData && filterData.provinces && filterData.regencies) {
@@ -64,24 +64,24 @@ async function getLocationData(provinceSlug: string, regencySlug: string) {
         const pNameDashed = normalizeSlugForMatching(p.name);
         return pName === provinceSlugNormalized || pNameDashed === provinceSlug;
       });
-      
+
       if (province) {
         provinceId = province.id;
         provinceName = province.name;
-        
+
         const regencySlugNormalized = normalizeSlug(regencySlug);
         const regency = filterData.regencies.find((r: any) => {
           if (r.province_id !== provinceId) return false;
-          
+
           const regencyNameLower = normalizeSlug(r.name);
           const regencyNameNoPrefix = regencyNameLower
             .replace(/^kab\s+/i, '')
             .replace(/^kabupaten\s+/i, '')
             .replace(/^kota\s+/i, '');
-          
+
           const regencyNameDashed = normalizeSlugForMatching(r.name);
           const regencyNameNoPrefixDashed = normalizeSlugForMatching(regencyNameNoPrefix);
-          
+
           return (
             regencyNameLower === regencySlugNormalized ||
             regencyNameDashed === regencySlug ||
@@ -89,7 +89,7 @@ async function getLocationData(provinceSlug: string, regencySlug: string) {
             regencyNameNoPrefixDashed === regencySlug
           );
         });
-        
+
         if (regency) {
           regencyId = regency.id;
           regencyName = regency.name;
@@ -115,7 +115,8 @@ async function getLocationData(provinceSlug: string, regencySlug: string) {
 }
 
 export async function generateMetadata({ params }: JobLocationPageProps): Promise<Metadata> {
-  const { provinceName, regencyName, isValid, settings, currentUrl, provinceSlug, regencySlug } = await getLocationData(params.province, params.regency);
+  const resolvedParams = await params;
+  const { provinceName, regencyName, isValid, settings, currentUrl, provinceSlug, regencySlug } = await getLocationData(resolvedParams.province, resolvedParams.regency);
 
   if (!isValid) {
     return {
@@ -160,7 +161,8 @@ export const revalidate = 300;
 export const dynamicParams = true;
 
 export default async function JobLocationPage({ params }: JobLocationPageProps) {
-  const { provinceId, provinceName, regencyId, regencyName, isValid, settings, currentUrl } = await getLocationData(params.province, params.regency);
+  const resolvedParams = await params;
+  const { provinceId, provinceName, regencyId, regencyName, isValid, settings, currentUrl } = await getLocationData(resolvedParams.province, resolvedParams.regency);
 
   if (!isValid) {
     redirect('/lowongan-kerja/');
@@ -168,7 +170,7 @@ export default async function JobLocationPage({ params }: JobLocationPageProps) 
 
   const breadcrumbItems = [
     { label: 'Lowongan Kerja', href: '/lowongan-kerja/' },
-    { label: `Lokasi: ${provinceName}`, href: `/lowongan-kerja/lokasi/${params.province}/` },
+    { label: `Lokasi: ${provinceName}`, href: `/lowongan-kerja/lokasi/${resolvedParams.province}/` },
     { label: regencyName }
   ];
   const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
@@ -221,14 +223,14 @@ export default async function JobLocationPage({ params }: JobLocationPageProps) 
         </div>
 
         <Suspense fallback={<JobSearchPageFallback />}>
-          <JobSearchPage 
-            settings={settings} 
+          <JobSearchPage
+            settings={settings}
             initialProvinceId={provinceId}
             initialLocationName={provinceName}
             initialCityId={regencyId}
             initialCityName={regencyName}
             locationType="city"
-            provinceSlug={params.province}
+            provinceSlug={resolvedParams.province}
           />
         </Suspense>
       </main>

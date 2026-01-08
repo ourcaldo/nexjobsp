@@ -32,9 +32,9 @@ function JobSearchPageFallback() {
 }
 
 interface JobLocationPageProps {
-  params: {
+  params: Promise<{
     province: string;
-  };
+  }>;
 }
 
 async function getLocationData(provinceSlug: string) {
@@ -48,19 +48,19 @@ async function getLocationData(provinceSlug: string) {
     jobs_og_image: '/og-jobs.jpg'
   };
   const currentUrl = getCurrentDomain();
-  
+
   let provinceId = '';
   let provinceName = provinceSlug.charAt(0).toUpperCase() + provinceSlug.slice(1);
-  
+
   try {
     const filterData = await jobService.getFiltersData();
     if (filterData && filterData.provinces) {
       const slugNormalized = provinceSlug.toLowerCase().replace(/-/g, ' ');
-      const province = filterData.provinces.find((p: any) => 
+      const province = filterData.provinces.find((p: any) =>
         p.name.toLowerCase() === slugNormalized ||
         p.name.toLowerCase().replace(/\s+/g, '-') === provinceSlug
       );
-      
+
       if (province) {
         provinceId = province.id;
         provinceName = province.name;
@@ -82,7 +82,8 @@ async function getLocationData(provinceSlug: string) {
 }
 
 export async function generateMetadata({ params }: JobLocationPageProps): Promise<Metadata> {
-  const { provinceSlug, locationName, category, settings, currentUrl } = await getLocationData(params.province);
+  const resolvedParams = await params;
+  const { provinceSlug, locationName, category, settings, currentUrl } = await getLocationData(resolvedParams.province);
 
   // Will redirect if invalid, but need metadata for valid case
   if (!locationName) {
@@ -138,7 +139,8 @@ export const revalidate = 300; // ISR: Revalidate every 5 minutes
 export const dynamicParams = true; // Enable dynamic params for locations not in static paths
 
 export default async function JobLocationPage({ params }: JobLocationPageProps) {
-  const { provinceSlug, location, locationName, category, locationType, settings, currentUrl } = await getLocationData(params.province);
+  const resolvedParams = await params;
+  const { provinceSlug, location, locationName, category, locationType, settings, currentUrl } = await getLocationData(resolvedParams.province);
 
   // Redirect to main job page if province is not found
   if (!locationName) {
@@ -201,8 +203,8 @@ export default async function JobLocationPage({ params }: JobLocationPageProps) 
 
         {/* Job Search Content */}
         <Suspense fallback={<JobSearchPageFallback />}>
-          <JobSearchPage 
-            settings={settings} 
+          <JobSearchPage
+            settings={settings}
             initialLocation={location}
             initialLocationName={locationName}
             initialCategory={category}

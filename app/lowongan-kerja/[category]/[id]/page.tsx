@@ -11,10 +11,10 @@ import { Job } from '@/types/job';
 import { formatLocationName, locationToSlug, getLocationNamesFromIds } from '@/utils/textUtils';
 
 interface JobPageProps {
-  params: {
+  params: Promise<{
     category: string;
     id: string;
-  };
+  }>;
 }
 
 // Wrap with React cache() to deduplicate API calls between generateMetadata() and page component
@@ -50,12 +50,12 @@ const getJobData = cache(async (category: string, id: string) => {
         filterData.provinces,
         filterData.regencies
       );
-      
+
       // Populate province name if we have an ID but missing the name
       if (job.job_province_id && !job.lokasi_provinsi && locationNames.provinceName) {
         job.lokasi_provinsi = locationNames.provinceName;
       }
-      
+
       // Populate regency name if we have an ID but missing the name
       if (job.job_regency_id && !job.lokasi_kota && locationNames.regencyName) {
         job.lokasi_kota = locationNames.regencyName;
@@ -77,11 +77,12 @@ const getJobData = cache(async (category: string, id: string) => {
 
 export async function generateMetadata({ params }: JobPageProps): Promise<Metadata> {
   try {
-    const { job, category, id, settings, currentUrl } = await getJobData(params.category, params.id);
+    const resolvedParams = await params;
+    const { job, category, id, settings, currentUrl } = await getJobData(resolvedParams.category, resolvedParams.id);
 
     const regencyName = formatLocationName(job.lokasi_kota);
     const provinceName = formatLocationName(job.lokasi_provinsi);
-    
+
     let locationString = '';
     if (regencyName && provinceName) {
       locationString = `${regencyName}, ${provinceName}`;
@@ -92,15 +93,15 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
     }
 
     const pageTitle = job.seo_title || `${job.title} - ${job.company_name} | Nexjob`;
-    
+
     let defaultDescription = `Lowongan ${job.title} di ${job.company_name}`;
     if (locationString) {
       defaultDescription += `, ${locationString}`;
     }
     defaultDescription += `. Gaji: ${job.gaji}. Lamar sekarang!`;
-    
+
     const pageDescription = job.seo_description || defaultDescription;
-    
+
     const canonicalUrl = `${currentUrl}/lowongan-kerja/${category}/${id}/`;
     const ogImage = settings.default_job_og_image || `${currentUrl}/og-job-default.jpg`;
 
@@ -168,14 +169,15 @@ export const revalidate = 300; // ISR: Revalidate every 5 minutes
 export const dynamicParams = true; // Enable dynamic params for jobs not in static paths
 
 export default async function JobPage({ params }: JobPageProps) {
-  const { job, category, id, settings, currentUrl } = await getJobData(params.category, params.id);
+  const resolvedParams = await params;
+  const { job, category, id, settings, currentUrl } = await getJobData(resolvedParams.category, resolvedParams.id);
 
   const categoryName = job.job_categories?.[0]?.name || 'Kategori';
   const provinceName = formatLocationName(job.lokasi_provinsi);
   const regencyName = formatLocationName(job.lokasi_kota);
   const provinceSlug = locationToSlug(job.lokasi_provinsi);
   const regencySlug = locationToSlug(job.lokasi_kota);
-  
+
   const breadcrumbItems: Array<{ label: string; href?: string }> = [
     { label: 'Lowongan Kerja', href: '/lowongan-kerja/' }
   ];
@@ -197,7 +199,7 @@ export default async function JobPage({ params }: JobPageProps) {
   breadcrumbItems.push(
     { label: categoryName, href: `/lowongan-kerja/kategori/${category}/` }
   );
-  
+
   // Current page (no href for current page in breadcrumbs)
   breadcrumbItems.push({ label: job.title });
 
@@ -218,7 +220,7 @@ export default async function JobPage({ params }: JobPageProps) {
           __html: JSON.stringify(breadcrumbSchema)
         }}
       />
-      
+
       <Header />
       <main>
         <JobDetailPage job={job} jobId={id} settings={settings} breadcrumbItems={breadcrumbItems} />

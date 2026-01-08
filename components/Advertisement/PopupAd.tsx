@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
-import { advertisementService } from '@/lib/utils/advertisements';
 
 const PopupAd: React.FC = () => {
   const pathname = usePathname();
@@ -119,8 +118,19 @@ const PopupAd: React.FC = () => {
   useEffect(() => {
     const loadConfig = async () => {
       try {
-        const config = await advertisementService.getPopupAdConfig();
-        setPopupConfig(config);
+        // Fetch from proxy API route instead of direct CMS call
+        const response = await fetch('/api/advertisements');
+        const data = await response.json();
+        
+        if (data.success && data.data && data.data.popup_ad) {
+          setPopupConfig({
+            url: data.data.popup_ad.url || '',
+            enabled: data.data.popup_ad.enabled || false,
+            loadSettings: data.data.popup_ad.load_settings || ['all_pages'],
+            maxExecutions: data.data.popup_ad.max_executions || 1,
+            device: data.data.popup_ad.device || 'all'
+          });
+        }
         setIsConfigLoaded(true);
       } catch (error) {
         console.error('PopupAd: Error loading popup config:', error);

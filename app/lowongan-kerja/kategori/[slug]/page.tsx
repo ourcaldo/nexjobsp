@@ -9,9 +9,9 @@ import { wpCategoryMappings } from '@/utils/urlUtils';
 import { renderTemplate } from '@/utils/templateUtils';
 
 interface JobCategoryPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 async function getCategoryData(slug: string) {
@@ -38,7 +38,8 @@ async function getCategoryData(slug: string) {
 }
 
 export async function generateMetadata({ params }: JobCategoryPageProps): Promise<Metadata> {
-  const { slug, category, location, settings, currentUrl } = await getCategoryData(params.slug);
+  const resolvedParams = await params;
+  const { slug, category, location, settings, currentUrl } = await getCategoryData(resolvedParams.slug);
 
   // Prepare template variables
   const templateVars = {
@@ -104,7 +105,8 @@ function JobSearchPageFallback() {
 }
 
 export default async function JobCategoryPage({ params }: JobCategoryPageProps) {
-  const { slug, category, location, settings, currentUrl } = await getCategoryData(params.slug);
+  const resolvedParams = await params;
+  const { slug, category, location, settings, currentUrl } = await getCategoryData(resolvedParams.slug);
 
   const breadcrumbItems = [
     { label: 'Lowongan Kerja', href: '/lowongan-kerja/' },
@@ -162,8 +164,8 @@ export default async function JobCategoryPage({ params }: JobCategoryPageProps) 
 
         {/* Job Search Content */}
         <Suspense fallback={<JobSearchPageFallback />}>
-          <JobSearchPage 
-            settings={settings} 
+          <JobSearchPage
+            settings={settings}
             initialCategory={category}
             initialLocation={location}
           />
