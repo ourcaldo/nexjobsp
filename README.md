@@ -70,20 +70,13 @@ cp .env.example .env.local
 
 Update `.env.local` with your credentials:
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+NEXT_PUBLIC_CMS_ENDPOINT=https://cms.nexjob.tech
+CMS_TOKEN=your-cms-api-token
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
-WP_API_BASE_URL=your_wordpress_api_url
+NEXT_PUBLIC_SITE_NAME=Nexjob
 ```
 
-4. **Database Setup**
-```bash
-# Run Supabase migrations
-# Upload the migration files to your Supabase project
-```
-
-5. **Start Development Server**
+4. **Start Development Server**
 ```bash
 npm run dev
 ```
