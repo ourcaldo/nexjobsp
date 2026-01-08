@@ -24,13 +24,38 @@ const PopupAd: React.FC = () => {
   const shouldTriggerOnPage = useCallback((loadSettings: string[]): boolean => {
     const currentPath = pathname || '';
 
+    // All pages trigger
     if (loadSettings.includes('all_pages')) {
       return true;
     }
 
+    // Single articles (e.g., /artikel/kategori/slug/)
     if (loadSettings.includes('single_articles')) {
-      // Check if current page is a single article page
-      return currentPath.startsWith('/artikel/') && !currentPath.endsWith('/artikel/');
+      const articleMatch = currentPath.match(/^\/artikel\/[^/]+\/[^/]+\/?$/);
+      if (articleMatch) return true;
+    }
+
+    // Article archive pages (e.g., /artikel/, /artikel/kategori/)
+    if (loadSettings.includes('article_archive')) {
+      if (currentPath === '/artikel/' || currentPath === '/artikel') return true;
+      const categoryMatch = currentPath.match(/^\/artikel\/[^/]+\/?$/);
+      if (categoryMatch && !currentPath.includes('/artikel/[')) return true;
+    }
+
+    // Job archive pages (e.g., /lowongan-kerja/, /lowongan-kerja/kategori/*, /lowongan-kerja/lokasi/*)
+    if (loadSettings.includes('job_archive')) {
+      if (currentPath === '/lowongan-kerja/' || currentPath === '/lowongan-kerja') return true;
+      if (currentPath.startsWith('/lowongan-kerja/kategori/')) return true;
+      if (currentPath.startsWith('/lowongan-kerja/lokasi/')) return true;
+    }
+
+    // Single job posts (e.g., /lowongan-kerja/kategori/slug/)
+    if (loadSettings.includes('single_jobs')) {
+      // Match /lowongan-kerja/[category]/[id]/ pattern (has 2 path segments after /lowongan-kerja/)
+      const jobMatch = currentPath.match(/^\/lowongan-kerja\/[^/]+\/[^/]+\/?$/);
+      if (jobMatch && !currentPath.includes('/kategori/') && !currentPath.includes('/lokasi/')) {
+        return true;
+      }
     }
 
     return false;
@@ -121,7 +146,7 @@ const PopupAd: React.FC = () => {
         // Fetch from proxy API route instead of direct CMS call
         const response = await fetch('/api/advertisements');
         const data = await response.json();
-        
+
         if (data.success && data.data && data.data.popup_ad) {
           setPopupConfig({
             url: data.data.popup_ad.url || '',
