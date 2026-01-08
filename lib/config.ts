@@ -10,7 +10,7 @@ export const config = {
   // CMS Configuration
   cms: {
     endpoint: process.env.NEXT_PUBLIC_CMS_ENDPOINT || 'https://cms.nexjob.tech',
-    token: process.env.CMS_TOKEN || 'placeholder-token',
+    token: process.env.CMS_TOKEN || '',
     timeout: parseInt(process.env.CMS_TIMEOUT || '10000'),
   },
   
@@ -60,7 +60,7 @@ export const validateConfig = () => {
   const missing: string[] = [];
   
   if (!config.cms.endpoint) missing.push('NEXT_PUBLIC_CMS_ENDPOINT');
-  if (!config.cms.token || config.cms.token === 'placeholder-token') missing.push('CMS_TOKEN');
+  if (!config.cms.token) missing.push('CMS_TOKEN');
   if (!config.site.url) missing.push('NEXT_PUBLIC_SITE_URL');
   
   if (missing.length > 0) {
