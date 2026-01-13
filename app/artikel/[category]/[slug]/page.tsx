@@ -29,7 +29,7 @@ const getArticleData = cache(async (categorySlug: string, slug: string) => {
       return null;
     }
 
-    const rawArticle = articleResponse.data;
+    const rawArticle = articleResponse.data as any;
 
     const article = {
       id: rawArticle.id,
@@ -60,7 +60,7 @@ const getArticleData = cache(async (categorySlug: string, slug: string) => {
     }
 
     const relatedArticlesResponse = await articleService.getRelatedArticles(slug, 5);
-    const relatedArticles = relatedArticlesResponse || [];
+    const relatedArticles = relatedArticlesResponse.success ? relatedArticlesResponse.data : [];
 
     return {
       article,

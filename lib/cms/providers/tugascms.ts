@@ -778,7 +778,7 @@ export class TugasCMSProvider implements CMSProvider {
       const data = await response.json();
 
       if (!data.success) {
-        return { success: false, data: { pages: [], pagination: {} } };
+        return { success: false, data: { pages: [], pagination: { page: 1, limit: 20, total: 0, total_pages: 0 } } };
       }
 
       const transformedPages = data.data.pages.map((page: any) => transformCMSPageToPage(page));
@@ -793,7 +793,7 @@ export class TugasCMSProvider implements CMSProvider {
       };
     } catch (error) {
       console.error('Error fetching pages:', error);
-      return { success: false, data: { pages: [], pagination: {} } };
+      return { success: false, data: { pages: [], pagination: { page: 1, limit: 20, total: 0, total_pages: 0 } } };
     }
   }
 

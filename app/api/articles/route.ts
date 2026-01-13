@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    
+
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
     const category = searchParams.get('category') || undefined;
@@ -21,7 +21,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(response);
+    // Transform response to match expected frontend format
+    return NextResponse.json({
+      success: true,
+      articles: response.data.posts,
+      totalPages: response.data.pagination.total_pages,
+      currentPage: response.data.pagination.page,
+      totalArticles: response.data.pagination.total,
+      hasMore: response.data.pagination.page < response.data.pagination.total_pages
+    });
   } catch (error) {
     console.error('Error in articles API route:', error);
     return NextResponse.json(
@@ -30,3 +38,4 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+

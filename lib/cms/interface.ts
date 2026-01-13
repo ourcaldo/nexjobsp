@@ -8,11 +8,16 @@ export interface Article {
   excerpt: string;
   featured_image: string | null;
   publish_date: string;
+  published_at?: string;
+  post_date?: string;
+  updated_at?: string;
   status: string;
+  author_id?: string;
   seo_title: string | null;
   meta_description: string | null;
   categories: Array<{ id: string; name: string; slug: string }>;
   tags: Array<{ id: string; name: string; slug: string }>;
+  author: { id?: string; full_name?: string; email?: string } | null;
 }
 
 export interface Category {
@@ -51,12 +56,41 @@ export interface JobsResponse {
   hasMore: boolean;
 }
 
-export interface ArticlesResponse {
-  articles: Article[];
-  totalPages: number;
-  currentPage: number;
-  totalArticles: number;
-  hasMore: boolean;
+// Generic API response wrapper for CMS endpoints
+export interface APIResponse<T> {
+  success: boolean;
+  data: T;
+  cached?: boolean;
+}
+
+export interface PaginationData {
+  page: number;
+  limit: number;
+  total: number;
+  total_pages: number;
+  hasNextPage?: boolean;
+  hasPrevPage?: boolean;
+}
+
+// Specific response types
+export interface ArticlesResponseData {
+  posts: Article[];
+  pagination: PaginationData;
+}
+
+export interface PagesResponseData {
+  pages: Page[];
+  pagination: PaginationData;
+}
+
+export interface CategoriesResponseData {
+  categories: Category[];
+  pagination: PaginationData;
+}
+
+export interface TagsResponseData {
+  tags: Tag[];
+  pagination: PaginationData;
 }
 
 export interface AdvertisementSettings {
@@ -96,19 +130,22 @@ export interface CMSProvider {
   getRelatedJobs(jobId: string, limit?: number): Promise<Job[]>;
   getAllJobsForSitemap(): Promise<Job[]>;
 
-  getArticles(page?: number, limit?: number, category?: string, search?: string): Promise<ArticlesResponse>;
-  getArticleBySlug(slug: string): Promise<Article | null>;
-  getRelatedArticles(articleSlug: string, limit?: number): Promise<Article[]>;
+  // Article methods - return API response wrapper
+  getArticles(page?: number, limit?: number, category?: string, search?: string): Promise<APIResponse<ArticlesResponseData>>;
+  getArticleBySlug(slug: string): Promise<APIResponse<Article | null>>;
+  getRelatedArticles(articleSlug: string, limit?: number): Promise<APIResponse<Article[]>>;
 
   getFiltersData(): Promise<FilterData>;
 
-  getCategories(page?: number, limit?: number, search?: string): Promise<{ categories: Category[]; total: number }>;
-  getTags(page?: number, limit?: number, search?: string): Promise<{ tags: Tag[]; total: number }>;
-  getCategoryWithPosts(idOrSlug: string, page?: number, limit?: number): Promise<{ category: Category; articles: Article[] } | null>;
-  getTagWithPosts(idOrSlug: string, page?: number, limit?: number): Promise<{ tag: Tag; articles: Article[] } | null>;
+  // Category/Tag methods - return API response wrapper
+  getCategories(page?: number, limit?: number, search?: string): Promise<APIResponse<CategoriesResponseData>>;
+  getTags(page?: number, limit?: number, search?: string): Promise<APIResponse<TagsResponseData>>;
+  getCategoryWithPosts(idOrSlug: string, page?: number, limit?: number): Promise<APIResponse<{ category: Category; posts: Article[] } | null>>;
+  getTagWithPosts(idOrSlug: string, page?: number, limit?: number): Promise<APIResponse<{ tag: Tag; posts: Article[] } | null>>;
 
-  getPages(page?: number, limit?: number, category?: string, tag?: string, search?: string): Promise<{ pages: Page[]; total: number }>;
-  getPageBySlug(slug: string): Promise<Page | null>;
+  // Page methods - return API response wrapper
+  getPages(page?: number, limit?: number, category?: string, tag?: string, search?: string): Promise<APIResponse<PagesResponseData>>;
+  getPageBySlug(slug: string): Promise<APIResponse<Page | null>>;
   getAllPagesForSitemap(): Promise<Page[]>;
 
   getSitemaps(): Promise<string[]>;
@@ -120,4 +157,3 @@ export interface CMSProvider {
   testConnection(): Promise<{ success: boolean; message?: string; error?: string }>;
   clearFilterCache(): void;
 }
-

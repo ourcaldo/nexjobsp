@@ -23,7 +23,8 @@ interface Article {
   post_date?: string;
   created_at?: string;
   updated_at?: string;
-  author?: { id?: string; full_name?: string; email?: string };
+  author_id?: string;
+  author?: { id?: string; full_name?: string; email?: string } | null;
   categories?: any[];
   tags?: any[];
 }
@@ -77,16 +78,16 @@ export default function ArticleListPage({
 
   const fetchArticles = async (page: number, categorySlug?: string) => {
     setLoading(true);
-    
+
     try {
       const catSlug = categorySlug || selectedCategory;
       const category = categories.find(cat => cat.slug === catSlug);
-      
+
       const params = new URLSearchParams({
         page: page.toString(),
         limit: articlesPerPage.toString(),
       });
-      
+
       if (catSlug !== 'all' && category?.id) {
         params.set('category', category.id);
       }
@@ -115,7 +116,7 @@ export default function ArticleListPage({
             email: article.author.email
           } : null
         }));
-        
+
         setArticles(formattedArticles);
         setTotalPages(articlesResponse.data.pagination.totalPages);
         setHasNextPage(articlesResponse.data.pagination.hasNextPage);
@@ -187,11 +188,10 @@ export default function ArticleListPage({
           <div className="flex flex-wrap gap-3 justify-center">
             <button
               onClick={() => handleCategoryChange('all')}
-              className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${
-                selectedCategory === 'all'
+              className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${selectedCategory === 'all'
                   ? 'bg-primary-600 text-white shadow-lg'
                   : 'bg-white text-gray-700 hover:bg-gray-50 shadow-sm border border-gray-200'
-              }`}
+                }`}
             >
               Semua Artikel
             </button>
@@ -199,11 +199,10 @@ export default function ArticleListPage({
               <button
                 key={category.id}
                 onClick={() => handleCategoryChange(category.slug)}
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${
-                  selectedCategory === category.slug
+                className={`px-6 py-3 rounded-full font-medium transition-all duration-200 ${selectedCategory === category.slug
                     ? 'bg-primary-600 text-white shadow-lg'
                     : 'bg-white text-gray-700 hover:bg-gray-50 shadow-sm border border-gray-200'
-                }`}
+                  }`}
               >
                 {category.name}
               </button>
@@ -244,73 +243,73 @@ export default function ArticleListPage({
               <>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {articles.map((article, index) => (
-                  <article
-                    key={article.id}
-                    className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group"
-                  >
-                    <Link href={`/artikel/${article.categories && article.categories.length > 0 && article.categories[0] && article.categories[0].slug ? article.categories[0].slug : 'uncategorized'}/${article.slug}`}>
-                      <div className="aspect-video relative overflow-hidden">
-                        {article.featured_image ? (
-                          <Image
-                            src={article.featured_image}
-                            alt={article.title}
-                            fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                            loading="lazy"
-                            placeholder="blur"
-                            blurDataURL={getBlurDataURL()}
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-primary-400 to-secondary-400 flex items-center justify-center">
-                            <Folder className="h-16 w-16 text-white/50" />
-                          </div>
-                        )}
-                      </div>
+                    <article
+                      key={article.id}
+                      className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group"
+                    >
+                      <Link href={`/artikel/${article.categories && article.categories.length > 0 && article.categories[0] && article.categories[0].slug ? article.categories[0].slug : 'uncategorized'}/${article.slug}`}>
+                        <div className="aspect-video relative overflow-hidden">
+                          {article.featured_image ? (
+                            <Image
+                              src={article.featured_image}
+                              alt={article.title}
+                              fill
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                              className="object-cover group-hover:scale-105 transition-transform duration-300"
+                              loading="lazy"
+                              placeholder="blur"
+                              blurDataURL={getBlurDataURL()}
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-primary-400 to-secondary-400 flex items-center justify-center">
+                              <Folder className="h-16 w-16 text-white/50" />
+                            </div>
+                          )}
+                        </div>
 
-                      <div className="p-6">
-                        {article.categories && article.categories.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mb-3">
-                            {article.categories.slice(0, 2).map((category, catIndex) => (
-                              <span
-                                key={category.id}
-                                className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getCategoryColor(catIndex)}`}
-                              >
-                                <Folder className="h-3 w-3 mr-1" />
-                                {category.name}
+                        <div className="p-6">
+                          {article.categories && article.categories.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-3">
+                              {article.categories.slice(0, 2).map((category, catIndex) => (
+                                <span
+                                  key={category.id}
+                                  className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getCategoryColor(catIndex)}`}
+                                >
+                                  <Folder className="h-3 w-3 mr-1" />
+                                  {category.name}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          <h3 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-2 group-hover:text-primary-600 transition-colors">
+                            {article.title}
+                          </h3>
+
+                          {article.excerpt && (
+                            <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                              {article.excerpt}
+                            </p>
+                          )}
+
+                          <div className="flex items-center justify-between text-xs text-gray-500 pt-4 border-t border-gray-100">
+                            <div className="flex items-center">
+                              <User className="h-3.5 w-3.5 mr-1" />
+                              <span className="truncate max-w-[100px]">
+                                {article.author?.full_name || article.author?.email || 'Nexjob'}
                               </span>
-                            ))}
-                          </div>
-                        )}
-
-                        <h3 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-2 group-hover:text-primary-600 transition-colors">
-                          {article.title}
-                        </h3>
-
-                        {article.excerpt && (
-                          <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                            {article.excerpt}
-                          </p>
-                        )}
-
-                        <div className="flex items-center justify-between text-xs text-gray-500 pt-4 border-t border-gray-100">
-                          <div className="flex items-center">
-                            <User className="h-3.5 w-3.5 mr-1" />
-                            <span className="truncate max-w-[100px]">
-                              {article.author?.full_name || article.author?.email || 'Nexjob'}
-                            </span>
-                          </div>
-                          <div className="flex items-center">
-                            <Clock className="h-3.5 w-3.5 mr-1" />
-                            <span>
-                              {formatDistance(new Date(article.published_at || article.post_date || article.created_at || new Date()), new Date(), { addSuffix: true })}
-                            </span>
+                            </div>
+                            <div className="flex items-center">
+                              <Clock className="h-3.5 w-3.5 mr-1" />
+                              <span>
+                                {formatDistance(new Date(article.published_at || article.post_date || article.created_at || new Date()), new Date(), { addSuffix: true })}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </Link>
-                  </article>
-                ))}
+                      </Link>
+                    </article>
+                  ))}
                 </div>
 
                 {/* Pagination */}
@@ -323,7 +322,7 @@ export default function ArticleListPage({
                     >
                       Previous
                     </button>
-                    
+
                     <div className="flex space-x-2">
                       {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                         let pageNum;
@@ -336,16 +335,15 @@ export default function ArticleListPage({
                         } else {
                           pageNum = currentPage - 2 + i;
                         }
-                        
+
                         return (
                           <button
                             key={pageNum}
                             onClick={() => handlePageChange(pageNum)}
-                            className={`px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${
-                              currentPage === pageNum
+                            className={`px-4 py-2 border rounded-lg text-sm font-medium transition-colors ${currentPage === pageNum
                                 ? 'bg-primary-600 text-white border-primary-600'
                                 : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                            }`}
+                              }`}
                           >
                             {pageNum}
                           </button>
