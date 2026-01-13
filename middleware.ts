@@ -9,7 +9,7 @@ export async function middleware(request: NextRequest) {
   if (pathname === '/sitemap.xml') {
     try {
       // Fetch sitemap from CMS
-      const response = await fetch(`${appConfig.cms.endpoint}/api/v1/sitemap.xml`, {
+      const response = await fetch(`${appConfig.cms.endpoint}/api/v1/sitemaps/sitemap.xml`, {
         headers: {
           'Authorization': `Bearer ${appConfig.cms.token}`,
         },
@@ -17,7 +17,12 @@ export async function middleware(request: NextRequest) {
       });
 
       if (response.ok) {
-        const sitemapXml = await response.text();
+        let sitemapXml = await response.text();
+
+        // Transform CMS URLs to frontend URLs
+        sitemapXml = sitemapXml.replace(/https:\/\/cms\.nexjob\.tech\/api\/v1\/sitemaps\//g, `${appConfig.site.url}/`);
+        sitemapXml = sitemapXml.replace(/\/api\/v1\/sitemaps\//g, '/');
+
         return new NextResponse(sitemapXml, {
           headers: {
             'Content-Type': 'application/xml; charset=utf-8',
