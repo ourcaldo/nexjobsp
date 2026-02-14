@@ -1,9 +1,40 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { config as appConfig } from '@/lib/config';
+import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Rate limit API routes (except sitemap XML which are public/cached)
+  if (pathname.startsWith('/api/')) {
+    const ip = getClientIp(request);
+    const result = checkRateLimit(ip);
+
+    if (!result.allowed) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Too many requests. Please try again later.',
+          retryAfter: result.retryAfter,
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(result.retryAfter),
+            'X-RateLimit-Limit': String(result.limit),
+            'X-RateLimit-Remaining': '0',
+          },
+        }
+      );
+    }
+
+    // Attach rate limit headers to the response
+    const response = NextResponse.next();
+    response.headers.set('X-RateLimit-Limit', String(result.limit));
+    response.headers.set('X-RateLimit-Remaining', String(result.remaining));
+    return response;
+  }
 
   // Handle sitemap.xml requests
   if (pathname === '/sitemap.xml') {
@@ -151,5 +182,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/sitemap.xml', '/:path*.xml'],
+  matcher: ['/api/:path*', '/sitemap.xml', '/:path*.xml'],
 };

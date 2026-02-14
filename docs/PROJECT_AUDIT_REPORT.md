@@ -104,7 +104,7 @@ The frontend is a Next.js 16 App Router application that acts as a public job po
 | ID | Issue | Impact | Evidence | Recommendation |
 |---|---|---|---|---|
 | S3 | ~~Unauthenticated diagnostic endpoints~~ | Info exposure and abuse | `/api/cms/test-connection`, `/api/test-wp-connection` | ~~Require auth or remove.~~ **FIXED** — SSRF route deleted; test-connection requires `Bearer CMS_TOKEN`. |
-| S4 | ~~No rate limiting~~ | DDoS and scraping risk | All `app/api/*` routes | ~~Add rate limiting (edge or server).~~ **ACCEPTABLE RISK** — CMS backend already enforces rate limiting (1000 req/60s on `/api/v1/*`). Frontend proxy routes add cache headers to reduce upstream load. Frontend-level rate limiting deferred until abuse is observed. |
+| S4 | ~~No rate limiting~~ | DDoS and scraping risk | All `app/api/*` routes | ~~Add rate limiting (edge or server).~~ **FIXED** — In-memory sliding window rate limiter added in `lib/rate-limit.ts`. Middleware enforces 100 req/60s per IP on all `/api/*` routes. Returns `429` with `Retry-After` header when exceeded. Configurable via `RATE_LIMIT_MAX_REQUESTS` and `RATE_LIMIT_WINDOW_SECONDS` env vars. |
 | S5 | ~~CMS token export risk~~ | Potential secret leak if imported by client | ~~`lib/config.ts` exports `CMS_TOKEN` via `env`~~ | ~~Remove server-only secrets from exported `env` object.~~ **FIXED** — Secrets removed from `env` export. |
 
 ### Medium
