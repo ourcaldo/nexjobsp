@@ -20,6 +20,7 @@ interface JobSidebarProps {
   onFiltersChange: (filters: any) => void;
   onSortChange: (sortBy: string) => void;
   isLoading: boolean;
+  initialFilterData?: FilterData | null;
 }
 
 const JobSidebar: React.FC<JobSidebarProps> = ({ 
@@ -28,10 +29,11 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
   sortBy,
   onFiltersChange, 
   onSortChange,
-  isLoading 
+  isLoading,
+  initialFilterData = null 
 }) => {
-  const [filterData, setFilterData] = useState<FilterData | null>(null);
-  const [loadingFilters, setLoadingFilters] = useState(true);
+  const [filterData, setFilterData] = useState<FilterData | null>(initialFilterData);
+  const [loadingFilters, setLoadingFilters] = useState(!initialFilterData);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     sort: true,
     cities: true,
@@ -45,8 +47,10 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
   });
 
   useEffect(() => {
-    loadFilterData();
-  }, []);
+    if (!initialFilterData) {
+      loadFilterData();
+    }
+  }, [initialFilterData]);
 
   const loadFilterData = async () => {
     try {

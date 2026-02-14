@@ -959,6 +959,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
                 onFiltersChange={handleSidebarFilterChange}
                 onSortChange={handleSortChange}
                 isLoading={searching}
+                initialFilterData={filterData}
               />
             </div>
           </div>

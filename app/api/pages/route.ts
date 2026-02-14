@@ -22,7 +22,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(response);
+    return NextResponse.json(response, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200',
+      },
+    });
   } catch (error) {
     console.error('Error in pages API route:', error);
     return NextResponse.json(

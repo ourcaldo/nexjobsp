@@ -99,6 +99,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: response
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+      },
     });
   } catch (error) {
     return NextResponse.json(

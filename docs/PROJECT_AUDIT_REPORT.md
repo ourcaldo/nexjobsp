@@ -104,7 +104,7 @@ The frontend is a Next.js 16 App Router application that acts as a public job po
 | ID | Issue | Impact | Evidence | Recommendation |
 |---|---|---|---|---|
 | S3 | ~~Unauthenticated diagnostic endpoints~~ | Info exposure and abuse | `/api/cms/test-connection`, `/api/test-wp-connection` | ~~Require auth or remove.~~ **FIXED** — SSRF route deleted; test-connection requires `Bearer CMS_TOKEN`. |
-| S4 | No rate limiting | DDoS and scraping risk | All `app/api/*` routes | Add rate limiting (edge or server). |
+| S4 | ~~No rate limiting~~ | DDoS and scraping risk | All `app/api/*` routes | ~~Add rate limiting (edge or server).~~ **ACCEPTABLE RISK** — CMS backend already enforces rate limiting (1000 req/60s on `/api/v1/*`). Frontend proxy routes add cache headers to reduce upstream load. Frontend-level rate limiting deferred until abuse is observed. |
 | S5 | ~~CMS token export risk~~ | Potential secret leak if imported by client | ~~`lib/config.ts` exports `CMS_TOKEN` via `env`~~ | ~~Remove server-only secrets from exported `env` object.~~ **FIXED** — Secrets removed from `env` export. |
 
 ### Medium
@@ -122,8 +122,8 @@ The frontend is a Next.js 16 App Router application that acts as a public job po
 | ID | Issue | Impact | Evidence | Recommendation |
 |---|---|---|---|---|
 | Q1 | ~~Articles API response mismatch~~ | Category filters break silently | ~~`/api/articles` returns `{ articles, totalPages }`, UI expects `data.posts`~~ | ~~Align response shape or update `ArticleListPage`.~~ **FIXED** — `ArticleListPage` updated to match API. |
-| Q2 | N+1 in `getJobsByIds` | Slow on bookmarks or batch fetch | `lib/cms/providers/tugascms.ts` | Batch CMS fetch or parallelize with limits. |
-| Q3 | 900+ line provider | Hard to maintain and test | `lib/cms/providers/tugascms.ts` | Split into domain-specific providers or helpers. |
+| Q2 | ~~N+1 in `getJobsByIds`~~ | Slow on bookmarks or batch fetch | `lib/cms/providers/tugascms.ts` | ~~Batch CMS fetch or parallelize with limits.~~ **ACCEPTABLE** — Already uses `Promise.allSettled` for parallel execution. Bookmark data is stored in localStorage (small lists). A true batch endpoint would require a CMS-side `ids=` filter. Deferred. |
+| Q3 | 900+ line provider | Hard to maintain and test | `lib/cms/providers/tugascms.ts` | Split into domain-specific providers or helpers. — *Deferred (non-breaking refactor).* |
 
 ### Medium
 
@@ -142,15 +142,15 @@ The frontend is a Next.js 16 App Router application that acts as a public job po
 - Article pages use client-side fetch, adding latency and reducing SEO quality.
 
 **Duplication**
-- Filters are fetched in both `JobSearchPage` and `JobSidebar`.
+- ~~Filters are fetched in both `JobSearchPage` and `JobSidebar`.~~ **FIXED** — `JobSidebar` now accepts `initialFilterData` prop from parent; skips its own fetch when data is provided.
 
 **Caching**
-- Some API routes use Next `revalidate`, but many are uncached.
+- ~~Some API routes use Next `revalidate`, but many are uncached.~~ **FIXED** — Added `Cache-Control` headers to all proxy routes.
 
 **Recommendations**
-1. Move initial jobs and article data fetches to server components.
-2. Pass filter data down from page to sidebar to avoid duplicate calls.
-3. Add cache headers on proxy routes with short TTLs.
+1. Move initial jobs and article data fetches to server components. — *Deferred (requires significant restructuring of client-side state management).*
+2. ~~Pass filter data down from page to sidebar to avoid duplicate calls.~~ **FIXED**
+3. ~~Add cache headers on proxy routes with short TTLs.~~ **FIXED** — All 8 proxy routes now include `Cache-Control` with `s-maxage` and `stale-while-revalidate`.
 
 ---
 
@@ -213,9 +213,9 @@ The frontend is a Next.js 16 App Router application that acts as a public job po
 2. ~~Allow indexing of paginated pages in robots rules.~~ **FIXED** — Blanket `Disallow: /*?*` replaced with targeted tracking-param blocks only.
 3. Refactor `TugasCMSProvider` into smaller units. — *Deferred (non-breaking).*
 
-**Improve (performance)** — pending
-1. Move jobs and articles to server-side fetch on key pages.
-2. Deduplicate filter requests and add caching headers.
+**Improve (performance)**
+1. Move jobs and articles to server-side fetch on key pages. — *Deferred (requires restructuring client-side state).*
+2. ~~Deduplicate filter requests and add caching headers.~~ **FIXED** — Filter data passed from `JobSearchPage` to `JobSidebar` via `initialFilterData` prop. Cache headers added to all proxy routes.
 
 **Additional fixes applied**
 - **Stale closure (Q6)**: `useInfiniteScroll` now uses `useRef` for `isFetching` to avoid stale observer callback.
@@ -224,6 +224,8 @@ The frontend is a Next.js 16 App Router application that acts as a public job po
 - **Stale config**: Deleted obsolete `tailwind.config.js` (v3); Tailwind v4 uses CSS `@theme` in `globals.css`.
 - **Obsolete script**: Removed `"export": "next export"` script (unsupported since Next 13).
 - **Image patterns**: Removed stale Supabase and Appwrite remote patterns from `next.config.js`.
+- **Cache headers**: Added `Cache-Control` with `s-maxage` and `stale-while-revalidate` to all 8 proxy API routes (`/api/articles`, `/api/articles/slug/:slug`, `/api/articles/:id/related`, `/api/job-posts`, `/api/job-posts/by-ids`, `/api/job-posts/filters`, `/api/job-posts/:id/related`, `/api/pages`).
+- **Filter deduplication (Performance)**: `JobSidebar` now accepts `initialFilterData` prop; `JobSearchPage` passes its already-fetched `filterData` down, eliminating the duplicate `/api/job-posts/filters` request.
 
 ---
 

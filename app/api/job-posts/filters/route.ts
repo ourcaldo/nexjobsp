@@ -9,6 +9,10 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       data: filterData
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200',
+      },
     });
   } catch (error) {
     console.error('Error in job-posts/filters API route:', error);

@@ -15,6 +15,10 @@ export async function GET(
     return NextResponse.json({
       success: true,
       data: relatedArticles
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+      },
     });
   } catch (error) {
     console.error('Error fetching related articles:', error);

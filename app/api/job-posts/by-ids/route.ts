@@ -17,6 +17,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: jobs
+    }, {
+      headers: {
+        'Cache-Control': 'private, s-maxage=60, stale-while-revalidate=300',
+      },
     });
   } catch (error) {
     console.error('Error fetching jobs by IDs:', error);

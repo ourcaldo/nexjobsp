@@ -29,6 +29,10 @@ export async function GET(request: NextRequest) {
       currentPage: response.data.pagination.page,
       totalArticles: response.data.pagination.total,
       hasMore: response.data.pagination.page < response.data.pagination.total_pages
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+      },
     });
   } catch (error) {
     console.error('Error in articles API route:', error);
