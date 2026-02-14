@@ -5,13 +5,15 @@ import { articleService } from '@/lib/services/ArticleService';
 import { getCurrentDomain } from '@/lib/config';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
-import { generateArticleSchema, generateBreadcrumbSchema } from '@/utils/schemaUtils';
+import { generateArticleSchema, generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
 import { formatDistance } from 'date-fns';
 import { Calendar, User, Tag, Folder, ArrowRight } from 'lucide-react';
 import ArticleContentWrapper from './ArticleContentWrapper';
 import ArticleSidebar from '@/components/ArticleSidebar';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import Image from 'next/image';
+import { logger } from '@/lib/logger';
+import { formatArticleDate } from '@/lib/utils/date';
 
 interface ArticleDetailPageProps {
   params: Promise<{
@@ -108,7 +110,7 @@ export async function generateStaticParams() {
 
     return allParams;
   } catch (error) {
-    console.error('Error in generateStaticParams:', error);
+    logger.error('Error in generateStaticParams:', {}, error);
     return [];
   }
 }
@@ -178,14 +180,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
   const articleSchema = generateArticleSchema(article);
   const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('id-ID', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
+
 
   return (
     <>
@@ -309,7 +304,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center text-xs text-gray-500 mb-2">
                             <Calendar className="h-3 w-3 mr-1" />
-                            {formatDate(relatedArticle.publishDate || relatedArticle.publish_date)}
+                            {formatArticleDate(relatedArticle.publishDate || relatedArticle.publish_date)}
                           </div>
                           <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-primary-600 transition-colors line-clamp-2">
                             {relatedArticle.title}

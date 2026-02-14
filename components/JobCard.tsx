@@ -2,7 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import { MapPin, Clock, Building, DollarSign } from 'lucide-react';
 import { Job } from '@/types/job';
-import { formatLocationName } from '@/utils/textUtils';
+import { formatLocationName } from '@/lib/utils/textUtils';
+import { formatJobDate } from '@/lib/utils/date';
 
 interface JobCardProps {
   job: Job;
@@ -31,26 +32,6 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
     }
     
     return '';
-  };
-
-  const formatDate = (dateStr?: string) => {
-    if (!dateStr) return 'Baru dipublikasikan';
-
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffHours < 24) {
-      if (diffHours === 1) return 'Dipublikasikan 1 jam lalu';
-      return `Dipublikasikan ${diffHours} jam lalu`;
-    }
-
-    if (diffDays === 1) return 'Dipublikasikan 1 hari lalu';
-    if (diffDays < 7) return `Dipublikasikan ${diffDays} hari lalu`;
-    if (diffDays < 30) return `Dipublikasikan ${Math.ceil(diffDays / 7)} minggu lalu`;
-    return `Dipublikasikan ${Math.ceil(diffDays / 30)} bulan lalu`;
   };
 
   return (
@@ -82,7 +63,7 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
         </div>
         <div className="flex items-center text-gray-600">
           <Clock className="h-4 w-4 mr-2" />
-          <span className="text-sm">{formatDate(job.created_at)}</span>
+          <span className="text-sm">{formatJobDate(job.created_at)}</span>
         </div>
       </div>
 

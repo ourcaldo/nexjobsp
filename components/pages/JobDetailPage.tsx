@@ -24,10 +24,13 @@ import { bookmarkService } from '@/lib/utils/bookmarks';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import JobCard from '@/components/JobCard';
-import JobApplicationModal from '@/components/ui/JobApplicationModal';
+import dynamic from 'next/dynamic';
 import { sanitizeHTML } from '@/lib/utils/sanitize';
-import ShareButton from '@/components/ui/ShareButton';
-import { formatLocationName } from '@/utils/textUtils';
+
+const JobApplicationModal = dynamic(() => import('@/components/ui/JobApplicationModal'), { ssr: false });
+const ShareButton = dynamic(() => import('@/components/ui/ShareButton'), { ssr: false });
+import { formatLocationName } from '@/lib/utils/textUtils';
+import { formatJobDate } from '@/lib/utils/date';
 
 interface BreadcrumbItem {
   label: string;
@@ -49,7 +52,6 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, bre
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
   const [isBookmarkLoading, setIsBookmarkLoading] = useState(false);
-  const [showBookmarkModal, setShowBookmarkModal] = useState(false);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
 
   // Load related jobs - only fetch once when job ID changes
@@ -113,8 +115,19 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, bre
   }, []);
 
   const handleBookmarkToggle = async () => {
-    // No authentication system - show modal
-    setShowBookmarkModal(true);
+    setIsBookmarkLoading(true);
+    try {
+      if (isBookmarked) {
+        bookmarkService.removeBookmark(job.id);
+        trackBookmark('remove', job.title, job.id);
+      } else {
+        bookmarkService.addBookmark(job.id);
+        trackBookmark('add', job.title, job.id);
+      }
+      setIsBookmarked(!isBookmarked);
+    } finally {
+      setIsBookmarkLoading(false);
+    }
   };
 
   const handleApplyClick = () => {
@@ -129,27 +142,8 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, bre
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return 'Baru dipublikasikan';
-
-    // Use a fixed date for SSR to prevent hydration mismatch
-    if (!isHydrated) {
-      return 'Baru dipublikasikan';
-    }
-
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffHours < 24) {
-      if (diffHours === 1) return 'Dipublikasikan 1 jam lalu';
-      return `Dipublikasikan ${diffHours} jam lalu`;
-    }
-
-    if (diffDays === 1) return 'Dipublikasikan 1 hari lalu';
-    if (diffDays < 7) return `Dipublikasikan ${diffDays} hari lalu`;
-    if (diffDays < 30) return `Dipublikasikan ${Math.ceil(diffDays / 7)} minggu lalu`;
-    return `Dipublikasikan ${Math.ceil(diffDays / 30)} bulan lalu`;
+    if (!isHydrated) return 'Baru dipublikasikan';
+    return formatJobDate(dateStr);
   };
 
   const parseJobContent = (content: string) => {
@@ -166,16 +160,6 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, bre
 
     // Tags are already decoded in TugasCMSProvider, so just split them
     return tagString.split(', ').map(tag => tag.trim()).filter(tag => tag.length > 0);
-  };
-
-  const handleBookmarkModalLogin = () => {
-    setShowBookmarkModal(false);
-    window.open('/login/', '_blank');
-  };
-
-  const handleBookmarkModalSignup = () => {
-    setShowBookmarkModal(false);
-    window.open('/signup/', '_blank');
   };
 
   const getFullLocation = () => {

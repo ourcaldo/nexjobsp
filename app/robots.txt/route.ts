@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { TugasCMSProvider } from '@/lib/cms/providers/tugascms'
+import { logger } from '@/lib/logger'
 
 // Enable ISR with 1 hour revalidation
 export const revalidate = 3600 // 1 hour in seconds
@@ -61,7 +62,7 @@ Crawl-delay: 1`
       }
     })
   } catch (error) {
-    console.error('Error fetching robots.txt:', error)
+    logger.error('Error fetching robots.txt:', {}, error)
 
     // Emergency fallback robots.txt
     const emergencyRobots = `User-agent: *

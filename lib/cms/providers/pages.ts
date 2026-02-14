@@ -135,13 +135,7 @@ export class PageOperations {
     await this.http.ensureInitialized();
     try {
       const response = await this.http.fetchWithTimeout(
-        `${this.http.getBaseUrl()}/api/v1/settings/advertisements`,
-        {
-          headers: {
-            'Authorization': `Bearer ${this.http.getHeaders()['Authorization']?.replace('Bearer ', '') || ''}`,
-            'Content-Type': 'application/json',
-          },
-        }
+        `${this.http.getBaseUrl()}/api/v1/settings/advertisements`
       );
       return await response.json();
     } catch (error) {

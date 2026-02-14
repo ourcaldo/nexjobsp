@@ -4,9 +4,10 @@ import { categoryService } from '@/lib/services/CategoryService';
 import { getCurrentDomain } from '@/lib/config';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
-import { generateArticleListingSchema, generateBreadcrumbSchema } from '@/utils/schemaUtils';
-import { renderTemplate } from '@/utils/templateUtils';
+import { generateArticleListingSchema, generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
+import { renderTemplate } from '@/lib/utils/templateUtils';
 import ArticleListPage from '@/components/pages/ArticleListPage';
+import { logger } from '@/lib/logger';
 
 async function getArticleData() {
   try {
@@ -81,7 +82,7 @@ async function getArticleData() {
       seoSettings
     };
   } catch (error) {
-    console.error('Error fetching articles:', error);
+    logger.error('Error fetching articles:', {}, error);
     return {
       articles: [],
       categories: [],

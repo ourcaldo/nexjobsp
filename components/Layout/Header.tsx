@@ -1,59 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
-import { Search, User, Menu, X, LogOut } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { Search, Menu, X } from 'lucide-react';
 
 const Header: React.FC = () => {
-  const router = useRouter();
   const pathname = usePathname();
-  const [user, setUser] = useState<any>(null);
-  const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const initializeAuth = useCallback(async () => {
-    // No authentication system
-    setUser(null);
-    setIsInitialized(true);
-    setIsLoading(false);
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-    
-    // Initialize auth state
-    initializeAuth();
-
-    return () => {
-      mounted = false;
-    };
-  }, [initializeAuth]);
-
-  // Re-check auth state on route changes (App Router - using pathname)
-  useEffect(() => {
-    // Only re-check auth if we don't have a user or if going to profile page
-    if (!user || pathname?.includes('/profile')) {
-      const timer = setTimeout(() => {
-        initializeAuth();
-      }, 100);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [pathname, initializeAuth, user]);
-
-  const handleLogout = async () => {
-    try {
-      // Placeholder logout - no authentication system
-      setShowUserMenu(false);
-      setShowMobileMenu(false);
-      router.push('/');
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
-  };
 
   const handleMobileNavClick = () => {
     setShowMobileMenu(false);
@@ -76,12 +30,6 @@ const Header: React.FC = () => {
       return pathname === '/artikel' || 
              pathname === '/artikel/' ||
              pathname.startsWith('/artikel/');
-    }
-
-    if (path === '/profile/') {
-      return pathname === '/profile' || 
-             pathname === '/profile/' ||
-             pathname.startsWith('/profile/');
     }
 
     return pathname === path || pathname === path + '/';
@@ -136,11 +84,6 @@ const Header: React.FC = () => {
               </Link>
             </nav>
 
-            {/* Desktop Right Side - No authentication system */}
-            <div className="hidden md:flex items-center space-x-4">
-              {/* Nothing here - no auth system */}
-            </div>
-
             {/* Mobile Menu Button */}
             <div className="flex md:hidden">
               <button
@@ -160,13 +103,6 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* Click outside to close desktop user menu */}
-        {showUserMenu && (
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setShowUserMenu(false)}
-          />
-        )}
       </header>
 
       {/* Mobile Off-Canvas Menu */}
@@ -243,10 +179,7 @@ const Header: React.FC = () => {
               </div>
             </nav>
 
-            {/* User Section - No authentication system */}
-            <div className="p-4 border-t border-gray-200">
-              {/* Nothing here - no auth system */}
-            </div>
+
           </div>
         </div>
       </div>

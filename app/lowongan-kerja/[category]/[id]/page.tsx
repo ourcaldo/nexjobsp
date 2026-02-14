@@ -6,9 +6,10 @@ import { getCurrentDomain } from '@/lib/config';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobDetailPage from '@/components/pages/JobDetailPage';
-import { generateJobPostingSchema, generateBreadcrumbSchema } from '@/utils/schemaUtils';
+import { generateJobPostingSchema, generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
 import { Job } from '@/types/job';
-import { formatLocationName, locationToSlug, getLocationNamesFromIds } from '@/utils/textUtils';
+import { formatLocationName, locationToSlug, getLocationNamesFromIds } from '@/lib/utils/textUtils';
+import { logger } from '@/lib/logger';
 
 interface JobPageProps {
   params: Promise<{
@@ -70,7 +71,7 @@ const getJobData = cache(async (category: string, id: string) => {
       currentUrl
     };
   } catch (error) {
-    console.error('Error fetching job:', error);
+    logger.error('Error fetching job:', {}, error);
     notFound();
   }
 });
@@ -160,7 +161,7 @@ export async function generateStaticParams() {
       };
     });
   } catch (error) {
-    console.error('Error generating static paths:', error);
+    logger.error('Error generating static paths:', {}, error);
     return [];
   }
 }

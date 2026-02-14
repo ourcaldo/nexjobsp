@@ -3,11 +3,12 @@ import { Suspense } from 'react';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobSearchPage from '@/components/pages/JobSearchPage';
-import { generateBreadcrumbSchema } from '@/utils/schemaUtils';
+import { generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
 import { getCurrentDomain } from '@/lib/config';
-import { wpCategoryMappings } from '@/utils/urlUtils';
-import { renderTemplate } from '@/utils/templateUtils';
+import { wpCategoryMappings } from '@/lib/utils/urlUtils';
+import { renderTemplate } from '@/lib/utils/templateUtils';
 import { jobService } from '@/lib/services/JobService';
+import { logger } from '@/lib/logger';
 
 interface JobCategoryPageProps {
   params: Promise<{
@@ -49,7 +50,7 @@ async function getCategoryData(slug: string) {
       initialFilterData: filterData,
     };
   } catch (error) {
-    console.error('Error fetching initial category jobs:', error);
+    logger.error('Error fetching initial category jobs:', {}, error);
     return {
       slug,
       category,

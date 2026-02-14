@@ -5,11 +5,11 @@ import { jobService } from '@/lib/services/JobService';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobSearchPage from '@/components/pages/JobSearchPage';
-import { generateBreadcrumbSchema } from '@/utils/schemaUtils';
+import { generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
 import { getCurrentDomain } from '@/lib/config';
-import { wpLocationMappings } from '@/utils/urlUtils';
-import { renderTemplate } from '@/utils/templateUtils';
-import { normalizeSlug, normalizeSlugForMatching } from '@/utils/textUtils';
+import { wpLocationMappings } from '@/lib/utils/urlUtils';
+import { renderTemplate } from '@/lib/utils/templateUtils';
+import { normalizeSlug, normalizeSlugForMatching } from '@/lib/utils/textUtils';
 
 function JobSearchPageFallback() {
   return (
@@ -101,7 +101,6 @@ async function getLocationData(provinceSlug: string) {
       initialFilterData: null,
     };
   }
-  };
 }
 
 export async function generateMetadata({ params }: JobLocationPageProps): Promise<Metadata> {

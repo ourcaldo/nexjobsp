@@ -3,157 +3,48 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { MouseEvent } from 'react';
 
 export default function NotFound() {
   const router = useRouter();
 
   return (
-    <div style={{
-      fontFamily: "'Inter', sans-serif",
-      backgroundColor: '#ffffff',
-      color: '#111827',
-      height: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      overflow: 'hidden'
-    }}>
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-        padding: '2rem 1rem 4rem 1rem',
-        maxWidth: '600px',
-        width: '100%'
-      }}>
-        
-        <div style={{
-          marginTop: '3rem',
-          marginBottom: '1rem',
-          width: '300px',
-          height: '300px'
-        }}>
-          <Image 
-            src="https://nexjob.b-cdn.net/404.png" 
-            alt="404 Illustration" 
+    <div className="font-sans bg-white text-gray-900 h-screen flex items-center justify-center overflow-hidden">
+      <div className="flex flex-col items-center text-center px-4 pb-16 max-w-[600px] w-full">
+
+        <div className="mt-12 mb-4 w-[300px] h-[300px] sm:w-[240px] sm:h-[240px]">
+          <Image
+            src="https://nexjob.b-cdn.net/404.png"
+            alt="404 Illustration"
             width={300}
             height={300}
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'contain',
-              animation: 'float 6s ease-in-out infinite'
-            }}
+            className="w-full h-full object-contain animate-float"
           />
         </div>
 
-        <h1 style={{
-          fontSize: '2.5rem',
-          fontWeight: 700,
-          lineHeight: 1.2,
-          marginBottom: '1rem',
-          letterSpacing: '-0.02em'
-        }}>
+        <h1 className="text-4xl sm:text-3xl font-bold leading-tight mb-4 tracking-tight">
           Uh-oh... I think I took<br />a wrong turn.
         </h1>
-        
-        <p style={{
-          fontSize: '1.1rem',
-          color: '#6b7280',
-          marginBottom: '2.5rem'
-        }}>
+
+        <p className="text-lg text-gray-500 mb-10">
           Let&apos;s get you back to where everything makes sense.
         </p>
 
-        <div style={{
-          display: 'flex',
-          gap: '1rem',
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-          marginBottom: '3rem'
-        }}>
-          <Link 
-            href="/" 
-            style={{
-              padding: '0.75rem 2rem',
-              borderRadius: '50px',
-              fontWeight: 600,
-              fontSize: '0.9rem',
-              cursor: 'pointer',
-              textDecoration: 'none',
-              transition: 'all 0.2s ease',
-              backgroundColor: '#f3f4f6',
-              color: '#1f2937',
-              border: '1px solid transparent'
-            }}
-            onMouseEnter={(e: MouseEvent<HTMLAnchorElement>) => {
-              e.currentTarget.style.backgroundColor = '#e5e7eb';
-              e.currentTarget.style.transform = 'translateY(-2px)';
-            }}
-            onMouseLeave={(e: MouseEvent<HTMLAnchorElement>) => {
-              e.currentTarget.style.backgroundColor = '#f3f4f6';
-              e.currentTarget.style.transform = 'translateY(0)';
-            }}
+        <div className="flex gap-4 justify-center flex-wrap mb-12 sm:flex-col sm:items-center sm:w-full">
+          <Link
+            href="/"
+            className="px-8 py-3 rounded-full font-semibold text-sm bg-gray-100 text-gray-800 border border-transparent hover:bg-gray-200 hover:-translate-y-0.5 transition-all sm:w-full sm:max-w-[300px] sm:text-center"
           >
             Go home
           </Link>
-          <button 
+          <button
             onClick={() => router.back()}
-            style={{
-              padding: '0.75rem 2rem',
-              borderRadius: '50px',
-              fontWeight: 600,
-              fontSize: '0.9rem',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              backgroundColor: 'transparent',
-              color: '#6b7280',
-              border: '1px solid transparent'
-            }}
-            onMouseEnter={(e: MouseEvent<HTMLButtonElement>) => {
-              e.currentTarget.style.color = '#111827';
-              e.currentTarget.style.backgroundColor = '#f9fafb';
-            }}
-            onMouseLeave={(e: MouseEvent<HTMLButtonElement>) => {
-              e.currentTarget.style.color = '#6b7280';
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
+            className="px-8 py-3 rounded-full font-semibold text-sm bg-transparent text-gray-500 border border-transparent hover:text-gray-900 hover:bg-gray-50 transition-all cursor-pointer sm:w-full sm:max-w-[300px] sm:text-center"
           >
             Go back
           </button>
         </div>
 
       </div>
-
-      <style jsx>{`
-        @keyframes float {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-          100% { transform: translateY(0px); }
-        }
-
-        @media (max-width: 600px) {
-          h1 {
-            font-size: 1.75rem !important;
-          }
-          div[style*="width: 300px"] {
-            width: 240px !important;
-            height: 240px !important;
-          }
-          div[style*="display: flex"][style*="gap: 1rem"] {
-            flex-direction: column;
-            width: 100%;
-            align-items: center;
-          }
-          a, button {
-            width: 100%;
-            max-width: 300px;
-            text-align: center;
-          }
-        }
-      `}</style>
     </div>
   );
 }

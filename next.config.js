@@ -5,7 +5,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   env: {
     PORT: process.env.PORT,
   },
@@ -87,21 +86,7 @@ const nextConfig = {
     unoptimized: false,
   },
   async rewrites() {
-    return [
-      {
-        source: '/bookmark/',
-        destination: '/bookmarks',
-      },
-      // Admin panel rewrite
-      {
-        source: '/admin',
-        destination: '/backend/admin',
-      },
-      {
-        source: '/admin/',
-        destination: '/backend/admin/',
-      },
-    ];
+    return [];
   },
   async redirects() {
     return [
@@ -145,15 +130,10 @@ const nextConfig = {
         destination: '/artikel/:slug/',
         permanent: true,
       },
-      {
-        source: '/bookmark',
-        destination: '/bookmark/',
-        permanent: true,
-      },
     ];
   },
   trailingSlash: true,
-  generateEtags: false,
+  generateEtags: true,
   poweredByHeader: false,
 };
 

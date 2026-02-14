@@ -7,7 +7,8 @@ import { seoTemplates } from '@/lib/seo-templates';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import HomePage from '@/components/pages/HomePage';
-import { generateWebsiteSchema, generateOrganizationSchema } from '@/utils/schemaUtils';
+import { generateWebsiteSchema, generateOrganizationSchema } from '@/lib/utils/schemaUtils';
+import { logger } from '@/lib/logger';
 
 async function getHomeData() {
   try {
@@ -25,7 +26,7 @@ async function getHomeData() {
       filterData
     };
   } catch (error) {
-    console.error('Error fetching home data:', error);
+    logger.error('Error fetching home data:', {}, error);
 
     return {
       articles: [],

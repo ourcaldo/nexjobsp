@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { config as appConfig } from '@/lib/config';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
+import { logger } from '@/lib/logger';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -63,7 +64,7 @@ export async function middleware(request: NextRequest) {
         });
       }
     } catch (error) {
-      console.error('Error fetching sitemap from CMS:', error);
+      logger.error('Error fetching sitemap from CMS:', {}, error);
     }
 
     // Fallback: return basic sitemap
@@ -117,7 +118,7 @@ export async function middleware(request: NextRequest) {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        console.error(`[Sitemap Middleware] CMS returned ${response.status} for ${sitemapFile}`);
+        logger.error(`CMS returned ${response.status} for ${sitemapFile}`, { module: 'Sitemap Middleware' });
         return NextResponse.next();
       }
 
@@ -169,11 +170,11 @@ export async function middleware(request: NextRequest) {
       });
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
-        console.error(`[Sitemap Middleware] Timeout fetching ${pathname}`);
+        logger.error(`Timeout fetching ${pathname}`, { module: 'Sitemap Middleware' });
         return NextResponse.next();
       }
 
-      console.error(`[Sitemap Middleware] Error processing ${pathname}:`, error);
+      logger.error(`Error processing ${pathname}`, { module: 'Sitemap Middleware' }, error);
       return NextResponse.next();
     }
   }

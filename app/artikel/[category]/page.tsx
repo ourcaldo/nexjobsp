@@ -5,10 +5,11 @@ import { categoryService } from '@/lib/services/CategoryService';
 import { getCurrentDomain } from '@/lib/config';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
-import { generateArticleListingSchema, generateBreadcrumbSchema } from '@/utils/schemaUtils';
+import { generateArticleListingSchema, generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
 import { formatDistance } from 'date-fns';
 import { Calendar, User, Folder, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { logger } from '@/lib/logger';
 import Image from 'next/image';
 
 interface ArticleCategoryPageProps {
@@ -75,7 +76,7 @@ async function getCategoryData(categorySlug: string) {
       total: articlesResponse.data.pagination.total
     };
   } catch (error) {
-    console.error('Error fetching category data:', error);
+    logger.error('Error fetching category data:', {}, error);
     return null;
   }
 }
@@ -91,7 +92,7 @@ export async function generateStaticParams() {
       category: category.slug,
     }));
   } catch (error) {
-    console.error('Error generating static params for categories:', error);
+    logger.error('Error generating static params for categories:', {}, error);
     return [];
   }
 }

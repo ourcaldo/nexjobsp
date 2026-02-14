@@ -4,11 +4,11 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, TrendingUp, ArrowRight, Users, Building, Code, Heart, Calculator, Truck, Briefcase } from 'lucide-react';
+import { Search, ArrowRight, Briefcase } from 'lucide-react';
 import { FilterData } from '@/lib/cms/interface';
 import SearchableSelect from '@/components/SearchableSelect';
 import SchemaMarkup from '@/components/SEO/SchemaMarkup';
-import { generateWebsiteSchema, generateOrganizationSchema } from '@/utils/schemaUtils';
+import { generateWebsiteSchema, generateOrganizationSchema } from '@/lib/utils/schemaUtils';
 import { Job } from '@/types/job';
 import JobCard from '@/components/JobCard';
 import { sanitizeHTML } from '@/lib/utils/sanitize';
@@ -29,7 +29,6 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
   const [jobCategories, setJobCategories] = useState<string[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     // Load filter data if not provided initially
@@ -100,10 +99,6 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
     return `/artikel/${articleSlug}/`;
   }, []);
 
-  const handleBookmarkChange = useCallback((jobId: string, isBookmarked: boolean) => {
-    // No bookmark system
-  }, []);
-
   // Generic icon component for categories
   const CategoryIcon = () => (
     <Briefcase className="h-6 w-6 text-white" />
@@ -127,23 +122,9 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
     }
   };
 
-  const loadUserBookmarks = useCallback(async (userId: string) => {
-    // No bookmark system
-  }, []);
-
-  const initializeAuth = useCallback(async () => {
-    try {
-      // No authentication system
-      setUser(null);
-    } catch (error) {
-      console.error('Error checking user:', error);
-    }
-  }, []);
-
   useEffect(() => {
     loadData();
-    initializeAuth();
-  }, [initializeAuth]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -159,7 +140,7 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
               Temukan Karir Impianmu
             </h1>
             <p className="text-xl text-primary-100 mb-8 max-w-3xl mx-auto">
-              {settings.siteDescription}
+              {settings.site_description || settings.siteDescription}
             </p>
           </div>
 

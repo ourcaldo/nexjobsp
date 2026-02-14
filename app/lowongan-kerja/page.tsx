@@ -4,9 +4,10 @@ import { getCurrentDomain } from '@/lib/config';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobSearchPage from '@/components/pages/JobSearchPage';
-import { generateBreadcrumbSchema } from '@/utils/schemaUtils';
-import { renderTemplate } from '@/utils/templateUtils';
+import { generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
+import { renderTemplate } from '@/lib/utils/templateUtils';
 import { jobService } from '@/lib/services/JobService';
+import { logger } from '@/lib/logger';
 
 async function getJobsData() {
   // Hardcoded settings - no admin panel
@@ -35,7 +36,7 @@ async function getJobsData() {
       initialFilterData: filterData,
     };
   } catch (error) {
-    console.error('Error fetching initial jobs data:', error);
+    logger.error('Error fetching initial jobs data:', {}, error);
     return {
       settings,
       currentUrl,

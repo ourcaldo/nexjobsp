@@ -18,6 +18,15 @@ export const formatRelativeDate = (dateStr?: string): string => {
   return `${Math.ceil(diffDays / 30)} bulan lalu`;
 };
 
+/**
+ * Format a date for job cards/detail pages with "Dipublikasikan" prefix.
+ * Returns "Baru dipublikasikan" for missing dates.
+ */
+export const formatJobDate = (dateStr?: string): string => {
+  if (!dateStr) return 'Baru dipublikasikan';
+  return `Dipublikasikan ${formatRelativeDate(dateStr)}`;
+};
+
 export const formatFullDate = (dateString: string): string => {
   return new Date(dateString).toLocaleString('id-ID', {
     year: 'numeric',
@@ -25,6 +34,15 @@ export const formatFullDate = (dateString: string): string => {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
+  });
+};
+
+/** Format a date as "15 Januari 2024" (Indonesian locale, date only). */
+export const formatArticleDate = (dateString: string): string => {
+  return new Date(dateString).toLocaleDateString('id-ID', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   });
 };
 

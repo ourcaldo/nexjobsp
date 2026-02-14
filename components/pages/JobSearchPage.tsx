@@ -1,19 +1,16 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React from 'react';
 import { Search, Filter, X, Loader2, AlertCircle } from 'lucide-react';
 import { Job } from '@/types/job';
 import { FilterData } from '@/lib/cms/interface';
-import { useAnalytics } from '@/hooks/useAnalytics';
 import JobCard from '@/components/JobCard';
 import JobSidebar from '@/components/JobSidebar';
 import SearchableSelect from '@/components/SearchableSelect';
 import JobCardSkeleton from '@/components/ui/JobCardSkeleton';
 import EmptyState from '@/components/ui/EmptyState';
-import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-import { useSearchHistory } from '@/hooks/useSearchHistory';
-import { features } from '@/lib/features';
+import JobSearchSkeleton from '@/components/ui/JobSearchSkeleton';
+import { useJobSearch } from '@/hooks/useJobSearch';
 
 interface JobSearchPageProps {
   settings: any;
@@ -32,9 +29,9 @@ interface JobSearchPageProps {
   initialFilterData?: FilterData | null;
 }
 
-const JobSearchPage: React.FC<JobSearchPageProps> = ({ 
-  settings, 
-  initialCategory, 
+const JobSearchPage: React.FC<JobSearchPageProps> = ({
+  settings,
+  initialCategory,
   initialLocation,
   initialLocationName,
   locationType = 'province',
@@ -48,778 +45,39 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   initialCurrentPage: serverCurrentPage = 1,
   initialFilterData: serverFilterData = null,
 }) => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const { trackPageView, trackSearch, trackFilterUsage } = useAnalytics();
-  const searchHistory = useSearchHistory();
-  const isSearchHistoryEnabled = features.searchHistory;
-
-  // Refs to prevent infinite loops
-  const initialDataLoadedRef = useRef(false);
-  const isSearchingRef = useRef(false);
-  const currentFiltersRef = useRef<any>({});
-  const debounceTimeoutRef = useRef<NodeJS.Timeout>();
-
-  // Determine if we have server-provided initial data
-  const hasServerData = serverJobs !== null && serverJobs.length > 0;
-
-  // State
-  const [jobs, setJobs] = useState<Job[]>(hasServerData ? serverJobs : []);
-  const [loading, setLoading] = useState(!hasServerData);
-  const [searching, setSearching] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [filterData, setFilterData] = useState<FilterData | null>(serverFilterData);
-  const [currentPage, setCurrentPage] = useState(hasServerData ? serverCurrentPage : 1);
-  const [hasMore, setHasMore] = useState(hasServerData ? serverHasMore : true);
-  const [totalJobs, setTotalJobs] = useState(hasServerData ? serverTotalJobs : 0);
-  const [displayedJobsCount, setDisplayedJobsCount] = useState(hasServerData ? serverJobs.length : 0);
-  const [showSearchHistory, setShowSearchHistory] = useState(false);
-
-  // Main search filters
-  const [keyword, setKeyword] = useState('');
-  const [selectedProvince, setSelectedProvince] = useState(
-    initialProvinceId ||
-    (initialLocation && locationType === 'province' ? initialLocation : '')
-  );
-  
-  // Track previous province to detect changes
-  const previousProvinceRef = useRef<string>(selectedProvince);
-
-  // Sidebar filters
-  const [sidebarFilters, setSidebarFilters] = useState({
-    cities: initialCityId ? [initialCityId] : (initialLocation && locationType === 'city' ? [initialLocation] : []) as string[],
-    jobTypes: [] as string[],
-    experiences: [] as string[],
-    educations: [] as string[],
-    industries: [] as string[],
-    workPolicies: [] as string[],
-    categories: initialCategory ? [initialCategory] : [] as string[],
-    salaries: [] as string[]
+  const {
+    jobs, loading, searching, loadingMore, error, filterData,
+    hasMore, totalJobs, keyword, selectedProvince, sidebarFilters,
+    sortBy, showMobileFilters, showSearchHistory,
+    isSearchHistoryEnabled, searchHistory,
+    setKeyword, setSelectedProvince, setShowMobileFilters, setShowSearchHistory,
+    handleManualSearch, handleSidebarFilterChange, handleSortChange,
+    handleKeyPress, clearAllFilters, removeFilter,
+    getProvinceOptions, getActiveFiltersCount, getFilterLabel,
+    getProvinceName, getFilterTypeLabel,
+    setTarget,
+  } = useJobSearch({
+    initialCategory,
+    initialLocation,
+    initialLocationName,
+    locationType,
+    initialProvinceId,
+    initialCityId,
+    provinceSlug,
+    serverJobs,
+    serverTotalJobs,
+    serverHasMore,
+    serverCurrentPage,
+    serverFilterData,
   });
 
-  const [sortBy, setSortBy] = useState('newest');
-  const [showMobileFilters, setShowMobileFilters] = useState(false);
-
-  // Helper function to calculate salary range from multiple selected ranges
-  const calculateSalaryRange = useCallback((selectedRanges: string[]): { min: string | null, max: string | null } => {
-    if (!selectedRanges || selectedRanges.length === 0) {
-      return { min: null, max: null };
-    }
-
-    // Salary range mapping
-    const rangeMapping: { [key: string]: { min: number, max: number | null } } = {
-      '1-3': { min: 1000000, max: 3000000 },
-      '4-6': { min: 4000000, max: 6000000 },
-      '7-9': { min: 7000000, max: 9000000 },
-      '10+': { min: 10000000, max: null }
-    };
-
-    // If all 4 ranges are selected, only send minimum
-    if (selectedRanges.length === 4) {
-      return { min: '1000000', max: null };
-    }
-
-    // Find min and max from selected ranges
-    let minSalary = Number.MAX_SAFE_INTEGER;
-    let maxSalary: number | null = null;
-    let hasOpenRange = false;
-
-    selectedRanges.forEach(range => {
-      const mapping = rangeMapping[range];
-      if (mapping) {
-        minSalary = Math.min(minSalary, mapping.min);
-        
-        // If any range is '10+', there's no max limit
-        if (mapping.max === null) {
-          hasOpenRange = true;
-        } else if (!hasOpenRange) {
-          if (maxSalary === null) {
-            maxSalary = mapping.max;
-          } else {
-            maxSalary = Math.max(maxSalary, mapping.max);
-          }
-        }
-      }
-    });
-
-    const finalMin = minSalary === Number.MAX_SAFE_INTEGER ? null : String(minSalary);
-    const finalMax = hasOpenRange ? null : (maxSalary !== null ? String(maxSalary) : null);
-    
-    return { min: finalMin, max: finalMax };
-  }, []);
-
-  // Get current filters object - memoized to prevent unnecessary recreations
-  const getCurrentFilters = useCallback(() => {
-    const locationFilter = selectedProvince || 
-      (initialLocation && locationType === 'province' ? initialLocation : '');
-
-    return {
-      search: keyword,
-      location: locationFilter,
-      sortBy: sortBy,
-      ...sidebarFilters
-    };
-  }, [keyword, selectedProvince, sortBy, sidebarFilters, initialLocation, locationType]);
-
-  // Check if filters have changed
-  const hasFiltersChanged = useCallback((newFilters: any) => {
-    return JSON.stringify(newFilters) !== JSON.stringify(currentFiltersRef.current);
-  }, []);
-
-  // Load initial data
-  const loadInitialData = useCallback(async () => {
-    if (initialDataLoadedRef.current) return;
-
-    // If server already provided data and no URL params override, skip client fetch
-    if (hasServerData && !searchParams?.get('search') && !searchParams?.get('location') && !searchParams?.get('category')) {
-      initialDataLoadedRef.current = true;
-
-      // Still load filter data if not server-provided
-      if (!serverFilterData) {
-        try {
-          const response = await fetch('/api/job-posts/filters');
-          const result = await response.json();
-          if (result.success) {
-            setFilterData(result.data);
-          }
-        } catch (error) {
-          console.error('Failed to load filter data:', error);
-        }
-      }
-
-      // Store current filters
-      currentFiltersRef.current = getCurrentFilters();
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      // Load filter data from API route
-      const response = await fetch('/api/job-posts/filters');
-      const result = await response.json();
-      
-      if (result.success) {
-        setFilterData(result.data);
-      }
-
-      // Initialize filters from URL params
-      const search = searchParams?.get('search');
-      const location = searchParams?.get('location');
-      const category = searchParams?.get('category');
-
-      let initialKeyword = '';
-      let initialProvince = selectedProvince;
-      let initialSidebarFilters = { ...sidebarFilters, cities: initialCityId ? [initialCityId] : sidebarFilters.cities };
-
-      if (search) {
-        initialKeyword = search;
-        setKeyword(search);
-      }
-
-      if (location && !initialLocation) {
-        initialProvince = location;
-        setSelectedProvince(location);
-      }
-
-      if (category && !initialCategory) {
-        initialSidebarFilters = {
-          ...initialSidebarFilters,
-          categories: [category]
-        };
-        setSidebarFilters(initialSidebarFilters);
-      }
-
-      // Build initial filters
-      const filters = {
-        search: initialKeyword,
-        location: initialProvinceId || (initialLocation && locationType === 'province' ? initialLocation : initialProvince),
-        sortBy: 'newest',
-        ...initialSidebarFilters
-      };
-
-      // Store current filters
-      currentFiltersRef.current = filters;
-
-      // Calculate salary range from selected salary filters
-      const salaryRange = calculateSalaryRange(filters.salaries);
-
-      // Load jobs from API route
-      const params = new URLSearchParams({
-        page: '1',
-        limit: '24',
-        ...(filters.search && { search: filters.search }),
-        ...(filters.location && { location: filters.location }),
-        ...(filters.cities && filters.cities.length > 0 && { city: filters.cities[0] }),
-        ...(filters.categories && filters.categories.length > 0 && { job_category: filters.categories[0] }),
-        ...(filters.jobTypes && filters.jobTypes.length > 0 && { employment_type: filters.jobTypes[0] }),
-        ...(filters.experiences && filters.experiences.length > 0 && { experience_level: filters.experiences[0] }),
-        ...(filters.educations && filters.educations.length > 0 && { education_level: filters.educations[0] }),
-        ...(filters.workPolicies && filters.workPolicies.length > 0 && { work_policy: filters.workPolicies[0] }),
-        ...(salaryRange.min && { job_salary_min: salaryRange.min }),
-        ...(salaryRange.max && { job_salary_max: salaryRange.max })
-      });
-      
-      const jobsResponse = await fetch(`/api/job-posts?${params.toString()}`);
-      const jobsResult = await jobsResponse.json();
-
-      if (jobsResult.success) {
-        const data = jobsResult.data;
-        setJobs(data.jobs);
-        setCurrentPage(data.currentPage);
-        setHasMore(data.hasMore);
-        setTotalJobs(data.totalJobs);
-        setDisplayedJobsCount(data.jobs.length);
-      }
-
-      initialDataLoadedRef.current = true;
-    } catch (err) {
-      setError('Gagal memuat data. Silakan coba lagi.');
-      console.error('Error loading initial data:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [searchParams, selectedProvince, sidebarFilters, initialLocation, locationType, initialCategory, calculateSalaryRange, initialCityId, initialProvinceId]);
-
-  // Search with filters
-  const searchWithFilters = useCallback(async (filters: any, isManualSearch = false) => {
-    if (isSearchingRef.current) return;
-
-    isSearchingRef.current = true;
-    setSearching(true);
-    setJobs([]);
-    setCurrentPage(1);
-    setHasMore(true);
-    setDisplayedJobsCount(0); // Reset displayed count when searching
-
-    try {
-      setError(null);
-
-      // Track search if there's a keyword and it's a manual search
-      if (filters.search && isManualSearch) {
-        trackSearch(filters.search, filters.location, filters.categories[0]);
-      }
-
-      // Update URL for non-category/location pages
-      if (!initialCategory && !initialLocation && isManualSearch) {
-        const params = new URLSearchParams();
-        if (filters.search) params.set('search', filters.search);
-        if (filters.location && filters.location !== selectedProvince) params.set('location', filters.location);
-
-        const newUrl = `/lowongan-kerja/${params.toString() ? '?' + params.toString() : ''}`;
-        router.replace(newUrl);
-      }
-
-      // Calculate salary range from selected salary filters
-      const salaryRange = calculateSalaryRange(filters.salaries);
-
-      const params = new URLSearchParams({
-        page: '1',
-        limit: '24',
-        ...(filters.search && { search: filters.search }),
-        ...(filters.location && { location: filters.location }),
-        ...(filters.cities && filters.cities.length > 0 && { city: filters.cities[0] }),
-        ...(filters.categories && filters.categories.length > 0 && { job_category: filters.categories[0] }),
-        ...(filters.jobTypes && filters.jobTypes.length > 0 && { employment_type: filters.jobTypes[0] }),
-        ...(filters.experiences && filters.experiences.length > 0 && { experience_level: filters.experiences[0] }),
-        ...(filters.educations && filters.educations.length > 0 && { education_level: filters.educations[0] }),
-        ...(filters.workPolicies && filters.workPolicies.length > 0 && { work_policy: filters.workPolicies[0] }),
-        ...(salaryRange.min && { job_salary_min: salaryRange.min }),
-        ...(salaryRange.max && { job_salary_max: salaryRange.max })
-      });
-      
-      const jobsResponse = await fetch(`/api/job-posts?${params.toString()}`);
-      const result = await jobsResponse.json();
-
-      if (result.success) {
-        const data = result.data;
-        setJobs(data.jobs);
-        setCurrentPage(data.currentPage);
-        setHasMore(data.hasMore);
-        setTotalJobs(data.totalJobs);
-        setDisplayedJobsCount(data.jobs.length);
-      }
-
-      // Update current filters ref
-      currentFiltersRef.current = filters;
-    } catch (err) {
-      setError('Gagal memuat data pekerjaan. Silakan coba lagi.');
-      console.error('Search error:', err);
-    } finally {
-      setSearching(false);
-      isSearchingRef.current = false;
-    }
-  }, [trackSearch, initialCategory, initialLocation, selectedProvince, router, calculateSalaryRange]);
-
-  // Handle manual search (button click or enter key)
-  const handleManualSearch = useCallback(async () => {
-    if (!initialDataLoadedRef.current) return;
-
-    const filters = getCurrentFilters();
-    
-    // Save search keyword to history
-    if (isSearchHistoryEnabled && filters.search) {
-      searchHistory.addToHistory(filters.search);
-    }
-    
-    await searchWithFilters(filters, true);
-    setShowSearchHistory(false);
-  }, [searchWithFilters, getCurrentFilters, isSearchHistoryEnabled, searchHistory]);
-
-  // Debounced filter search
-  const debouncedFilterSearch = useCallback(() => {
-    if (!initialDataLoadedRef.current) return;
-
-    const filters = getCurrentFilters();
-
-    // Only search if filters have actually changed
-    if (!hasFiltersChanged(filters)) return;
-
-    // Clear existing timeout
-    if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current);
-    }
-
-    // Set new timeout
-    debounceTimeoutRef.current = setTimeout(() => {
-      searchWithFilters(filters, false);
-    }, 300);
-  }, [searchWithFilters, getCurrentFilters, hasFiltersChanged]);
-
-  // Load more jobs for infinite scroll
-  const loadMoreJobs = useCallback(async () => {
-    if (loadingMore || !hasMore || isSearchingRef.current || !initialDataLoadedRef.current) return;
-
-    setLoadingMore(true);
-    try {
-      const filters = getCurrentFilters();
-      
-      // Calculate salary range from selected salary filters
-      const salaryRange = calculateSalaryRange(filters.salaries);
-      
-      const params = new URLSearchParams({
-        page: (currentPage + 1).toString(),
-        limit: '24',
-        ...(filters.search && { search: filters.search }),
-        ...(filters.location && { location: filters.location }),
-        ...(filters.cities && filters.cities.length > 0 && { city: filters.cities[0] }),
-        ...(filters.categories && filters.categories.length > 0 && { job_category: filters.categories[0] }),
-        ...(filters.jobTypes && filters.jobTypes.length > 0 && { employment_type: filters.jobTypes[0] }),
-        ...(filters.experiences && filters.experiences.length > 0 && { experience_level: filters.experiences[0] }),
-        ...(filters.educations && filters.educations.length > 0 && { education_level: filters.educations[0] }),
-        ...(filters.workPolicies && filters.workPolicies.length > 0 && { work_policy: filters.workPolicies[0] }),
-        ...(salaryRange.min && { job_salary_min: salaryRange.min }),
-        ...(salaryRange.max && { job_salary_max: salaryRange.max })
-      });
-      
-      const jobsResponse = await fetch(`/api/job-posts?${params.toString()}`);
-      const result = await jobsResponse.json();
-
-      if (result.success && result.data.jobs.length > 0) {
-        setJobs(prevJobs => [...prevJobs, ...result.data.jobs]);
-        setCurrentPage(result.data.currentPage);
-        setHasMore(result.data.hasMore);
-        setDisplayedJobsCount(prevCount => prevCount + result.data.jobs.length);
-      } else {
-        setHasMore(false);
-      }
-    } catch (err) {
-      console.error('Error loading more jobs:', err);
-      setHasMore(false);
-    } finally {
-      setLoadingMore(false);
-    }
-  }, [currentPage, hasMore, loadingMore, getCurrentFilters, calculateSalaryRange]);
-
-  useEffect(() => {
-    loadInitialData();
-  }, [loadInitialData]);
-
-  // Track page view on mount
-  useEffect(() => {
-    trackPageView({
-      page_title: document.title,
-      content_group1: 'job_search',
-      content_group2: initialCategory || '',
-      content_group3: initialLocation || '',
-    });
-  }, [trackPageView, initialCategory, initialLocation]);
-
-  // Clear invalid city filters when province changes (prevent mismatched province+city queries)
-  useEffect(() => {
-    if (!initialDataLoadedRef.current) {
-      // On initial mount, just store the current province
-      previousProvinceRef.current = selectedProvince;
-      return;
-    }
-
-    // Check if province has actually changed
-    if (selectedProvince !== previousProvinceRef.current) {
-      // Validate city filters against new province
-      if (filterData && sidebarFilters.cities.length > 0) {
-        const validCities = sidebarFilters.cities.filter(cityId => {
-          // Keep cities that belong to the new province (or if no province selected, keep all)
-          if (!selectedProvince) return true;
-          
-          const city = filterData.regencies.find(r => r.id === cityId);
-          return city && city.province_id === selectedProvince;
-        });
-
-        // Only update if we need to remove invalid cities
-        if (validCities.length !== sidebarFilters.cities.length) {
-          setSidebarFilters(prev => ({
-            ...prev,
-            cities: validCities
-          }));
-        }
-      }
-      
-      // Update the ref with new province
-      previousProvinceRef.current = selectedProvince;
-    }
-  }, [selectedProvince, filterData, sidebarFilters.cities]);
-
-  // Watch for filter changes (debounced)
-  useEffect(() => {
-    if (!initialDataLoadedRef.current) return;
-
-    debouncedFilterSearch();
-
-    // Cleanup timeout on unmount
-    return () => {
-      if (debounceTimeoutRef.current) {
-        clearTimeout(debounceTimeoutRef.current);
-      }
-    };
-  }, [debouncedFilterSearch]);
-
-  // Infinite scroll hook
-  const { isFetching, setTarget, resetFetching } = useInfiniteScroll(loadMoreJobs, {
-    threshold: 0.8,
-    rootMargin: '200px'
-  });
-
-  // Reset fetching state when loading more is complete
-  useEffect(() => {
-    if (!loadingMore && isFetching) {
-      resetFetching();
-    }
-  }, [loadingMore, isFetching, resetFetching]);
-
-  // Event handlers
-  const handleSidebarFilterChange = useCallback((newFilters: any) => {
-    setSidebarFilters(newFilters);
-
-    // Track filter usage
-    Object.entries(newFilters).forEach(([filterType, values]) => {
-      if (Array.isArray(values) && values.length > 0) {
-        values.forEach(value => {
-          trackFilterUsage(filterType, value);
-        });
-      }
-    });
-  }, [trackFilterUsage]);
-
-  const handleSortChange = useCallback((newSortBy: string) => {
-    setSortBy(newSortBy);
-  }, []);
-
-  const handleJobClick = useCallback((job: Job) => {
-    // JobCard handles navigation with Link
-    return;
-  }, []);
-
-  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleManualSearch();
-    }
-  }, [handleManualSearch]);
-
-  const clearAllFilters = useCallback(() => {
-    const clearedFilters = {
-      search: '',
-      location: '',
-      sortBy: 'newest',
-      cities: [],
-      jobTypes: [],
-      experiences: [],
-      educations: [],
-      industries: [],
-      workPolicies: [],
-      categories: [],
-      salaries: []
-    };
-
-    setKeyword('');
-    setSelectedProvince('');
-    setSidebarFilters({
-      cities: [],
-      jobTypes: [],
-      experiences: [],
-      educations: [],
-      industries: [],
-      workPolicies: [],
-      categories: [],
-      salaries: []
-    });
-    setSortBy('newest');
-
-    searchWithFilters(clearedFilters, false);
-
-    if (initialCategory || initialLocation || initialProvinceId || initialCityId) {
-      router.replace('/lowongan-kerja/');
-    }
-  }, [searchWithFilters, initialCategory, initialLocation, initialProvinceId, initialCityId, router]);
-
-  const getActiveFiltersCount = useMemo(() => {
-    let count = 0;
-    if (keyword) count++;
-    
-    if (initialLocation && locationType === 'province') {
-      count++;
-    } else if (selectedProvince) {
-      count++;
-    }
-
-    Object.entries(sidebarFilters).forEach(([key, filterArray]) => {
-      if (key === 'categories' && initialCategory) {
-        count += filterArray.filter(cat => cat !== initialCategory).length;
-      } else if (key === 'cities' && initialLocation && locationType === 'city') {
-        count += filterArray.filter(city => city !== initialLocation).length;
-      } else {
-        count += filterArray.length;
-      }
-    });
-    return count;
-  }, [keyword, selectedProvince, sidebarFilters, initialLocation, locationType, initialCategory]);
-
-  const removeFilter = useCallback((filterType: string, value?: string) => {
-    if (filterType === 'keyword') {
-      setKeyword('');
-    } else if (filterType === 'province') {
-      if (initialProvinceId) {
-        // On nested routes (province+city), removing province redirects to main page
-        router.replace('/lowongan-kerja/');
-      } else if (initialLocation && locationType === 'province') {
-        router.replace('/lowongan-kerja/');
-      } else {
-        setSelectedProvince('');
-        setSidebarFilters(prev => ({ ...prev, cities: [] }));
-      }
-    } else if (filterType === 'cities' && value) {
-      if (initialCityId && value === initialCityId) {
-        if (provinceSlug) {
-          router.replace(`/lowongan-kerja/lokasi/${provinceSlug}/`);
-        } else {
-          router.replace('/lowongan-kerja/');
-        }
-      } else {
-        setSidebarFilters(prev => ({
-          ...prev,
-          cities: prev.cities.filter(city => city !== value)
-        }));
-      }
-    } else if (value) {
-      setSidebarFilters(prev => ({
-        ...prev,
-        [filterType]: prev[filterType as keyof typeof prev].filter(item => item !== value)
-      }));
-    }
-  }, [initialLocation, locationType, initialProvinceId, initialCityId, provinceSlug, router]);
-
-  const getProvinceOptions = useMemo(() => {
-    if (!filterData) return [];
-    return filterData.provinces.map(province => ({
-      value: province.id,
-      label: province.name
-    }));
-  }, [filterData]);
-
-  const getFilterLabel = useCallback((filterType: string, value: string): string => {
-    if (!filterData) return value;
-
-    switch (filterType) {
-      case 'cities':
-        const city = filterData.regencies.find(r => r.id === value);
-        return city ? city.name : value;
-      
-      case 'jobTypes':
-        const jobType = filterData.employment_types.find(t => t.id === value);
-        return jobType ? jobType.name : value;
-      
-      case 'experiences':
-        const experience = filterData.experience_levels.find(e => e.id === value);
-        return experience ? experience.name : value;
-      
-      case 'educations':
-        const education = filterData.education_levels.find(e => e.id === value);
-        return education ? education.name : value;
-      
-      case 'categories':
-        const category = filterData.categories.find(c => c.id === value);
-        return category ? category.name : value;
-      
-      case 'workPolicies':
-        const workPolicy = filterData.work_policy.find(w => w.value === value);
-        return workPolicy ? workPolicy.name : value;
-      
-      case 'salaries':
-        const salaryMapping: { [key: string]: string } = {
-          '1-3': '1-3 Juta',
-          '4-6': '4-6 Juta',
-          '7-9': '7-9 Juta',
-          '10+': '10+ Juta'
-        };
-        return salaryMapping[value] || value;
-      
-      default:
-        return value;
-    }
-  }, [filterData]);
-
-  const getProvinceName = useCallback((provinceId: string): string => {
-    if (!filterData) return provinceId;
-    const province = filterData.provinces.find(p => p.id === provinceId);
-    return province ? province.name : provinceId;
-  }, [filterData]);
-
-  const getFilterTypeLabel = useCallback((filterType: string): string => {
-    const labels: { [key: string]: string } = {
-      cities: 'Kota',
-      jobTypes: 'Tipe Pekerjaan',
-      experiences: 'Pengalaman',
-      educations: 'Pendidikan',
-      categories: 'Kategori',
-      workPolicies: 'Kebijakan Kerja',
-      salaries: 'Gaji',
-      industries: 'Industri'
-    };
-    return labels[filterType] || filterType;
-  }, []);
-
-  // Show loading state while initial data loads
-  if (loading) {
-    return (
-      <div className="bg-gray-50">
-        {/* Search Section Skeleton */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8">
-            <div className="max-w-4xl mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-                <div className="lg:col-span-5">
-                  <div className="h-12 bg-gray-200 rounded-lg animate-pulse"></div>
-                </div>
-                <div className="lg:col-span-4">
-                  <div className="h-12 bg-gray-200 rounded-lg animate-pulse"></div>
-                </div>
-                <div className="lg:col-span-3">
-                  <div className="h-12 bg-gray-200 rounded-lg animate-pulse"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content Skeleton */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Sidebar Skeleton */}
-            <div className="lg:col-span-1">
-              <div className="space-y-6">
-                {/* Sort Skeleton */}
-                <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-                  <div className="h-4 bg-gray-200 rounded mb-3 animate-pulse"></div>
-                  <div className="h-10 bg-gray-200 rounded animate-pulse"></div>
-                </div>
-                
-                {/* Filter Groups Skeleton */}
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-                    <div className="h-5 bg-gray-200 rounded mb-3 animate-pulse"></div>
-                    <div className="space-y-2">
-                      {[1, 2, 3].map((j) => (
-                        <div key={j} className="flex items-center space-x-2">
-                          <div className="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
-                          <div className="h-4 bg-gray-200 rounded flex-1 animate-pulse"></div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Job Results Skeleton */}
-            <div className="lg:col-span-3">
-              {/* Results Header Skeleton */}
-              <div className="mb-6">
-                <div className="h-8 bg-gray-200 rounded mb-2 w-64 animate-pulse"></div>
-                <div className="h-4 bg-gray-200 rounded w-48 animate-pulse"></div>
-              </div>
-
-              {/* Job Cards Skeleton */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div key={i} className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-                    {/* Header */}
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex-1">
-                        <div className="h-6 bg-gray-200 rounded mb-2 animate-pulse"></div>
-                        <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-                      </div>
-                      <div className="h-8 w-8 bg-gray-200 rounded animate-pulse"></div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="space-y-3 mb-4">
-                      <div className="flex items-center space-x-2">
-                        <div className="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
-                        <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
-                        <div className="h-4 bg-gray-200 rounded w-32 animate-pulse"></div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
-                        <div className="h-4 bg-gray-200 rounded w-28 animate-pulse"></div>
-                      </div>
-                    </div>
-
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {[1, 2, 3].map((j) => (
-                        <div key={j} className="h-6 bg-gray-200 rounded-full w-16 animate-pulse"></div>
-                      ))}
-                    </div>
-
-                    {/* Footer */}
-                    <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-                      <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
-                      <div className="flex items-center space-x-2">
-                        <div className="h-8 w-8 bg-gray-200 rounded animate-pulse"></div>
-                        <div className="h-8 w-20 bg-gray-200 rounded animate-pulse"></div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <JobSearchSkeleton />;
 
   return (
     <div className="bg-gray-50">
       {/* Search Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8">
-          {/* Centered Search Form */}
           <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
               {/* Keyword Search */}
@@ -835,7 +93,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
                   onBlur={() => setTimeout(() => setShowSearchHistory(false), 200)}
                   className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-gray-900"
                 />
-                
+
                 {/* Search History Dropdown */}
                 {isSearchHistoryEnabled && showSearchHistory && searchHistory.history.length > 0 && (
                   <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
@@ -846,18 +104,12 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
                       <div
                         key={index}
                         className="px-4 py-2 hover:bg-gray-50 flex items-center justify-between group cursor-pointer"
-                        onClick={() => {
-                          setKeyword(query);
-                          setShowSearchHistory(false);
-                        }}
+                        onClick={() => { setKeyword(query); setShowSearchHistory(false); }}
                       >
                         <span className="text-gray-700">{query}</span>
                         <button
                           type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            searchHistory.removeFromHistory(query);
-                          }}
+                          onClick={(e) => { e.stopPropagation(); searchHistory.removeFromHistory(query); }}
                           className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-600 transition-opacity"
                           aria-label="Hapus dari riwayat"
                         >
@@ -919,10 +171,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
               {keyword && (
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary-100 text-primary-800">
                   Keyword: {keyword}
-                  <button
-                    onClick={() => removeFilter('keyword')}
-                    className="ml-2 hover:text-primary-900"
-                  >
+                  <button onClick={() => removeFilter('keyword')} className="ml-2 hover:text-primary-900">
                     <X className="h-3 w-3" />
                   </button>
                 </span>
@@ -931,50 +180,37 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
               {initialLocation && locationType === 'province' ? (
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary-100 text-primary-800">
                   Provinsi: {initialLocationName || getProvinceName(initialLocation)}
-                  <button
-                    onClick={() => removeFilter('province')}
-                    className="ml-2 hover:text-primary-900"
-                  >
+                  <button onClick={() => removeFilter('province')} className="ml-2 hover:text-primary-900">
                     <X className="h-3 w-3" />
                   </button>
                 </span>
               ) : selectedProvince && (
                 <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary-100 text-primary-800">
                   Provinsi: {getProvinceName(selectedProvince)}
-                  <button
-                    onClick={() => removeFilter('province')}
-                    className="ml-2 hover:text-primary-900"
-                  >
+                  <button onClick={() => removeFilter('province')} className="ml-2 hover:text-primary-900">
                     <X className="h-3 w-3" />
                   </button>
                 </span>
               )}
 
-              {/* Sidebar filters */}
               {Object.entries(sidebarFilters).map(([filterType, values]) =>
                 values
-                  .filter(value => {
+                  .filter((value: string) => {
                     if (filterType === 'categories' && initialCategory && value === initialCategory) return false;
                     if (filterType === 'cities' && initialLocation && locationType === 'city' && value === initialLocation) return false;
                     return true;
                   })
-                  .map((value) => (
+                  .map((value: string) => (
                     <span key={`${filterType}-${value}`} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary-100 text-primary-800">
                       {getFilterTypeLabel(filterType)}: {getFilterLabel(filterType, value)}
-                      <button
-                        onClick={() => removeFilter(filterType, value)}
-                        className="ml-2 hover:text-primary-900"
-                      >
+                      <button onClick={() => removeFilter(filterType, value)} className="ml-2 hover:text-primary-900">
                         <X className="h-3 w-3" />
                       </button>
                     </span>
                   ))
               )}
 
-              <button
-                onClick={clearAllFilters}
-                className="text-sm text-red-600 hover:text-red-700 font-medium"
-              >
+              <button onClick={clearAllFilters} className="text-sm text-red-600 hover:text-red-700 font-medium">
                 Hapus Semua Filter
               </button>
             </div>
@@ -1002,7 +238,6 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
 
           {/* Job Results */}
           <div className="lg:col-span-3">
-            {/* Results Header */}
             <div className="flex justify-between items-center mb-6">
               <div>
                 <p className="text-2xl font-bold text-gray-900 mb-2">
@@ -1028,7 +263,6 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
               </div>
             </div>
 
-            {/* Error State */}
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
                 <div className="flex items-center">
@@ -1038,7 +272,6 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
               </div>
             )}
 
-            {/* Job Grid */}
             {searching ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <JobCardSkeleton count={6} />
@@ -1046,34 +279,24 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
             ) : jobs.length > 0 ? (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {jobs.map((job, index) => (
-                    <JobCard 
-                      key={job.id} 
-                      job={job} 
-                    />
+                  {jobs.map((job) => (
+                    <JobCard key={job.id} job={job} />
                   ))}
                 </div>
 
-                {/* Infinite Scroll Trigger */}
                 {hasMore && (
-                  <div 
-                    ref={setTarget}
-                    className="flex justify-center items-center py-8"
-                  >
+                  <div ref={setTarget} className="flex justify-center items-center py-8">
                     {loadingMore ? (
                       <div className="flex items-center space-x-2">
                         <Loader2 className="h-6 w-6 animate-spin text-primary-600" />
                         <span className="text-gray-600">Memuat lowongan lainnya...</span>
                       </div>
                     ) : (
-                      <div className="text-gray-400 text-sm">
-                        Scroll untuk memuat lebih banyak lowongan
-                      </div>
+                      <div className="text-gray-400 text-sm">Scroll untuk memuat lebih banyak lowongan</div>
                     )}
                   </div>
                 )}
 
-                {/* End of Results */}
                 {!hasMore && jobs.length > 0 && (
                   <div className="text-center py-8">
                     <div className="text-gray-500 text-sm">
@@ -1088,10 +311,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
                 title="Tidak ada lowongan ditemukan"
                 description="Coba ubah kriteria pencarian Anda atau gunakan filter yang berbeda"
                 action={
-                  <button
-                    onClick={clearAllFilters}
-                    className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
-                  >
+                  <button onClick={clearAllFilters} className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors">
                     Reset Filter
                   </button>
                 }

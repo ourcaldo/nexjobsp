@@ -5,7 +5,9 @@ import { Providers } from './providers';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import GoogleAnalytics from '@/components/Analytics/GoogleAnalytics';
 import GoogleTagManager, { GoogleTagManagerNoScript } from '@/components/Analytics/GoogleTagManager';
-import PopupAd from '@/components/Advertisement/PopupAd';
+import dynamic from 'next/dynamic';
+
+const PopupAd = dynamic(() => import('@/components/Advertisement/PopupAd'), { ssr: false });
 import '../styles/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });

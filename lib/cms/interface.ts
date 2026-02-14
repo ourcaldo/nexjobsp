@@ -1,4 +1,103 @@
-import { Job, JobFilters } from '@/types/job';
+// ── Core Job types (consolidated from types/job.ts) ──
+
+export interface Job {
+  id: string;
+  slug: string;
+  title: string;
+  content: string;
+  company_name: string;
+  kategori_pekerjaan: string;
+  job_categories: Array<{ id: string; name: string; slug: string }>;
+  lokasi_provinsi: string;
+  lokasi_kota: string;
+  job_province_id?: string;
+  job_regency_id?: string;
+  tipe_pekerjaan: string;
+  pendidikan: string;
+  pengalaman: string;
+  tag: string;
+  job_tags?: Array<{ id: string; name: string; slug: string }>;
+  gender: string;
+  gaji: string;
+  kebijakan_kerja: string;
+  industry: string;
+  link: string;
+  sumber_lowongan: string;
+  created_at?: string;
+  seo_title?: string;
+  seo_description?: string;
+  _id: { $oid: string };
+  id_obj: { $numberInt: string };
+}
+
+export interface JobFilters {
+  search: string;
+  location: string;
+  jobType: string;
+  experience: string;
+  salary: string;
+  education: string;
+  industry: string;
+}
+
+export interface AdminSettings {
+  id?: string;
+  api_url?: string;
+  filters_api_url?: string;
+  auth_token?: string;
+  site_title?: string;
+  site_description?: string;
+  site_tagline?: string;
+  siteDescription?: string;
+  homeTitle?: string;
+  homeDescription?: string;
+  jobs_title?: string;
+  jobs_description?: string;
+  articles_title?: string;
+  articles_description?: string;
+  site_url?: string;
+  ga_id?: string;
+  gtm_id?: string;
+  cms_endpoint?: string;
+  cms_token?: string;
+  cms_timeout?: string;
+  location_page_title_template?: string;
+  location_page_description_template?: string;
+  category_page_title_template?: string;
+  category_page_description_template?: string;
+  login_page_title?: string;
+  login_page_description?: string;
+  signup_page_title?: string;
+  signup_page_description?: string;
+  profile_page_title?: string;
+  profile_page_description?: string;
+  popup_ad_code?: string;
+  sidebar_archive_ad_code?: string;
+  sidebar_single_ad_code?: string;
+  single_top_ad_code?: string;
+  single_bottom_ad_code?: string;
+  single_middle_ad_code?: string;
+  home_og_image?: string;
+  jobs_og_image?: string;
+  articles_og_image?: string;
+  default_job_og_image?: string;
+  default_article_og_image?: string;
+  sitemap_update_interval?: number;
+  auto_generate_sitemap?: boolean;
+  last_sitemap_update?: string;
+  robots_txt?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface SitemapSettings {
+  updateInterval: number;
+  autoGenerate: boolean;
+  lastUpdate: string;
+  itemsPerPage: number;
+}
+
+// ── CMS domain types ──
 
 export interface Article {
   id: string;

@@ -5,10 +5,10 @@ import { jobService } from '@/lib/services/JobService';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobSearchPage from '@/components/pages/JobSearchPage';
-import { generateBreadcrumbSchema } from '@/utils/schemaUtils';
+import { generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
 import { getCurrentDomain } from '@/lib/config';
-import { renderTemplate } from '@/utils/templateUtils';
-import { normalizeSlug, normalizeSlugForMatching } from '@/utils/textUtils';
+import { renderTemplate } from '@/lib/utils/templateUtils';
+import { normalizeSlug, normalizeSlugForMatching } from '@/lib/utils/textUtils';
 
 function JobSearchPageFallback() {
   return (
