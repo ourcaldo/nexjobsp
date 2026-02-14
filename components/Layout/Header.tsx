@@ -54,30 +54,30 @@ const Header: React.FC = () => {
             <nav className="hidden md:flex items-center space-x-8" aria-label="Navigasi utama">
               <Link 
                 href="/" 
-                className={`font-medium transition-colors ${
+                className={`font-medium transition-all ${
                   isActive('/') 
-                    ? 'text-primary-600' 
-                    : 'text-gray-700 hover:text-primary-600'
+                    ? 'text-primary-600 font-bold' 
+                    : 'text-gray-700 hover:text-primary-600 hover:font-bold'
                 }`}
               >
                 Beranda
               </Link>
               <Link 
                 href="/lowongan-kerja/" 
-                className={`font-medium transition-colors ${
+                className={`font-medium transition-all ${
                   isActive('/lowongan-kerja/')
-                    ? 'text-primary-600' 
-                    : 'text-gray-700 hover:text-primary-600'
+                    ? 'text-primary-600 font-bold' 
+                    : 'text-gray-700 hover:text-primary-600 hover:font-bold'
                 }`}
               >
                 Cari Lowongan
               </Link>
               <Link 
                 href="/artikel/" 
-                className={`font-medium transition-colors ${
+                className={`font-medium transition-all ${
                   isActive('/artikel/')
-                    ? 'text-primary-600' 
-                    : 'text-gray-700 hover:text-primary-600'
+                    ? 'text-primary-600 font-bold' 
+                    : 'text-gray-700 hover:text-primary-600 hover:font-bold'
                 }`}
               >
                 Tips Karir

@@ -24,7 +24,7 @@ export default async function Image({ params }: { params: Promise<{ category: st
               height: '100%',
               alignItems: 'center',
               justifyContent: 'center',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: 'linear-gradient(135deg, #0f2b3c 0%, #153a54 100%)',
               color: 'white',
               fontSize: 60,
               fontWeight: 'bold',
@@ -49,7 +49,7 @@ export default async function Image({ params }: { params: Promise<{ category: st
             flexDirection: 'column',
             width: '100%',
             height: '100%',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: 'linear-gradient(135deg, #0f2b3c 0%, #153a54 100%)',
             padding: '60px',
           }}
         >
@@ -76,7 +76,7 @@ export default async function Image({ params }: { params: Promise<{ category: st
                   width: '60px',
                   height: '60px',
                   borderRadius: '15px',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  background: 'linear-gradient(135deg, #0f2b3c 0%, #153a54 100%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -133,7 +133,7 @@ export default async function Image({ params }: { params: Promise<{ category: st
                   style={{
                     fontSize: '32px',
                     fontWeight: '600',
-                    color: '#667eea',
+                    color: '#2d607f',
                   }}
                 >
                   {job.company_name}
@@ -217,7 +217,7 @@ export default async function Image({ params }: { params: Promise<{ category: st
                 style={{
                   fontSize: '24px',
                   fontWeight: '600',
-                  color: '#667eea',
+                  color: '#2d607f',
                 }}
               >
                 nexjob.tech
@@ -240,7 +240,7 @@ export default async function Image({ params }: { params: Promise<{ category: st
             height: '100%',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: 'linear-gradient(135deg, #0f2b3c 0%, #153a54 100%)',
             color: 'white',
             fontSize: 60,
             fontWeight: 'bold',

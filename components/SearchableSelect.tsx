@@ -156,7 +156,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
               }`}
               onClick={() => handleOptionClick('')}
               style={{ 
-                backgroundColor: value === '' ? undefined : (hoveredIndex === -1 ? undefined : '#EBF5FA')
+                backgroundColor: value === '' ? undefined : (hoveredIndex === -1 ? undefined : 'var(--color-primary-50)')
               }}
             >
               <MapPin className="h-4 w-4 mr-3 text-gray-400" />
@@ -175,7 +175,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
                   style={{ 
                     backgroundColor: value === option.value 
                       ? undefined 
-                      : (hoveredIndex === index ? '#EBF5FA' : undefined)
+                      : (hoveredIndex === index ? 'var(--color-primary-50)' : undefined)
                   }}
                   onClick={() => handleOptionClick(option.value)}
                   onMouseEnter={() => setHoveredIndex(index)}

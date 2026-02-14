@@ -5,9 +5,7 @@ import { Providers } from './providers';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import GoogleAnalytics from '@/components/Analytics/GoogleAnalytics';
 import GoogleTagManager, { GoogleTagManagerNoScript } from '@/components/Analytics/GoogleTagManager';
-import dynamic from 'next/dynamic';
-
-const PopupAd = dynamic(() => import('@/components/Advertisement/PopupAd'), { ssr: false });
+import PopupAdClient from '@/components/Advertisement/PopupAdClient';
 import '../styles/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -39,7 +37,7 @@ export default function RootLayout({
             <div id="main-content">
               {children}
             </div>
-            <PopupAd />
+            <PopupAdClient />
           </Providers>
         </ErrorBoundary>
         <Suspense fallback={null}>
