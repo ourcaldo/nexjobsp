@@ -61,8 +61,6 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   const [hasMore, setHasMore] = useState(true);
   const [totalJobs, setTotalJobs] = useState(0);
   const [displayedJobsCount, setDisplayedJobsCount] = useState(0); // Track currently displayed jobs
-  const [userBookmarks, setUserBookmarks] = useState<Set<string>>(new Set());
-  const [user, setUser] = useState<any>(null);
   const [showSearchHistory, setShowSearchHistory] = useState(false);
 
   // Main search filters
@@ -400,27 +398,9 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     }
   }, [currentPage, hasMore, loadingMore, getCurrentFilters, calculateSalaryRange]);
 
-  const loadUserBookmarks = useCallback(async (userId: string) => {
-    // No bookmark system
-  }, []);
-
-  const initializeAuth = useCallback(async () => {
-    try {
-      // Since we removed Supabase, we'll assume no user authentication for now
-      // This can be replaced with your new auth system later
-      setUser(null);
-    } catch (error) {
-      console.error('Error checking user:', error);
-    }
-  }, []);
-
   useEffect(() => {
     loadInitialData();
-    initializeAuth();
-
-    // Since we removed Supabase auth, we'll skip the auth state change listener
-    // This can be replaced with your new auth system later
-  }, [initializeAuth, loadInitialData]);
+  }, [loadInitialData]);
 
   // Track page view on mount
   useEffect(() => {
@@ -683,16 +663,6 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
     };
     return labels[filterType] || filterType;
   }, []);
-
-  const handleBookmarkChange = useCallback((jobId: string, isBookmarked: boolean) => {
-    const newBookmarks = new Set(userBookmarks);
-    if (isBookmarked) {
-      newBookmarks.add(jobId);
-    } else {
-      newBookmarks.delete(jobId);
-    }
-    setUserBookmarks(newBookmarks);
-  }, [userBookmarks]);
 
   // Show loading state while initial data loads
   if (loading) {

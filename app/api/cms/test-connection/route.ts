@@ -1,8 +1,15 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { jobService } from '@/lib/services/JobService';
 import { categoryService } from '@/lib/services/CategoryService';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  // Require CMS_TOKEN for access — prevents information leakage
+  const authHeader = request.headers.get('authorization');
+  const expectedToken = process.env.CMS_TOKEN;
+  if (!expectedToken || authHeader !== `Bearer ${expectedToken}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const wpTest = await (async () => {
       try {

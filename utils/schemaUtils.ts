@@ -152,70 +152,34 @@ export const generateBreadcrumbSchema = (items: Array<{ label: string; href?: st
 };
 
 export const generateArticleSchema = (article: any) => {
-  // Handle both WordPress articles and CMS articles
-  const isWordPressArticle = article.title?.rendered !== undefined;
-
-  if (isWordPressArticle) {
-    // WordPress article structure
-    return {
-      "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      "headline": article.title.rendered,
-      "description": article.seo_description || article.excerpt.rendered.replace(/<[^>]*>/g, '').substring(0, 160),
-      "image": article.featured_media_url || `${config.site.url}/default-article-image.jpg`,
-      "author": {
-        "@type": "Person",
-        "name": article.author_info?.display_name || article.author_info?.name || "Nexjob Team"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": config.site.name,
-        "logo": {
-          "@type": "ImageObject",
-          "url": `${config.site.url}/logo.png`
-        }
-      },
-      "datePublished": article.date,
-      "dateModified": article.modified || article.date,
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": `${config.site.url}/artikel/${article.slug}/`
-      },
-      "articleSection": article.categories_info?.[0]?.name || "Career Tips",
-      "keywords": article.tags_info?.map((tag: any) => tag.name).join(", ") || "",
-      "url": `${config.site.url}/artikel/${article.slug}/`
-    };
-  } else {
-    // CMS article structure (NxdbArticle)
-    return {
-      "@context": "https://schema.org",
-      "@type": "BlogPosting",
-      "headline": article.title,
-      "description": article.meta_description || article.excerpt || article.content?.replace(/<[^>]*>/g, '').substring(0, 160) || "",
-      "image": article.featured_image || `${config.site.url}/default-article-image.jpg`,
-      "author": {
-        "@type": "Person",
-        "name": article.author?.full_name || article.author?.email || "Nexjob Team"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": config.site.name,
-        "logo": {
-          "@type": "ImageObject",
-          "url": `${config.site.url}/logo.png`
-        }
-      },
-      "datePublished": article.published_at || article.post_date,
-      "dateModified": article.updated_at,
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": `${config.site.url}/artikel/${article.categories?.[0]?.slug || 'uncategorized'}/${article.slug}/`
-      },
-      "articleSection": article.categories?.[0]?.name || "Career Tips",
-      "keywords": article.tags?.map((tag: any) => tag.name).join(", ") || "",
-      "url": `${config.site.url}/artikel/${article.categories?.[0]?.slug || 'uncategorized'}/${article.slug}/`
-    };
-  }
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": article.title,
+    "description": article.meta_description || article.excerpt || article.content?.replace(/<[^>]*>/g, '').substring(0, 160) || "",
+    "image": article.featured_image || `${config.site.url}/default-article-image.jpg`,
+    "author": {
+      "@type": "Person",
+      "name": article.author?.full_name || article.author?.email || "Nexjob Team"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": config.site.name,
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${config.site.url}/logo.png`
+      }
+    },
+    "datePublished": article.published_at || article.post_date,
+    "dateModified": article.updated_at,
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `${config.site.url}/artikel/${article.categories?.[0]?.slug || 'uncategorized'}/${article.slug}/`
+    },
+    "articleSection": article.categories?.[0]?.name || "Career Tips",
+    "keywords": article.tags?.map((tag: any) => tag.name).join(", ") || "",
+    "url": `${config.site.url}/artikel/${article.categories?.[0]?.slug || 'uncategorized'}/${article.slug}/`
+  };
 };
 
 export const generateJobListingSchema = (jobs: Job[]) => {
@@ -268,14 +232,14 @@ export const generateArticleListingSchema = (articles: any[]) => {
       "position": index + 1,
       "item": {
         "@type": "BlogPosting",
-        "headline": article.title.rendered,
-        "description": article.seo_description || article.excerpt.rendered.replace(/<[^>]*>/g, '').substring(0, 160),
+        "headline": article.title,
+        "description": article.meta_description || article.excerpt?.replace(/<[^>]*>/g, '').substring(0, 160) || "",
         "author": {
           "@type": "Person",
-          "name": article.author_info?.display_name || article.author_info?.name || "Nexjob Team"
+          "name": article.author?.full_name || article.author?.email || "Nexjob Team"
         },
-        "datePublished": article.date,
-        "url": `${config.site.url}/artikel/${article.slug}/`
+        "datePublished": article.published_at || article.post_date,
+        "url": `${config.site.url}/artikel/${article.categories?.[0]?.slug || 'uncategorized'}/${article.slug}/`
       }
     })) : [],
   };
@@ -285,10 +249,10 @@ export const generateAuthorSchema = (author: any) => {
   return {
     "@context": "https://schema.org",
     "@type": "Person",
-    "name": author.display_name || author.name,
+    "name": author.full_name || author.name || author.email,
     "description": author.description || "Content writer at Nexjob",
-    "url": `${config.site.url}/author/${author.slug}/`,
-    "image": author.avatar_urls?.['96'] || `${config.site.url}/default-avatar.png`,
+    "url": `${config.site.url}/author/${author.slug || author.id}/`,
+    "image": author.avatar || `${config.site.url}/default-avatar.png`,
     "worksFor": {
       "@type": "Organization",
       "name": config.site.name

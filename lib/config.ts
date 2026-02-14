@@ -89,22 +89,18 @@ export const getCurrentDomain = () => {
 };
 
 // Export env object for compatibility with existing imports
+// NOTE: Only public/non-secret values should be exported here.
+// Server-only secrets (CMS_TOKEN, STORAGE keys) must be accessed
+// via `config.cms.token` or `config.storage.*` on the server side only.
 export const env = {
   // Site Configuration
   SITE_URL: config.site.url,
   SITE_NAME: config.site.name,
   SITE_DESCRIPTION: config.site.description,
 
-  // CMS API
+  // CMS API (public endpoint only — token is server-only via config.cms.token)
   CMS_ENDPOINT: config.cms.endpoint,
-  CMS_TOKEN: config.cms.token,
   CMS_TIMEOUT: config.cms.timeout.toString(),
-
-  // Storage Configuration
-  STORAGE_ACCESS_KEY: config.storage.accessKey,
-  STORAGE_SECRET_KEY: config.storage.secretKey,
-  STORAGE_ENDPOINT: config.storage.endpoint,
-  STORAGE_REGION: config.storage.region,
 
   // Analytics
   GA_ID: config.analytics.gaId,

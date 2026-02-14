@@ -29,10 +29,12 @@ Disallow: /admin/
 Disallow: /dashboard/
 Disallow: /_next/
 
-# SEO optimizations
-Disallow: /*?*
-Disallow: /*#*
+# Block internal search and tracking params, but allow pagination
 Disallow: /search?
+Disallow: /*?utm_*
+Disallow: /*?ref=*
+Disallow: /*?fbclid=*
+Disallow: /*?gclid=*
 
 # Crawl delay for politeness
 Crawl-delay: 1`

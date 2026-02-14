@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 interface UseInfiniteScrollOptions {
   threshold?: number;
@@ -12,16 +12,22 @@ export const useInfiniteScroll = (
   const { threshold = 1.0, rootMargin = '100px' } = options;
   const [isFetching, setIsFetching] = useState(false);
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
+  const isFetchingRef = useRef(isFetching);
+
+  // Keep ref in sync with state to avoid stale closures in observer callback
+  useEffect(() => {
+    isFetchingRef.current = isFetching;
+  }, [isFetching]);
 
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       const [target] = entries;
-      if (target.isIntersecting && !isFetching) {
+      if (target.isIntersecting && !isFetchingRef.current) {
         setIsFetching(true);
         callback();
       }
     },
-    [callback, isFetching]
+    [callback]
   );
 
   useEffect(() => {

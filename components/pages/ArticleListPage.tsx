@@ -96,7 +96,7 @@ export default function ArticleListPage({
       const articlesResponse = await response.json();
 
       if (articlesResponse.success) {
-        const formattedArticles = articlesResponse.data.posts.map((article: any) => ({
+        const formattedArticles = (articlesResponse.articles || []).map((article: any) => ({
           id: article.id,
           title: article.title,
           slug: article.slug,
@@ -118,8 +118,8 @@ export default function ArticleListPage({
         }));
 
         setArticles(formattedArticles);
-        setTotalPages(articlesResponse.data.pagination.totalPages);
-        setHasNextPage(articlesResponse.data.pagination.hasNextPage);
+        setTotalPages(articlesResponse.totalPages || 1);
+        setHasNextPage(articlesResponse.hasMore || false);
       }
     } catch (error) {
       console.error('Error filtering articles:', error);
