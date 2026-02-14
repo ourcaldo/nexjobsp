@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { articleService } from '@/lib/services/ArticleService';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('api:articles');
 
 export const dynamic = 'force-dynamic';
 
@@ -35,7 +38,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error in articles API route:', error);
+    log.error('Failed to fetch articles', { route: '/api/articles' }, error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

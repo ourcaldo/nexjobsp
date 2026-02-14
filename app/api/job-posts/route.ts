@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jobService } from '@/lib/services/JobService';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('api:job-posts');
 
 export async function GET(request: NextRequest) {
   try {
@@ -105,6 +108,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
+    log.error('Failed to fetch jobs', { route: '/api/job-posts' }, error);
     return NextResponse.json(
       { 
         success: false, 

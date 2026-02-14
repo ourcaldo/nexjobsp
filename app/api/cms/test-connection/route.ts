@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jobService } from '@/lib/services/JobService';
 import { categoryService } from '@/lib/services/CategoryService';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('api:cms:test-connection');
 
 export async function GET(request: NextRequest) {
   // Require CMS_TOKEN for access — prevents information leakage
@@ -51,7 +54,7 @@ export async function GET(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Error testing CMS connection:', error);
+    log.error('CMS connection test failed', { route: '/api/cms/test-connection' }, error);
     return NextResponse.json(
       { 
         success: false, 

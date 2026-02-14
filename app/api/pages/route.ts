@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { pageService } from '@/lib/services/PageService';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('api:pages');
 
 export const dynamic = 'force-dynamic';
 
@@ -28,7 +31,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error in pages API route:', error);
+    log.error('Failed to fetch pages', { route: '/api/pages' }, error);
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

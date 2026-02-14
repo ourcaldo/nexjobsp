@@ -4,13 +4,33 @@ interface LogContext {
   [key: string]: any;
 }
 
+interface StructuredLogEntry {
+  timestamp: string;
+  level: LogLevel;
+  message: string;
+  service: string;
+  context?: LogContext;
+  error?: {
+    name: string;
+    message: string;
+    stack?: string;
+  };
+}
+
 class Logger {
   private level: LogLevel;
   private isServer: boolean;
+  private service: string;
 
-  constructor() {
+  constructor(service: string = 'nexjob') {
     this.level = (process.env.LOG_LEVEL as LogLevel) || 'info';
     this.isServer = typeof window === 'undefined';
+    this.service = service;
+  }
+
+  /** Create a child logger scoped to a specific module/route */
+  child(module: string): Logger {
+    return new Logger(`${this.service}:${module}`);
   }
 
   private shouldLog(level: LogLevel): boolean {
@@ -20,42 +40,61 @@ class Logger {
     return messageLevelIndex >= currentLevelIndex;
   }
 
-  private formatMessage(level: LogLevel, message: string, context?: LogContext): string {
-    const timestamp = new Date().toISOString();
-    const contextStr = context ? ` ${JSON.stringify(context)}` : '';
-    return `[${timestamp}] [${level.toUpperCase()}] ${message}${contextStr}`;
+  private serializeError(err: unknown): { name: string; message: string; stack?: string } | undefined {
+    if (!err) return undefined;
+    if (err instanceof Error) {
+      return {
+        name: err.name,
+        message: err.message,
+        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+      };
+    }
+    return { name: 'UnknownError', message: String(err) };
   }
 
-  private log(level: LogLevel, message: string, context?: LogContext): void {
+  private buildEntry(level: LogLevel, message: string, context?: LogContext, err?: unknown): StructuredLogEntry {
+    const entry: StructuredLogEntry = {
+      timestamp: new Date().toISOString(),
+      level,
+      message,
+      service: this.service,
+    };
+    if (context && Object.keys(context).length > 0) entry.context = context;
+    if (err) entry.error = this.serializeError(err);
+    return entry;
+  }
+
+  private log(level: LogLevel, message: string, context?: LogContext, err?: unknown): void {
     if (!this.shouldLog(level)) return;
 
-    const formattedMessage = this.formatMessage(level, message, context);
+    const entry = this.buildEntry(level, message, context, err);
 
     if (this.isServer) {
+      // Structured JSON logging for server-side (parseable by log aggregators)
+      const jsonLine = JSON.stringify(entry);
       switch (level) {
         case 'error':
-          console.error(formattedMessage);
+          console.error(jsonLine);
           break;
         case 'warn':
-          console.warn(formattedMessage);
+          console.warn(jsonLine);
           break;
         case 'debug':
         case 'info':
         default:
-          // Server-side logging only, not visible in browser
-          process.stdout.write(formattedMessage + '\n');
+          process.stdout.write(jsonLine + '\n');
       }
     } else {
       if (process.env.NODE_ENV === 'development') {
+        const prefix = `[${entry.timestamp}] [${level.toUpperCase()}] [${this.service}]`;
         switch (level) {
           case 'error':
-            console.error(formattedMessage);
+            console.error(prefix, message, context || '', err || '');
             break;
           case 'warn':
-            console.warn(formattedMessage);
+            console.warn(prefix, message, context || '');
             break;
           default:
-            // No client-side info/debug logs in production
             break;
         }
       }
@@ -70,12 +109,23 @@ class Logger {
     this.log('warn', message, context);
   }
 
-  error(message: string, context?: LogContext): void {
-    this.log('error', message, context);
+  error(message: string, context?: LogContext, err?: unknown): void {
+    this.log('error', message, context, err);
   }
 
   debug(message: string, context?: LogContext): void {
     this.log('debug', message, context);
+  }
+
+  /** Log an API route request with method, path, status, and duration */
+  apiRequest(method: string, path: string, statusCode: number, durationMs: number, extra?: LogContext): void {
+    this.log(statusCode >= 500 ? 'error' : statusCode >= 400 ? 'warn' : 'info', `${method} ${path} ${statusCode}`, {
+      method,
+      path,
+      statusCode,
+      durationMs,
+      ...extra,
+    });
   }
 }
 

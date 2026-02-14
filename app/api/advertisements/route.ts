@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { config } from '@/lib/config'
+import { logger } from '@/lib/logger'
+
+const log = logger.child('api:advertisements')
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,7 +30,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error fetching advertisements from CMS:', error)
+    log.error('Failed to fetch advertisements from CMS', { route: '/api/advertisements' }, error)
     
     // Return default/empty advertisements on error
     return NextResponse.json({

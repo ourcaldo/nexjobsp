@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jobService } from '@/lib/services/JobService';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('api:job-posts:related');
 
 export async function GET(
   request: NextRequest,
@@ -21,7 +24,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error('Error fetching related jobs:', error);
+    log.error('Failed to fetch related jobs', { route: '/api/job-posts/related' }, error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch related jobs' },
       { status: 500 }

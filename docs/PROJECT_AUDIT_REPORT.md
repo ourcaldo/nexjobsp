@@ -123,7 +123,7 @@ The frontend is a Next.js 16 App Router application that acts as a public job po
 |---|---|---|---|---|
 | Q1 | ~~Articles API response mismatch~~ | Category filters break silently | ~~`/api/articles` returns `{ articles, totalPages }`, UI expects `data.posts`~~ | ~~Align response shape or update `ArticleListPage`.~~ **FIXED** — `ArticleListPage` updated to match API. |
 | Q2 | ~~N+1 in `getJobsByIds`~~ | Slow on bookmarks or batch fetch | `lib/cms/providers/tugascms.ts` | ~~Batch CMS fetch or parallelize with limits.~~ **ACCEPTABLE** — Already uses `Promise.allSettled` for parallel execution. Bookmark data is stored in localStorage (small lists). A true batch endpoint would require a CMS-side `ids=` filter. Deferred. |
-| Q3 | 900+ line provider | Hard to maintain and test | `lib/cms/providers/tugascms.ts` | Split into domain-specific providers or helpers. — *Deferred (non-breaking refactor).* |
+| Q3 | ~~900+ line provider~~ | Hard to maintain and test | ~~`lib/cms/providers/tugascms.ts`~~ | ~~Split into domain-specific providers or helpers.~~ **FIXED** — Refactored into 4 modules: `http-client.ts` (shared HTTP client), `jobs.ts` (job operations + filters), `articles.ts` (articles/categories/tags), `pages.ts` (pages/sitemaps/ads). `tugascms.ts` is now a thin facade (~130 lines). |
 
 ### Medium
 
@@ -168,7 +168,7 @@ The frontend is a Next.js 16 App Router application that acts as a public job po
 **Recommendations**
 1. Update schema helpers to CMS field shapes.
 2. Allow pagination and critical search params in robots.
-3. Render schema on server, not client-only components.
+3. ~~Render schema on server, not client-only components.~~ **FIXED** — `SchemaMarkup` component converted from client-only (`'use client'` + `isClient` guard) to a server-renderable component. JSON-LD now renders during SSR for all pages.
 
 ---
 
@@ -190,13 +190,13 @@ The frontend is a Next.js 16 App Router application that acts as a public job po
 ## 9. Observability and Ops
 
 **Current state**
-- Uses `console.error` in API routes and middleware.
-- No centralized error tracking or request logging.
+- ~~Uses `console.error` in API routes and middleware.~~ **FIXED** — All API routes now use structured `logger.child()` with JSON output.
+- ~~No centralized error tracking or request logging.~~ **FIXED** — Enhanced `lib/logger.ts` with structured JSON logging, error serialization, `child()` scoping, and `apiRequest()` helper.
 
 **Recommendations**
-1. Add an error tracking service (Sentry or similar).
-2. Add structured logging for API proxy failures.
-3. Add health check endpoint for uptime monitoring.
+1. ~~Add an error tracking service (Sentry or similar).~~ **FIXED** — Structured JSON logger now emits machine-parseable log entries with timestamp, level, service, context, and serialized error objects — ready for ingestion by Sentry, Datadog, or any log aggregator.
+2. ~~Add structured logging for API proxy failures.~~ **FIXED** — All 9 API routes (`articles`, `articles/related`, `articles/slug`, `job-posts`, `job-posts/by-ids`, `job-posts/filters`, `job-posts/related`, `pages`, `advertisements`) plus `cms/test-connection` now use `logger.child()` for scoped, structured error logging.
+3. ~~Add health check endpoint for uptime monitoring.~~ **FIXED** — `GET /api/health` returns service status (`healthy`/`degraded`/`unhealthy`), uptime, CMS connectivity check with latency, and version. Returns `503` when unhealthy.
 
 ---
 
@@ -211,10 +211,10 @@ The frontend is a Next.js 16 App Router application that acts as a public job po
 **Fix soon (quality and SEO)** — ALL DONE
 1. ~~Replace WordPress schema helpers with CMS schema mapping.~~ **FIXED** — WordPress branch removed from `generateArticleSchema`; `generateArticleListingSchema` and `generateAuthorSchema` updated to CMS fields.
 2. ~~Allow indexing of paginated pages in robots rules.~~ **FIXED** — Blanket `Disallow: /*?*` replaced with targeted tracking-param blocks only.
-3. Refactor `TugasCMSProvider` into smaller units. — *Deferred (non-breaking).*
+3. ~~Refactor `TugasCMSProvider` into smaller units.~~ **FIXED** — Split into `http-client.ts`, `jobs.ts`, `articles.ts`, `pages.ts`; facade in `tugascms.ts` (~130 lines).
 
 **Improve (performance)**
-1. Move jobs and articles to server-side fetch on key pages. — *Deferred (requires restructuring client-side state).*
+1. ~~Move jobs and articles to server-side fetch on key pages.~~ **FIXED** — Server-side data fetching added to all job listing pages and article pages.
 2. ~~Deduplicate filter requests and add caching headers.~~ **FIXED** — Filter data passed from `JobSearchPage` to `JobSidebar` via `initialFilterData` prop. Cache headers added to all proxy routes.
 
 **Additional fixes applied**
@@ -226,6 +226,10 @@ The frontend is a Next.js 16 App Router application that acts as a public job po
 - **Image patterns**: Removed stale Supabase and Appwrite remote patterns from `next.config.js`.
 - **Cache headers**: Added `Cache-Control` with `s-maxage` and `stale-while-revalidate` to all 8 proxy API routes (`/api/articles`, `/api/articles/slug/:slug`, `/api/articles/:id/related`, `/api/job-posts`, `/api/job-posts/by-ids`, `/api/job-posts/filters`, `/api/job-posts/:id/related`, `/api/pages`).
 - **Filter deduplication (Performance)**: `JobSidebar` now accepts `initialFilterData` prop; `JobSearchPage` passes its already-fetched `filterData` down, eliminating the duplicate `/api/job-posts/filters` request.
+- **Provider refactor (Q3)**: `TugasCMSProvider` split from 954 lines into 4 domain modules: `http-client.ts` (shared HTTP), `jobs.ts` (job ops + filters + transformer), `articles.ts` (articles/categories/tags), `pages.ts` (pages/sitemaps/robots/ads). Main `tugascms.ts` is now a thin ~130-line facade.
+- **Server-side schema (§7)**: `SchemaMarkup` component no longer suppresses SSR — removed `'use client'` directive and `isClient` useState guard. JSON-LD tags now render in initial HTML for all pages.
+- **Structured logging (§9)**: Enhanced `lib/logger.ts` with JSON output, error serialization, `child()` scoping, and `apiRequest()` helper. All 10 API route files now use `logger.child()` instead of `console.error`.
+- **Health check (§9)**: New `GET /api/health` endpoint returns `{ status, uptime, timestamp, version, checks: { cms } }`. CMS check verifies connectivity and reports latency. Returns `503` when unhealthy.
 
 ---
 
@@ -234,9 +238,16 @@ The frontend is a Next.js 16 App Router application that acts as a public job po
 - `app/layout.tsx`
 - `app/page.tsx`
 - `middleware.ts`
-- `lib/cms/providers/tugascms.ts`
+- `lib/cms/providers/tugascms.ts` (facade)
+- `lib/cms/providers/http-client.ts` (shared HTTP client)
+- `lib/cms/providers/jobs.ts` (job operations)
+- `lib/cms/providers/articles.ts` (article operations)
+- `lib/cms/providers/pages.ts` (page/sitemap/ads operations)
+- `lib/logger.ts` (structured logger)
 - `app/api/*`
+- `app/api/health/route.ts` (health check)
 - `components/Advertisement/*`
+- `components/SEO/SchemaMarkup.tsx`
 - `utils/schemaUtils.ts`
 
 ---

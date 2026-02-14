@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jobService } from '@/lib/services/JobService';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('api:job-posts:by-ids');
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,7 +26,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error fetching jobs by IDs:', error);
+    log.error('Failed to fetch jobs by IDs', { route: '/api/job-posts/by-ids' }, error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch jobs' },
       { status: 500 }

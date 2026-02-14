@@ -40,6 +40,10 @@ export class JobService {
   clearFilterCache(): void {
     this.cms.clearFilterCache();
   }
+
+  async testConnection(): Promise<{ success: boolean; data?: any; error?: string }> {
+    return await this.cms.testConnection();
+  }
 }
 
 export const jobService = new JobService();

@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { articleService } from '@/lib/services/ArticleService';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('api:articles:slug');
 
 export async function GET(
   request: NextRequest,
@@ -23,7 +26,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error('Error fetching article by slug:', error);
+    log.error('Failed to fetch article by slug', { route: '/api/articles/slug' }, error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch article' },
       { status: 500 }
