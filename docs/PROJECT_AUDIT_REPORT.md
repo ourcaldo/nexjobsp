@@ -148,7 +148,7 @@ The frontend is a Next.js 16 App Router application that acts as a public job po
 - ~~Some API routes use Next `revalidate`, but many are uncached.~~ **FIXED** — Added `Cache-Control` headers to all proxy routes.
 
 **Recommendations**
-1. Move initial jobs and article data fetches to server components. — *Deferred (requires significant restructuring of client-side state management).*
+1. ~~Move initial jobs and article data fetches to server components.~~ — **FIXED** *(Server-side data fetching added to all job listing pages: main, category, province, and regency pages. Article page already had server-side fetch. `JobSearchPage` uses `hasServerData` flag to skip redundant client-side fetch.)*
 2. ~~Pass filter data down from page to sidebar to avoid duplicate calls.~~ **FIXED**
 3. ~~Add cache headers on proxy routes with short TTLs.~~ **FIXED** — All 8 proxy routes now include `Cache-Control` with `s-maxage` and `stale-while-revalidate`.
 

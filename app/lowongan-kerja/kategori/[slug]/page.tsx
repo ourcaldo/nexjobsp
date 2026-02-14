@@ -7,6 +7,7 @@ import { generateBreadcrumbSchema } from '@/utils/schemaUtils';
 import { getCurrentDomain } from '@/lib/config';
 import { wpCategoryMappings } from '@/utils/urlUtils';
 import { renderTemplate } from '@/utils/templateUtils';
+import { jobService } from '@/lib/services/JobService';
 
 interface JobCategoryPageProps {
   params: Promise<{
@@ -28,13 +29,40 @@ async function getCategoryData(slug: string) {
   };
   const currentUrl = getCurrentDomain();
 
-  return {
-    slug,
-    category,
-    location,
-    settings,
-    currentUrl
-  };
+  // Server-side fetch: initial jobs for this category + filter data
+  try {
+    const [jobsResponse, filterData] = await Promise.all([
+      jobService.getJobs({ categories: [category] }, 1, 24),
+      jobService.getFiltersData(),
+    ]);
+
+    return {
+      slug,
+      category,
+      location,
+      settings,
+      currentUrl,
+      initialJobs: jobsResponse.jobs,
+      initialTotalJobs: jobsResponse.totalJobs,
+      initialHasMore: jobsResponse.hasMore,
+      initialCurrentPage: jobsResponse.currentPage,
+      initialFilterData: filterData,
+    };
+  } catch (error) {
+    console.error('Error fetching initial category jobs:', error);
+    return {
+      slug,
+      category,
+      location,
+      settings,
+      currentUrl,
+      initialJobs: null,
+      initialTotalJobs: 0,
+      initialHasMore: false,
+      initialCurrentPage: 1,
+      initialFilterData: null,
+    };
+  }
 }
 
 export async function generateMetadata({ params }: JobCategoryPageProps): Promise<Metadata> {
@@ -106,7 +134,7 @@ function JobSearchPageFallback() {
 
 export default async function JobCategoryPage({ params }: JobCategoryPageProps) {
   const resolvedParams = await params;
-  const { slug, category, location, settings, currentUrl } = await getCategoryData(resolvedParams.slug);
+  const { slug, category, location, settings, currentUrl, initialJobs, initialTotalJobs, initialHasMore, initialCurrentPage, initialFilterData } = await getCategoryData(resolvedParams.slug);
 
   const breadcrumbItems = [
     { label: 'Lowongan Kerja', href: '/lowongan-kerja/' },
@@ -168,6 +196,11 @@ export default async function JobCategoryPage({ params }: JobCategoryPageProps) 
             settings={settings}
             initialCategory={category}
             initialLocation={location}
+            initialJobs={initialJobs}
+            initialTotalJobs={initialTotalJobs}
+            initialHasMore={initialHasMore}
+            initialCurrentPage={initialCurrentPage}
+            initialFilterData={initialFilterData}
           />
         </Suspense>
       </main>

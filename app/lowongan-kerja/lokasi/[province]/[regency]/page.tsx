@@ -55,8 +55,9 @@ async function getLocationData(provinceSlug: string, regencySlug: string) {
   let regencyName = '';
   let isValid = false;
 
+  let filterData = null;
   try {
-    const filterData = await jobService.getFiltersData();
+    filterData = await jobService.getFiltersData();
     if (filterData && filterData.provinces && filterData.regencies) {
       const provinceSlugNormalized = normalizeSlug(provinceSlug);
       const province = filterData.provinces.find((p: any) => {
@@ -97,21 +98,45 @@ async function getLocationData(provinceSlug: string, regencySlug: string) {
         }
       }
     }
+
+    // Server-side fetch: initial jobs for this city/regency
+    const jobsResponse = await jobService.getJobs({ location: regencyId || regencySlug }, 1, 24);
+
+    return {
+      provinceSlug,
+      regencySlug,
+      provinceId,
+      provinceName,
+      regencyId,
+      regencyName,
+      isValid,
+      settings,
+      currentUrl,
+      initialJobs: jobsResponse.jobs,
+      initialTotalJobs: jobsResponse.totalJobs,
+      initialHasMore: jobsResponse.hasMore,
+      initialCurrentPage: jobsResponse.currentPage,
+      initialFilterData: filterData,
+    };
   } catch (error) {
     // Error logged server-side, will redirect to main page
+    return {
+      provinceSlug,
+      regencySlug,
+      provinceId,
+      provinceName,
+      regencyId,
+      regencyName,
+      isValid,
+      settings,
+      currentUrl,
+      initialJobs: null,
+      initialTotalJobs: 0,
+      initialHasMore: false,
+      initialCurrentPage: 1,
+      initialFilterData: filterData,
+    };
   }
-
-  return {
-    provinceSlug,
-    regencySlug,
-    provinceId,
-    provinceName,
-    regencyId,
-    regencyName,
-    isValid,
-    settings,
-    currentUrl
-  };
 }
 
 export async function generateMetadata({ params }: JobLocationPageProps): Promise<Metadata> {
@@ -162,7 +187,7 @@ export const dynamicParams = true;
 
 export default async function JobLocationPage({ params }: JobLocationPageProps) {
   const resolvedParams = await params;
-  const { provinceId, provinceName, regencyId, regencyName, isValid, settings, currentUrl } = await getLocationData(resolvedParams.province, resolvedParams.regency);
+  const { provinceId, provinceName, regencyId, regencyName, isValid, settings, currentUrl, initialJobs, initialTotalJobs, initialHasMore, initialCurrentPage, initialFilterData } = await getLocationData(resolvedParams.province, resolvedParams.regency);
 
   if (!isValid) {
     redirect('/lowongan-kerja/');
@@ -231,6 +256,11 @@ export default async function JobLocationPage({ params }: JobLocationPageProps) 
             initialCityName={regencyName}
             locationType="city"
             provinceSlug={resolvedParams.province}
+            initialJobs={initialJobs}
+            initialTotalJobs={initialTotalJobs}
+            initialHasMore={initialHasMore}
+            initialCurrentPage={initialCurrentPage}
+            initialFilterData={initialFilterData}
           />
         </Suspense>
       </main>

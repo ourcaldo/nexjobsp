@@ -6,6 +6,7 @@ import Footer from '@/components/Layout/Footer';
 import JobSearchPage from '@/components/pages/JobSearchPage';
 import { generateBreadcrumbSchema } from '@/utils/schemaUtils';
 import { renderTemplate } from '@/utils/templateUtils';
+import { jobService } from '@/lib/services/JobService';
 
 async function getJobsData() {
   // Hardcoded settings - no admin panel
@@ -17,10 +18,34 @@ async function getJobsData() {
   };
   const currentUrl = getCurrentDomain();
 
-  return {
-    settings,
-    currentUrl
-  };
+  // Server-side fetch: initial jobs + filter data in parallel
+  try {
+    const [jobsResponse, filterData] = await Promise.all([
+      jobService.getJobs(undefined, 1, 24),
+      jobService.getFiltersData(),
+    ]);
+
+    return {
+      settings,
+      currentUrl,
+      initialJobs: jobsResponse.jobs,
+      initialTotalJobs: jobsResponse.totalJobs,
+      initialHasMore: jobsResponse.hasMore,
+      initialCurrentPage: jobsResponse.currentPage,
+      initialFilterData: filterData,
+    };
+  } catch (error) {
+    console.error('Error fetching initial jobs data:', error);
+    return {
+      settings,
+      currentUrl,
+      initialJobs: null,
+      initialTotalJobs: 0,
+      initialHasMore: false,
+      initialCurrentPage: 1,
+      initialFilterData: null,
+    };
+  }
 }
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -63,7 +88,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export const revalidate = 300; // ISR: Revalidate every 5 minutes
 
 export default async function Jobs() {
-  const { settings, currentUrl } = await getJobsData();
+  const { settings, currentUrl, initialJobs, initialTotalJobs, initialHasMore, initialCurrentPage, initialFilterData } = await getJobsData();
 
   const breadcrumbItems = [{ label: 'Lowongan Kerja' }];
   const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
@@ -116,7 +141,14 @@ export default async function Jobs() {
 
         {/* Job Search Content */}
         <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-8">Loading...</div>}>
-          <JobSearchPage settings={settings} />
+          <JobSearchPage
+            settings={settings}
+            initialJobs={initialJobs}
+            initialTotalJobs={initialTotalJobs}
+            initialHasMore={initialHasMore}
+            initialCurrentPage={initialCurrentPage}
+            initialFilterData={initialFilterData}
+          />
         </Suspense>
       </main>
       <Footer />

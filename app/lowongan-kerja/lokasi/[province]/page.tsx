@@ -66,18 +66,41 @@ async function getLocationData(provinceSlug: string) {
         provinceName = province.name;
       }
     }
+
+    // Server-side fetch: initial jobs for this location
+    const jobsResponse = await jobService.getJobs({ location: provinceId || provinceSlug }, 1, 24);
+
+    return {
+      provinceSlug,
+      location: provinceId,
+      locationName: provinceId ? provinceName : '',
+      category: '',
+      locationType: 'province' as const,
+      settings,
+      currentUrl,
+      initialJobs: jobsResponse.jobs,
+      initialTotalJobs: jobsResponse.totalJobs,
+      initialHasMore: jobsResponse.hasMore,
+      initialCurrentPage: jobsResponse.currentPage,
+      initialFilterData: filterData,
+    };
   } catch (error) {
     // Error logged server-side
+    return {
+      provinceSlug,
+      location: provinceId,
+      locationName: provinceId ? provinceName : '',
+      category: '',
+      locationType: 'province' as const,
+      settings,
+      currentUrl,
+      initialJobs: null,
+      initialTotalJobs: 0,
+      initialHasMore: false,
+      initialCurrentPage: 1,
+      initialFilterData: null,
+    };
   }
-
-  return {
-    provinceSlug,
-    location: provinceId,
-    locationName: provinceId ? provinceName : '',
-    category: '',
-    locationType: 'province' as const,
-    settings,
-    currentUrl
   };
 }
 
@@ -140,7 +163,7 @@ export const dynamicParams = true; // Enable dynamic params for locations not in
 
 export default async function JobLocationPage({ params }: JobLocationPageProps) {
   const resolvedParams = await params;
-  const { provinceSlug, location, locationName, category, locationType, settings, currentUrl } = await getLocationData(resolvedParams.province);
+  const { provinceSlug, location, locationName, category, locationType, settings, currentUrl, initialJobs, initialTotalJobs, initialHasMore, initialCurrentPage, initialFilterData } = await getLocationData(resolvedParams.province);
 
   // Redirect to main job page if province is not found
   if (!locationName) {
@@ -209,6 +232,11 @@ export default async function JobLocationPage({ params }: JobLocationPageProps) 
             initialLocationName={locationName}
             initialCategory={category}
             locationType={locationType as 'province' | 'city'}
+            initialJobs={initialJobs}
+            initialTotalJobs={initialTotalJobs}
+            initialHasMore={initialHasMore}
+            initialCurrentPage={initialCurrentPage}
+            initialFilterData={initialFilterData}
           />
         </Suspense>
       </main>

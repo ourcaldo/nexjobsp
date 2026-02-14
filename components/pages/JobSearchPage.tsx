@@ -25,6 +25,11 @@ interface JobSearchPageProps {
   initialCityId?: string;
   initialCityName?: string;
   provinceSlug?: string;
+  initialJobs?: Job[] | null;
+  initialTotalJobs?: number;
+  initialHasMore?: boolean;
+  initialCurrentPage?: number;
+  initialFilterData?: FilterData | null;
 }
 
 const JobSearchPage: React.FC<JobSearchPageProps> = ({ 
@@ -36,7 +41,12 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   initialProvinceId,
   initialCityId,
   initialCityName,
-  provinceSlug
+  provinceSlug,
+  initialJobs: serverJobs = null,
+  initialTotalJobs: serverTotalJobs = 0,
+  initialHasMore: serverHasMore = false,
+  initialCurrentPage: serverCurrentPage = 1,
+  initialFilterData: serverFilterData = null,
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -50,17 +60,20 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   const currentFiltersRef = useRef<any>({});
   const debounceTimeoutRef = useRef<NodeJS.Timeout>();
 
+  // Determine if we have server-provided initial data
+  const hasServerData = serverJobs !== null && serverJobs.length > 0;
+
   // State
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [jobs, setJobs] = useState<Job[]>(hasServerData ? serverJobs : []);
+  const [loading, setLoading] = useState(!hasServerData);
   const [searching, setSearching] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [filterData, setFilterData] = useState<FilterData | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [totalJobs, setTotalJobs] = useState(0);
-  const [displayedJobsCount, setDisplayedJobsCount] = useState(0); // Track currently displayed jobs
+  const [filterData, setFilterData] = useState<FilterData | null>(serverFilterData);
+  const [currentPage, setCurrentPage] = useState(hasServerData ? serverCurrentPage : 1);
+  const [hasMore, setHasMore] = useState(hasServerData ? serverHasMore : true);
+  const [totalJobs, setTotalJobs] = useState(hasServerData ? serverTotalJobs : 0);
+  const [displayedJobsCount, setDisplayedJobsCount] = useState(hasServerData ? serverJobs.length : 0);
   const [showSearchHistory, setShowSearchHistory] = useState(false);
 
   // Main search filters
@@ -157,6 +170,29 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   // Load initial data
   const loadInitialData = useCallback(async () => {
     if (initialDataLoadedRef.current) return;
+
+    // If server already provided data and no URL params override, skip client fetch
+    if (hasServerData && !searchParams?.get('search') && !searchParams?.get('location') && !searchParams?.get('category')) {
+      initialDataLoadedRef.current = true;
+
+      // Still load filter data if not server-provided
+      if (!serverFilterData) {
+        try {
+          const response = await fetch('/api/job-posts/filters');
+          const result = await response.json();
+          if (result.success) {
+            setFilterData(result.data);
+          }
+        } catch (error) {
+          console.error('Failed to load filter data:', error);
+        }
+      }
+
+      // Store current filters
+      currentFiltersRef.current = getCurrentFilters();
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
     setError(null);
