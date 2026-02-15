@@ -4,7 +4,7 @@ module.exports = {
       name: 'nexjob-frontend',
       script: 'npm',
       args: 'start',
-      cwd: '/var/www/nexjob-frontend',
+      cwd: '/root/nexjobsp',
       instances: 'max',
       exec_mode: 'cluster',
       env: {
@@ -23,9 +23,9 @@ module.exports = {
       max_memory_restart: '1G',
       
       // Logging
-      log_file: '/var/log/pm2/nexjob-frontend.log',
-      out_file: '/var/log/pm2/nexjob-frontend-out.log',
-      error_file: '/var/log/pm2/nexjob-frontend-error.log',
+      log_file: '/root/.pm2/logs/nexjob-frontend.log',
+      out_file: '/root/.pm2/logs/nexjob-frontend-out.log',
+      error_file: '/root/.pm2/logs/nexjob-frontend-error.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
       
       // Health monitoring
