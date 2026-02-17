@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { MapPin, Clock, Building, DollarSign } from 'lucide-react';
+import { MapPin, Clock, Building, Banknote } from 'lucide-react';
 import { Job } from '@/types/job';
 import { formatLocationName } from '@/lib/utils/textUtils';
 import { formatJobDate } from '@/lib/utils/date';
@@ -58,7 +58,7 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
           </div>
         )}
         <div className="flex items-center text-gray-600">
-          <DollarSign className="h-4 w-4 mr-2" />
+          <Banknote className="h-4 w-4 mr-2" />
           <span className="text-sm font-medium text-accent-600">{job.gaji}</span>
         </div>
         <div className="flex items-center text-gray-600">

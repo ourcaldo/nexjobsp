@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Briefcase, Clock, GraduationCap, Building, Users, Filter, MapPin, ChevronDown, ChevronUp, Star, Zap, DollarSign } from 'lucide-react';
+import { Briefcase, Clock, GraduationCap, Building, Users, Filter, MapPin, ChevronDown, ChevronUp, Star, Zap, Banknote } from 'lucide-react';
 import { FilterData } from '@/lib/cms/interface';
 
 interface JobSidebarProps {
@@ -329,7 +329,7 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
         {/* Salary Range */}
         {renderCheckboxGroup(
           'Rentang Gaji',
-          <DollarSign className="h-4 w-4 text-gray-400" />,
+          <Banknote className="h-4 w-4 text-gray-400" />,
           'salaries',
           [
             { id: '1-3', name: '1-3 Juta' },
