@@ -19,18 +19,18 @@ const ArticleTableOfContents: React.FC<ArticleTableOfContentsProps> = ({ content
 
   useEffect(() => {
     const parseHeadings = () => {
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = content;
+      // Use DOMParser instead of innerHTML to avoid XSS (DOMParser doesn't execute scripts)
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(content, 'text/html');
 
-      const headingElements = tempDiv.querySelectorAll('h2, h3');
+      const headingElements = doc.querySelectorAll('h2, h3');
       const parsed: Heading[] = [];
 
       headingElements.forEach((heading, index) => {
         const text = heading.textContent || '';
         const level = parseInt(heading.tagName.substring(1));
+        // IDs match those set by parseContent() in ArticleContentWrapper
         const id = `heading-${index}`;
-        
-        heading.id = id;
         parsed.push({ id, text, level });
       });
 

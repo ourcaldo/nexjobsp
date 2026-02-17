@@ -28,8 +28,12 @@ const GoogleAnalytics = () => {
     }
   }, [pathname, searchParams]);
 
+  // Validate GA ID format (G-XXXXXXXXXX or UA-XXXXX-X)
+  const gaIdPattern = /^(G-[A-Z0-9]+|UA-\d+-\d+)$/;
+  const gaId = config.analytics.gaId;
+
   // Don't render in development unless explicitly enabled
-  if (!config.analytics.gaId || (config.isDevelopment && !config.analytics.enableInDev)) {
+  if (!gaId || !gaIdPattern.test(gaId) || (config.isDevelopment && !config.analytics.enableInDev)) {
     return null;
   }
 
@@ -38,7 +42,7 @@ const GoogleAnalytics = () => {
       {/* Google Analytics */}
       <Script
         strategy="afterInteractive"
-        src={`https://www.googletagmanager.com/gtag/js?id=${config.analytics.gaId}`}
+        src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
       />
       <Script
         id="google-analytics"
@@ -48,7 +52,7 @@ const GoogleAnalytics = () => {
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', '${config.analytics.gaId}', {
+            gtag('config', '${gaId}', {
               page_path: window.location.pathname,
               send_page_view: true
             });

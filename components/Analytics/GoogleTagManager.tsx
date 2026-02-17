@@ -2,8 +2,12 @@ import Script from 'next/script';
 import { config } from '@/lib/config';
 
 const GoogleTagManager = () => {
+  // Validate GTM ID format (GTM-XXXXXXX)
+  const gtmIdPattern = /^GTM-[A-Z0-9]+$/;
+  const gtmId = config.analytics.gtmId;
+
   // Don't render in development unless explicitly enabled
-  if (!config.analytics.gtmId || (config.isDevelopment && !config.analytics.enableInDev)) {
+  if (!gtmId || !gtmIdPattern.test(gtmId) || (config.isDevelopment && !config.analytics.enableInDev)) {
     return null;
   }
 
@@ -19,7 +23,7 @@ const GoogleTagManager = () => {
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','${config.analytics.gtmId}');
+            })(window,document,'script','dataLayer','${gtmId}');
           `,
         }}
       />
@@ -28,7 +32,10 @@ const GoogleTagManager = () => {
 };
 
 export const GoogleTagManagerNoScript = () => {
-  if (!config.analytics.gtmId || (config.isDevelopment && !config.analytics.enableInDev)) {
+  const gtmIdPattern = /^GTM-[A-Z0-9]+$/;
+  const gtmId = config.analytics.gtmId;
+
+  if (!gtmId || !gtmIdPattern.test(gtmId) || (config.isDevelopment && !config.analytics.enableInDev)) {
     return null;
   }
 

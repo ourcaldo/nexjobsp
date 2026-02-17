@@ -10,9 +10,10 @@ interface ArticleContentWrapperProps {
 }
 
 // Add Tailwind classes and heading IDs to sanitized HTML
-const parseContent = (htmlContent: string) => {
-  let headingIndex = 0;
-  return htmlContent
+// startIndex ensures continuous heading numbering across split content
+const parseContent = (htmlContent: string, startIndex = 0): { html: string; nextIndex: number } => {
+  let headingIndex = startIndex;
+  const html = htmlContent
     .replace(/<h2>/g, () => {
       const id = `heading-${headingIndex++}`;
       return `<h2 id="${id}" class="text-2xl font-bold text-gray-900 mt-8 mb-4">`;
@@ -26,6 +27,7 @@ const parseContent = (htmlContent: string) => {
     .replace(/<ul>/g, '<ul class="list-disc list-inside space-y-2 mb-4 text-gray-700 ml-4">')
     .replace(/<li>/g, '<li class="pl-2">')
     .replace(/<img/g, '<img class="w-full h-auto my-6 rounded-lg"');
+  return { html, nextIndex: headingIndex };
 };
 
 // Split sanitized content at the middle h2 for ad insertion
@@ -85,9 +87,11 @@ const ArticleContentWrapper: React.FC<ArticleContentWrapperProps> = ({ content }
 
   const { topHtml, bottomHtml, hasMiddleSplit } = useMemo(() => {
     const { top, bottom, split } = splitContentAtMiddle(sanitizedContent);
+    const topResult = parseContent(top, 0);
+    const bottomResult = parseContent(bottom, topResult.nextIndex);
     return {
-      topHtml: parseContent(top),
-      bottomHtml: parseContent(bottom),
+      topHtml: topResult.html,
+      bottomHtml: bottomResult.html,
       hasMiddleSplit: split,
     };
   }, [sanitizedContent]);
