@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
+import { X } from 'lucide-react';
 
 const PopupAd: React.FC = () => {
   const pathname = usePathname();
@@ -13,6 +14,7 @@ const PopupAd: React.FC = () => {
     device: 'all'
   });
   const [isConfigLoaded, setIsConfigLoaded] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
 
   // Device detection
   const getDeviceType = (): 'mobile' | 'desktop' => {
@@ -24,34 +26,24 @@ const PopupAd: React.FC = () => {
   const shouldTriggerOnPage = useCallback((loadSettings: string[]): boolean => {
     const currentPath = pathname || '';
 
-    // All pages trigger
-    if (loadSettings.includes('all_pages')) {
-      return true;
-    }
+    if (loadSettings.includes('all_pages')) return true;
 
-    // Single articles (e.g., /artikel/kategori/slug/)
     if (loadSettings.includes('single_articles')) {
-      const articleMatch = currentPath.match(/^\/artikel\/[^/]+\/[^/]+\/?$/);
-      if (articleMatch) return true;
+      if (/^\/artikel\/[^/]+\/[^/]+\/?$/.test(currentPath)) return true;
     }
 
-    // Article archive pages (e.g., /artikel/, /artikel/kategori/)
     if (loadSettings.includes('article_archive')) {
       if (currentPath === '/artikel/' || currentPath === '/artikel') return true;
-      const categoryMatch = currentPath.match(/^\/artikel\/[^/]+\/?$/);
-      if (categoryMatch && !currentPath.includes('/artikel/[')) return true;
+      if (/^\/artikel\/[^/]+\/?$/.test(currentPath)) return true;
     }
 
-    // Job archive pages (e.g., /lowongan-kerja/, /lowongan-kerja/kategori/*, /lowongan-kerja/lokasi/*)
     if (loadSettings.includes('job_archive')) {
       if (currentPath === '/lowongan-kerja/' || currentPath === '/lowongan-kerja') return true;
       if (currentPath.startsWith('/lowongan-kerja/kategori/')) return true;
       if (currentPath.startsWith('/lowongan-kerja/lokasi/')) return true;
     }
 
-    // Single job posts (e.g., /lowongan-kerja/kategori/slug/)
     if (loadSettings.includes('single_jobs')) {
-      // Match /lowongan-kerja/[category]/[id]/ pattern (has 2 path segments after /lowongan-kerja/)
       const jobMatch = currentPath.match(/^\/lowongan-kerja\/[^/]+\/[^/]+\/?$/);
       if (jobMatch && !currentPath.includes('/kategori/') && !currentPath.includes('/lokasi/')) {
         return true;
@@ -61,89 +53,10 @@ const PopupAd: React.FC = () => {
     return false;
   }, [pathname]);
 
-  /**
-   * Generate a random alphanumeric string.
-   */
-  const generateRandomString = useCallback((length: number): string => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
-  }, []);
-
-  /**
-   * Generate a session ID with timestamp and random string.
-   */
-  const generateSessionId = useCallback((): string => {
-    return 'session_' + Date.now() + '_' + generateRandomString(8);
-  }, [generateRandomString]);
-
-  /**
-   * Generate a page-unique key for session tracking.
-   */
-  const getPageKey = useCallback((): string => {
-    return pathname || '';
-  }, [pathname]);
-
-  /**
-   * Clear sessionStorage from other pages to ensure only current page has session
-   */
-  const clearOtherPagesSessions = useCallback((): void => {
-    const currentPageKey = getPageKey();
-    const allKeys = Object.keys(sessionStorage);
-
-    // Find all sessionID_ and tabOpened_ keys that are NOT for current page
-    const keysToRemove = allKeys.filter(key => {
-      if (key.startsWith('sessionID_') || key.startsWith('tabOpened_')) {
-        const pageFromKey = key.replace('sessionID_', '').replace('tabOpened_', '');
-        return pageFromKey !== currentPageKey;
-      }
-      return false;
-    });
-
-    // Remove cookies from other pages
-    keysToRemove.forEach(key => {
-      sessionStorage.removeItem(key);
-    });
-  }, [getPageKey]);
-
-  /**
-   * Initialize session ID, once per page session.
-   */
-  const initSession = useCallback((): void => {
-    const sessionKey = 'sessionID_' + getPageKey();
-    if (!sessionStorage.getItem(sessionKey)) {
-      sessionStorage.setItem(sessionKey, generateSessionId());
-    }
-  }, [getPageKey, generateSessionId]);
-
-  /**
-   * Open the target URL in a new tab, only once per page session.
-   */
-  const openTabOnce = useCallback((): void => {
-    const tabKey = 'tabOpened_' + getPageKey();
-    if (!sessionStorage.getItem(tabKey)) {
-      window.open(popupConfig.url, '_blank');
-      sessionStorage.setItem(tabKey, 'true');
-    }
-  }, [popupConfig.url, getPageKey]);
-
-  /**
-   * Main handler to be triggered by user interaction.
-   * EXACTLY like reference - init session and open tab ONLY on user click
-   */
-  const handleUserEventTrigger = useCallback((): void => {
-    initSession();
-    openTabOnce();
-  }, [initSession, openTabOnce]);
-
   // Load popup configuration
   useEffect(() => {
     const loadConfig = async () => {
       try {
-        // Fetch from proxy API route instead of direct CMS call
         const response = await fetch('/api/advertisements');
         const data = await response.json();
 
@@ -166,51 +79,60 @@ const PopupAd: React.FC = () => {
     loadConfig();
   }, []);
 
-  // Set up click event listener and cleanup sessionStorage when page changes
+  // Check if already dismissed this session
   useEffect(() => {
-    if (!isConfigLoaded || !popupConfig.enabled || !popupConfig.url) {
-      return;
+    const dismissKey = `popupAd_dismissed_${pathname}`;
+    if (sessionStorage.getItem(dismissKey)) {
+      setIsDismissed(true);
     }
+  }, [pathname]);
 
-    // Check if should trigger on this page
-    if (!shouldTriggerOnPage(popupConfig.loadSettings)) {
-      return;
-    }
+  const handleDismiss = useCallback(() => {
+    setIsDismissed(true);
+    const dismissKey = `popupAd_dismissed_${pathname}`;
+    sessionStorage.setItem(dismissKey, 'true');
+  }, [pathname]);
 
-    // Check device compatibility
-    const currentDevice = getDeviceType();
-    if (popupConfig.device !== 'all' && popupConfig.device !== currentDevice) {
-      return;
-    }
+  // Don't render if not configured, not loaded, or already dismissed
+  if (!isConfigLoaded || !popupConfig.enabled || !popupConfig.url || isDismissed) {
+    return null;
+  }
 
-    // CLEAR sessionStorage dari page lain saat mount component
-    clearOtherPagesSessions();
+  // Check page and device compatibility
+  if (!shouldTriggerOnPage(popupConfig.loadSettings)) {
+    return null;
+  }
 
-    const handleClick = (event: MouseEvent) => {
-      handleUserEventTrigger();
-    };
+  const currentDevice = getDeviceType();
+  if (popupConfig.device !== 'all' && popupConfig.device !== currentDevice) {
+    return null;
+  }
 
-    // Add click listener to document
-    document.addEventListener('click', handleClick, { passive: true });
-
-    // Cleanup function - HAPUS sessionStorage dari halaman sebelumnya
-    return () => {
-      document.removeEventListener('click', handleClick);
-
-      // HAPUS sessionStorage untuk halaman ini saat pindah halaman
-      const currentPageKey = getPageKey();
-      const sessionKey = 'sessionID_' + currentPageKey;
-      const tabKey = 'tabOpened_' + currentPageKey;
-
-      if (sessionStorage.getItem(sessionKey) || sessionStorage.getItem(tabKey)) {
-        sessionStorage.removeItem(sessionKey);
-        sessionStorage.removeItem(tabKey);
-      }
-    };
-  }, [isConfigLoaded, popupConfig, pathname, shouldTriggerOnPage, getPageKey, clearOtherPagesSessions, handleUserEventTrigger]);
-
-  // Component renders nothing (invisible)
-  return null;
+  // Render a visible, dismissable notification bar instead of hijacking clicks
+  return (
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-primary-900 text-white px-4 py-3 shadow-lg">
+      <div className="container mx-auto flex items-center justify-between gap-4">
+        <p className="text-sm flex-1">
+          <span className="text-xs text-white/60 mr-2">Iklan</span>
+          <a
+            href={popupConfig.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-white/80 transition-colors"
+          >
+            Kunjungi sponsor kami →
+          </a>
+        </p>
+        <button
+          onClick={handleDismiss}
+          className="p-1 hover:bg-white/10 rounded-md transition-colors"
+          aria-label="Tutup iklan"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default PopupAd;
