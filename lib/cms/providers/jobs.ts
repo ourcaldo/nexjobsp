@@ -76,6 +76,15 @@ export function transformCMSJobToJob(cmsJob: CMSJobPost): Job {
 
     if (!minNum && !maxNum) return 'Negosiasi';
 
+    const periodMap: Record<string, string> = {
+      monthly: 'bulan',
+      yearly: 'tahun',
+      weekly: 'minggu',
+      daily: 'hari',
+      hourly: 'jam',
+    };
+    const displayPeriod = period ? (periodMap[period.toLowerCase()] || period) : null;
+
     const currencySymbol = currency === 'IDR' ? 'Rp ' : currency === 'USD' ? '$' : '';
     const formatNumber = (num: number) => {
       if (num >= 1000000) {
@@ -87,13 +96,13 @@ export function transformCMSJobToJob(cmsJob: CMSJobPost): Job {
 
     if (minNum && maxNum) {
       if (minNum >= 1000000 && maxNum >= 1000000) {
-        return `${currencySymbol}${formatNumber(minNum)}-${formatNumber(maxNum)} Juta${period ? '/' + period : ''}`;
+        return `${currencySymbol}${formatNumber(minNum)}-${formatNumber(maxNum)} Juta${displayPeriod ? '/' + displayPeriod : ''}`;
       }
-      return `${currencySymbol}${formatNumber(minNum)} - ${formatNumber(maxNum)}${period ? '/' + period : ''}`;
+      return `${currencySymbol}${formatNumber(minNum)} - ${formatNumber(maxNum)}${displayPeriod ? '/' + displayPeriod : ''}`;
     } else if (minNum) {
-      return `${currencySymbol}${formatNumber(minNum)}+${period ? '/' + period : ''}`;
+      return `${currencySymbol}${formatNumber(minNum)}+${displayPeriod ? '/' + displayPeriod : ''}`;
     } else if (maxNum) {
-      return `Up to ${currencySymbol}${formatNumber(maxNum)}${period ? '/' + period : ''}`;
+      return `Hingga ${currencySymbol}${formatNumber(maxNum)}${displayPeriod ? '/' + displayPeriod : ''}`;
     }
 
     return 'Negosiasi';

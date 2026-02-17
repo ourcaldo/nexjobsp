@@ -1,23 +1,21 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { 
-  MapPin, 
-  Clock, 
-  Briefcase, 
-  GraduationCap, 
-  Building, 
-  Users, 
-  DollarSign, 
+import {
+  MapPin,
+  Clock,
+  Briefcase,
+  GraduationCap,
+  Building,
+  Users,
+  Banknote,
   ExternalLink,
-  ArrowLeft,
   Bookmark,
-  Share2,
   CalendarDays,
-  Badge,
-  AlertTriangle
+  AlertTriangle,
+  ChevronRight,
+  Globe,
 } from 'lucide-react';
 import { Job } from '@/types/job';
 import { bookmarkService } from '@/lib/utils/bookmarks';
@@ -26,11 +24,11 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import JobCard from '@/components/JobCard';
 import dynamic from 'next/dynamic';
 import { sanitizeHTML } from '@/lib/utils/sanitize';
+import { formatLocationName } from '@/lib/utils/textUtils';
+import { formatJobDate } from '@/lib/utils/date';
 
 const JobApplicationModal = dynamic(() => import('@/components/ui/JobApplicationModal'), { ssr: false });
 const ShareButton = dynamic(() => import('@/components/ui/ShareButton'), { ssr: false });
-import { formatLocationName } from '@/lib/utils/textUtils';
-import { formatJobDate } from '@/lib/utils/date';
 
 interface BreadcrumbItem {
   label: string;
@@ -47,20 +45,17 @@ interface JobDetailPageProps {
 const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, breadcrumbItems: propsBreadcrumbItems }) => {
   const { trackPageView, trackJobApplication, trackBookmark } = useAnalytics();
 
-  // State
   const [relatedJobs, setRelatedJobs] = useState<Job[]>([]);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
   const [isBookmarkLoading, setIsBookmarkLoading] = useState(false);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
 
-  // Load related jobs - only fetch once when job ID changes
   useEffect(() => {
     const fetchRelatedJobs = async () => {
       try {
         const response = await fetch(`/api/job-posts/${job.id}/related?limit=4`);
         const data = await response.json();
-        
         if (data.success && data.data) {
           setRelatedJobs(data.data);
         }
@@ -68,11 +63,9 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, bre
         console.error('Error loading related jobs:', err);
       }
     };
-
     fetchRelatedJobs();
   }, [job.id]);
 
-  // Track page view for analytics - separate effect
   useEffect(() => {
     trackPageView({
       page_title: `${job.title} - ${job.company_name}`,
@@ -82,34 +75,27 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, bre
     });
   }, [job.id, job.title, job.company_name, job.kategori_pekerjaan, job.lokasi_kota, trackPageView]);
 
-  // Update bookmark state when job changes
   useEffect(() => {
     setIsBookmarked(bookmarkService.isBookmarked(job.id));
   }, [job.id]);
 
-  // Listen for bookmark changes
   useEffect(() => {
     const handleBookmarkUpdate = () => {
       setIsBookmarked(bookmarkService.isBookmarked(job.id));
     };
-
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === 'nexjob_bookmarks') {
         setIsBookmarked(bookmarkService.isBookmarked(job.id));
       }
     };
-
-    // Listen to both custom events and storage events
     window.addEventListener('bookmarkUpdated', handleBookmarkUpdate);
     window.addEventListener('storage', handleStorageChange);
-
     return () => {
       window.removeEventListener('bookmarkUpdated', handleBookmarkUpdate);
       window.removeEventListener('storage', handleStorageChange);
     };
   }, [job.id]);
 
-    // set hydrated to true
   useEffect(() => {
     setIsHydrated(true);
   }, []);
@@ -149,7 +135,8 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, bre
   const parseJobContent = (content: string) => {
     return content
       .replace(/<h2>/g, '<h2 class="text-xl font-semibold text-gray-900 mt-6 mb-3">')
-      .replace(/<p>/g, '<p class="text-gray-700 mb-4">')
+      .replace(/<h3>/g, '<h3 class="text-lg font-semibold text-gray-800 mt-5 mb-2">')
+      .replace(/<p>/g, '<p class="text-gray-700 leading-relaxed mb-4">')
       .replace(/<ol>/g, '<ol class="list-decimal list-inside space-y-2 mb-4 text-gray-700">')
       .replace(/<ul>/g, '<ul class="list-disc list-inside space-y-2 mb-4 text-gray-700">')
       .replace(/<li>/g, '<li class="pl-2">');
@@ -157,360 +144,249 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, bre
 
   const getJobTags = (tagString: string) => {
     if (!tagString) return [];
-
-    // Tags are already decoded in TugasCMSProvider, so just split them
     return tagString.split(', ').map(tag => tag.trim()).filter(tag => tag.length > 0);
   };
 
   const getFullLocation = () => {
     const province = formatLocationName(job.lokasi_provinsi);
     const regency = formatLocationName(job.lokasi_kota);
-    
-    if (province && regency) {
-      return `${province}, ${regency}`;
-    }
-    
-    if (province) {
-      return province;
-    }
-    
-    if (regency) {
-      return regency;
-    }
-    
+    if (province && regency) return `${regency}, ${province}`;
+    if (province) return province;
+    if (regency) return regency;
     return '';
   };
 
+  const companyInitial = job.company_name?.charAt(0)?.toUpperCase() || 'C';
+
   const breadcrumbItems = propsBreadcrumbItems || [
     { label: 'Lowongan Kerja', href: '/lowongan-kerja/' },
-    { label: job.title }
+    { label: job.title },
   ];
+
+  const infoItems = [
+    { icon: Banknote, label: 'Gaji', value: job.gaji, highlight: true },
+    getFullLocation() ? { icon: MapPin, label: 'Lokasi', value: getFullLocation() } : null,
+    { icon: Briefcase, label: 'Tipe Pekerjaan', value: job.tipe_pekerjaan },
+    { icon: Clock, label: 'Pengalaman', value: job.pengalaman },
+    { icon: GraduationCap, label: 'Pendidikan', value: job.pendidikan },
+    { icon: Globe, label: 'Kebijakan Kerja', value: job.kebijakan_kerja },
+  ].filter(Boolean) as Array<{ icon: any; label: string; value: string; highlight?: boolean }>;
+
+  const tags = getJobTags(job.tag);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumbs */}
-        <Breadcrumbs items={breadcrumbItems} />
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <Breadcrumbs items={breadcrumbItems} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2">
-            {/* Job Header */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 mb-8">
-              <div className="flex justify-between items-start mb-6">
-                <div className="flex-1">
-                  <h1 className="text-3xl font-bold text-gray-900 mb-4">{job.title}</h1>
-                  <div className="flex items-center mb-4">
-                    <Building className="h-5 w-5 text-primary-600 mr-2" />
-                    <span className="text-xl font-medium text-primary-600">{job.company_name}</span>
-                  </div>
-                  <div className="flex flex-wrap gap-4 text-gray-600">
-                    {getFullLocation() && (
-                      <div className="flex items-center">
-                        <MapPin className="h-4 w-4 mr-2" />
-                        {getFullLocation()}
-                      </div>
-                    )}
-                    <div className="flex items-center">
-                      <CalendarDays className="h-4 w-4 mr-2" />
-                      {isHydrated ? formatDate(job.created_at) : 'Baru dipublikasikan'}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex space-x-2">
-                  <button 
-                    onClick={handleBookmarkToggle}
-                    className={`p-2 border rounded-lg transition-colors ${
-                      isBookmarked 
-                        ? 'text-primary-600 bg-primary-50 border-primary-200 hover:bg-primary-100' 
-                        : 'text-gray-400 hover:text-gray-600 border-gray-200 hover:border-gray-300'
-                    }`}
-                    title={isBookmarked ? 'Hapus dari bookmark' : 'Simpan ke bookmark'}
-                    aria-label={isBookmarked ? 'Hapus dari bookmark' : 'Simpan ke bookmark'}
-                  >
-                    <Bookmark className={`h-5 w-5 ${isBookmarked ? 'fill-current' : ''}`} />
-                  </button>
-                  <ShareButton
-                    title={job.title}
-                    text={`${job.title} - ${job.company_name} | Nexjob`}
-                    url={typeof window !== 'undefined' ? window.location.href : ''}
-                    className="p-2"
-                  />
-                </div>
+          <div className="mt-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="flex items-start gap-3.5 flex-1 min-w-0">
+              {/* Company Initial */}
+              <div className="hidden sm:flex w-12 h-12 bg-primary-600 rounded-lg items-center justify-center flex-shrink-0">
+                <span className="text-white text-lg font-bold">{companyInitial}</span>
               </div>
 
-              {/* Tags */}
-              {getJobTags(job.tag).length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {getJobTags(job.tag).map((tag, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-50 text-primary-700"
-                    >
-                      <Badge className="h-3 w-3 mr-1" />
-                      {tag}
-                    </span>
-                  ))}
+              <div className="min-w-0 flex-1">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
+                  {job.title}
+                </h1>
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+                  <span className="font-semibold text-gray-900">{job.company_name}</span>
+                  {job.industry && (
+                    <span className="text-gray-500">{job.industry}</span>
+                  )}
                 </div>
-              )}
+                <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500">
+                  {getFullLocation() && (
+                    <span className="flex items-center">
+                      <MapPin className="h-3.5 w-3.5 mr-1" />
+                      {getFullLocation()}
+                    </span>
+                  )}
+                  <span className="flex items-center">
+                    <CalendarDays className="h-3.5 w-3.5 mr-1" />
+                    {isHydrated ? formatDate(job.created_at) : 'Baru dipublikasikan'}
+                  </span>
+                </div>
 
-              {/* Apply Buttons */}
-              <div className="flex gap-3">
-                <button
-                  onClick={handleBookmarkToggle}
-                  className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center ${
-                    isHydrated && isBookmarked
-                      ? 'bg-primary-100 text-primary-700 hover:bg-primary-200'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  <Bookmark className={`h-4 w-4 mr-2 ${isHydrated && isBookmarked ? 'fill-current' : ''}`} />
-                  {isHydrated && isBookmarked ? 'Tersimpan' : 'Simpan'}
-                </button>
-                <button
-                  onClick={handleApplyClick}
-                  className="flex-1 bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-8 py-3 rounded-lg hover:from-primary-700 hover:to-secondary-700 transition-all duration-200 font-semibold inline-flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-105"
-                >
-                  Lamar Sekarang
-                  <ExternalLink className="h-5 w-5 ml-2" />
-                </button>
+                {/* Key info pills — only job type + work policy (rest in sidebar) */}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {job.tipe_pekerjaan && (
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-primary-50 text-primary-700">
+                      {job.tipe_pekerjaan}
+                    </span>
+                  )}
+                  {job.kebijakan_kerja && (
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700">
+                      {job.kebijakan_kerja}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
-            {/* Mobile: Company Info and Job Info Cards */}
-            <div className="lg:hidden space-y-6 mb-8">
-              {/* Company Info Card */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Tentang Perusahaan</h3>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Building className="h-8 w-8 text-white" />
-                  </div>
-                  <h4 className="font-semibold text-gray-900 mb-2">{job.company_name}</h4>
-                  <p className="text-sm text-gray-600 mb-4">{job.industry}</p>
-                  <p className="text-xs text-gray-500">
-                    Informasi lebih lanjut tentang perusahaan dapat dilihat setelah melamar pekerjaan ini.
-                  </p>
-                </div>
-              </div>
+            {/* Action Buttons (Desktop) */}
+            <div className="hidden sm:flex items-center gap-2 flex-shrink-0">
+              <button
+                onClick={handleBookmarkToggle}
+                disabled={isBookmarkLoading}
+                className={`inline-flex items-center gap-1.5 px-4 py-2.5 border rounded-lg text-sm font-medium transition-colors ${
+                  isBookmarked
+                    ? 'border-primary-300 bg-primary-50 text-primary-700 hover:bg-primary-100'
+                    : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
+                {isHydrated && isBookmarked ? 'Tersimpan' : 'Simpan'}
+              </button>
+              <ShareButton
+                title={job.title}
+                text={`${job.title} - ${job.company_name} | Nexjob`}
+                url={typeof window !== 'undefined' ? window.location.href : ''}
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium bg-white text-gray-700 hover:bg-gray-50 transition-colors"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
-              {/* Job Info Card */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Informasi Pekerjaan</h3>
-                <div className="space-y-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center">
-                      <DollarSign className="h-5 w-5 text-accent-600 mr-3" />
-                      <div>
-                        <p className="text-sm text-gray-500">Gaji</p>
-                        <p className="font-semibold text-accent-600">{job.gaji}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {getFullLocation() && (
-                    <div className="border-t border-gray-100 pt-4">
-                      <div className="flex items-center mb-2">
-                        <MapPin className="h-5 w-5 text-gray-400 mr-3" />
-                        <div>
-                          <p className="text-sm text-gray-500">Lokasi Kerja</p>
-                          <p className="font-medium">{getFullLocation()}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="border-t border-gray-100 pt-4">
-                    <div className="flex items-center mb-2">
-                      <Briefcase className="h-5 w-5 text-gray-400 mr-3" />
-                      <div>
-                        <p className="text-sm text-gray-500">Tipe Pekerjaan</p>
-                        <p className="font-medium">{job.tipe_pekerjaan}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-gray-100 pt-4">
-                    <div className="flex items-center mb-2">
-                      <Clock className="h-5 w-5 text-gray-400 mr-3" />
-                      <div>
-                        <p className="text-sm text-gray-500">Pengalaman</p>
-                        <p className="font-medium">{job.pengalaman}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-gray-100 pt-4">
-                    <div className="flex items-center mb-2">
-                      <GraduationCap className="h-5 w-5 text-gray-400 mr-3" />
-                      <div>
-                        <p className="text-sm text-gray-500">Pendidikan</p>
-                        <p className="font-medium">{job.pendidikan}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-gray-100 pt-4">
-                    <div className="flex items-center mb-2">
-                      <Building className="h-5 w-5 text-gray-400 mr-3" />
-                      <div>
-                        <p className="text-sm text-gray-500">Industri</p>
-                        <p className="font-medium">{job.industry}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-gray-100 pt-4">
-                    <div className="flex items-center mb-2">
-                      <Users className="h-5 w-5 text-gray-400 mr-3" />
-                      <div>
-                        <p className="text-sm text-gray-500">Kebijakan Kerja</p>
-                        <p className="font-medium">{job.kebijakan_kerja}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Scam Warning */}
+            <div className="flex items-start gap-2.5 px-4 py-3 rounded-lg bg-amber-50/70 border border-amber-100 text-sm text-amber-800">
+              <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+              <p>
+                Waspada penipuan &mdash; perusahaan yang sah <strong>tidak pernah meminta biaya</strong> dalam proses rekrutmen.
+              </p>
             </div>
 
             {/* Job Description */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 mb-8">
-              {/* Scam Warning Notice */}
-              <div className="border-2 border-dashed border-yellow-500 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-5 mb-6 shadow-sm">
-                <div className="flex items-start gap-3">
-                  <div className="bg-yellow-500 rounded-full p-2 flex-shrink-0">
-                    <AlertTriangle className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-yellow-900 text-base mb-2">
-                      Perhatian: Waspada Penipuan!
-                    </h3>
-                    <p className="text-yellow-900 text-sm leading-relaxed">
-                      Perusahaan yang sah <span className="font-bold text-orange-700">tidak akan pernah meminta biaya apapun</span> dalam proses rekrutmen. Jika diminta membayar, segera laporkan dan hentikan proses lamaran Anda.
-                    </p>
-                  </div>
-                </div>
+            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <div className="px-6 py-5 border-b border-gray-100">
+                <h2 className="text-xl font-bold text-gray-900">Deskripsi Pekerjaan</h2>
               </div>
+              <div className="px-6 py-5">
+                <div
+                  className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-li:text-gray-700"
+                  dangerouslySetInnerHTML={{ __html: sanitizeHTML(parseJobContent(job.content)) }}
+                />
 
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Deskripsi Pekerjaan</h2>
-              <div 
-                className="prose prose-gray max-w-none"
-                dangerouslySetInnerHTML={{ __html: sanitizeHTML(parseJobContent(job.content)) }}
+                {/* Tags — inline after description */}
+                {tags.length > 0 && (
+                  <div className="mt-6 pt-5 border-t border-gray-100">
+                    <div className="flex flex-wrap gap-2">
+                      {tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className="px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Mobile Action Buttons */}
+            <div className="sm:hidden flex gap-2">
+              <button
+                onClick={handleBookmarkToggle}
+                disabled={isBookmarkLoading}
+                className={`flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-3 border rounded-lg text-sm font-medium transition-colors ${
+                  isBookmarked
+                    ? 'border-primary-300 bg-primary-50 text-primary-700'
+                    : 'border-gray-300 bg-white text-gray-700'
+                }`}
+              >
+                <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
+                {isHydrated && isBookmarked ? 'Tersimpan' : 'Simpan'}
+              </button>
+              <ShareButton
+                title={job.title}
+                text={`${job.title} - ${job.company_name} | Nexjob`}
+                url={typeof window !== 'undefined' ? window.location.href : ''}
+                className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium bg-white text-gray-700"
               />
             </div>
 
             {/* Related Jobs */}
             {relatedJobs.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">Lowongan Serupa</h2>
-                <div className="grid grid-cols-1 gap-6">
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                  <h2 className="text-lg font-bold text-gray-900">Lowongan Serupa</h2>
+                  <Link href="/lowongan-kerja/" className="text-sm text-primary-600 hover:text-primary-700 font-medium flex items-center">
+                    Lihat semua
+                    <ChevronRight className="h-4 w-4 ml-0.5" />
+                  </Link>
+                </div>
+                <div className="divide-y divide-gray-100">
                   {relatedJobs.map((relatedJob) => (
-                    <JobCard 
-                      key={relatedJob.id} 
-                      job={relatedJob}
-                    />
+                    <div key={relatedJob.id} className="px-6 py-4">
+                      <JobCard job={relatedJob} />
+                    </div>
                   ))}
                 </div>
               </div>
             )}
           </div>
 
-          {/* Desktop Sidebar - Not sticky */}
-          <div className="hidden lg:block space-y-6">
-            {/* Company Info Card */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Tentang Perusahaan</h3>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Building className="h-8 w-8 text-white" />
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">{job.company_name}</h4>
-                <p className="text-sm text-gray-600 mb-4">{job.industry}</p>
-                <p className="text-xs text-gray-500">
-                  Informasi lebih lanjut tentang perusahaan dapat dilihat setelah melamar pekerjaan ini.
+          {/* Right Column — Sidebar */}
+          <div className="space-y-6">
+            <div className="lg:sticky lg:top-6 space-y-5">
+              {/* Apply CTA */}
+              <div className="bg-white rounded-xl border border-gray-200 p-5">
+                <button
+                  onClick={handleApplyClick}
+                  className="w-full bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-semibold inline-flex items-center justify-center"
+                >
+                  Lamar Sekarang
+                  <ExternalLink className="h-4 w-4 ml-2" />
+                </button>
+                <p className="text-xs text-gray-400 text-center mt-2.5">
+                  Anda akan diarahkan ke halaman lamaran perusahaan
                 </p>
               </div>
-            </div>
 
-            {/* Job Info Card */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Informasi Pekerjaan</h3>
-              <div className="space-y-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center">
-                    <DollarSign className="h-5 w-5 text-accent-600 mr-3" />
-                    <div>
-                      <p className="text-sm text-gray-500">Gaji</p>
-                      <p className="font-semibold text-accent-600">{job.gaji}</p>
-                    </div>
-                  </div>
+              {/* Job Details */}
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="px-5 py-4 border-b border-gray-100">
+                  <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Detail Pekerjaan</h3>
                 </div>
-
-                {getFullLocation() && (
-                  <div className="border-t border-gray-100 pt-4">
-                    <div className="flex items-center mb-2">
-                      <MapPin className="h-5 w-5 text-gray-400 mr-3" />
-                      <div>
-                        <p className="text-sm text-gray-500">Lokasi Kerja</p>
-                        <p className="font-medium">{getFullLocation()}</p>
+                <div className="divide-y divide-gray-50">
+                  {infoItems.map((item, index) => (
+                    <div key={index} className="px-5 py-3 flex items-start gap-3">
+                      <item.icon className={`h-4 w-4 mt-0.5 flex-shrink-0 ${item.highlight ? 'text-accent-600' : 'text-gray-400'}`} />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs text-gray-400">{item.label}</p>
+                        <p className={`text-sm font-medium ${item.highlight ? 'text-accent-600' : 'text-gray-900'}`}>
+                          {item.value}
+                        </p>
                       </div>
                     </div>
-                  </div>
-                )}
-
-                <div className="border-t border-gray-100 pt-4">
-                  <div className="flex items-center mb-2">
-                    <Briefcase className="h-5 w-5 text-gray-400 mr-3" />
-                    <div>
-                      <p className="text-sm text-gray-500">Tipe Pekerjaan</p>
-                      <p className="font-medium">{job.tipe_pekerjaan}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t border-gray-100 pt-4">
-                  <div className="flex items-center mb-2">
-                    <Clock className="h-5 w-5 text-gray-400 mr-3" />
-                    <div>
-                      <p className="text-sm text-gray-500">Pengalaman</p>
-                      <p className="font-medium">{job.pengalaman}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t border-gray-100 pt-4">
-                  <div className="flex items-center mb-2">
-                    <GraduationCap className="h-5 w-5 text-gray-400 mr-3" />
-                    <div>
-                      <p className="text-sm text-gray-500">Pendidikan</p>
-                      <p className="font-medium">{job.pendidikan}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t border-gray-100 pt-4">
-                  <div className="flex items-center mb-2">
-                    <Building className="h-5 w-5 text-gray-400 mr-3" />
-                    <div>
-                      <p className="text-sm text-gray-500">Industri</p>
-                      <p className="font-medium">{job.industry}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="border-t border-gray-100 pt-4">
-                  <div className="flex items-center mb-2">
-                    <Users className="h-5 w-5 text-gray-400 mr-3" />
-                    <div>
-                      <p className="text-sm text-gray-500">Kebijakan Kerja</p>
-                      <p className="font-medium">{job.kebijakan_kerja}</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Fixed Bottom Bar (Mobile) */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 sm:hidden z-50">
+        <button
+          onClick={handleApplyClick}
+          className="w-full bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold inline-flex items-center justify-center hover:bg-primary-700 transition-colors"
+        >
+          Lamar Sekarang
+          <ExternalLink className="h-4 w-4 ml-2" />
+        </button>
       </div>
 
       {/* Job Application Modal */}
