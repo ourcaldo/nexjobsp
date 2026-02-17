@@ -3,6 +3,11 @@
  * 
  * Uses a Map to track request timestamps per IP.
  * Automatically cleans up expired entries to prevent memory leaks.
+ * 
+ * LIMITATION: In-memory store is per-process. In PM2 cluster mode (multiple workers),
+ * each worker has its own rate limit state — effective limits are multiplied by worker count.
+ * For strict rate limiting in cluster mode, use Nginx `limit_req` or an external store (Redis).
+ * The ecosystem.config.js uses `instances: 1` to avoid this issue.
  */
 
 interface RateLimitEntry {
@@ -45,17 +50,26 @@ function cleanup(windowMs: number): void {
 
 /**
  * Extract client IP from request headers.
- * Checks X-Forwarded-For first (first IP), then X-Real-IP, then falls back to 'anonymous'.
+ * 
+ * Priority (most trustworthy first when behind Nginx):
+ * 1. X-Real-IP — set directly by Nginx from $remote_addr (cannot be spoofed)
+ * 2. X-Forwarded-For — use the RIGHTMOST entry (added by the closest trusted proxy),
+ *    NOT the leftmost (which is client-supplied and easily spoofed)
+ * 3. Falls back to 'anonymous'
  */
 export function getClientIp(request: Request): string {
-  const forwarded = request.headers.get('x-forwarded-for');
-  if (forwarded) {
-    const firstIp = forwarded.split(',')[0]?.trim();
-    if (firstIp) return firstIp;
-  }
-
+  // Prefer X-Real-IP (set by Nginx, most reliable)
   const realIp = request.headers.get('x-real-ip');
   if (realIp) return realIp.trim();
+
+  // Fallback: rightmost X-Forwarded-For entry (added by trusted reverse proxy)
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    const ips = forwarded.split(',').map(ip => ip.trim()).filter(Boolean);
+    // Rightmost IP is the one added by the closest trusted proxy (Nginx)
+    const lastIp = ips[ips.length - 1];
+    if (lastIp) return lastIp;
+  }
 
   return 'anonymous';
 }
