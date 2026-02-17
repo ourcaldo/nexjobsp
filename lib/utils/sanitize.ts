@@ -25,7 +25,7 @@ const DEFAULT_ALLOWED_TAGS = [
 
 const DEFAULT_ALLOWED_ATTR = [
   'href', 'src', 'alt', 'class', 'id', 'target', 'rel', 'title',
-  'width', 'height', 'style', 'align'
+  'width', 'height', 'align'
 ];
 
 export const sanitizeHTML = (

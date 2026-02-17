@@ -46,6 +46,28 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '' }) => {
     loadAd();
   }, [position]);
 
+  // Allowed ad network script domains (defense-in-depth)
+  const ALLOWED_SCRIPT_DOMAINS = [
+    'pagead2.googlesyndication.com',
+    'www.googletagservices.com',
+    'www.googletagmanager.com',
+    'www.google-analytics.com',
+    'cdn.adnxs.com',
+    'securepubads.g.doubleclick.net',
+    'adservice.google.com',
+    'tpc.googlesyndication.com',
+    'partner.googleadservices.com',
+  ];
+
+  const isAllowedScriptSrc = (src: string): boolean => {
+    try {
+      const url = new URL(src, window.location.origin);
+      return ALLOWED_SCRIPT_DOMAINS.some(domain => url.hostname === domain || url.hostname.endsWith('.' + domain));
+    } catch {
+      return false;
+    }
+  };
+
   // Execute any scripts in the ad code
   useEffect(() => {
     if (adCode) {
@@ -59,7 +81,7 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '' }) => {
         const newScript = document.createElement('script');
         const src = script.getAttribute('src');
 
-        if (src) {
+        if (src && isAllowedScriptSrc(src)) {
           newScript.src = src;
 
           // Copy other attributes
@@ -76,6 +98,8 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '' }) => {
 
           // Append to document head to execute
           document.head.appendChild(newScript);
+        } else if (src) {
+          console.warn(`Blocked ad script from untrusted domain: ${src}`);
         }
       });
 

@@ -1,104 +1,127 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import ArticleTableOfContents from '@/components/ArticleTableOfContents';
 import AdDisplay from '@/components/Advertisement/AdDisplay';
+import { sanitizeHTML } from '@/lib/utils/sanitize';
 
 interface ArticleContentWrapperProps {
   content: string;
 }
 
-// Helper function to insert middle ad into content
-const insertMiddleAd = (htmlContent: string, adCode: string): string => {
-  if (!adCode || !htmlContent) return htmlContent;
-  
-  if (typeof DOMParser === 'undefined') return htmlContent;
-  
+// Add Tailwind classes and heading IDs to sanitized HTML
+const parseContent = (htmlContent: string) => {
+  let headingIndex = 0;
+  return htmlContent
+    .replace(/<h2>/g, () => {
+      const id = `heading-${headingIndex++}`;
+      return `<h2 id="${id}" class="text-2xl font-bold text-gray-900 mt-8 mb-4">`;
+    })
+    .replace(/<h3>/g, () => {
+      const id = `heading-${headingIndex++}`;
+      return `<h3 id="${id}" class="text-xl font-semibold text-gray-900 mt-6 mb-3">`;
+    })
+    .replace(/<p>/g, '<p class="text-gray-700 mb-4 leading-relaxed">')
+    .replace(/<ol>/g, '<ol class="list-decimal list-inside space-y-2 mb-4 text-gray-700 ml-4">')
+    .replace(/<ul>/g, '<ul class="list-disc list-inside space-y-2 mb-4 text-gray-700 ml-4">')
+    .replace(/<li>/g, '<li class="pl-2">')
+    .replace(/<img/g, '<img class="w-full h-auto my-6 rounded-lg"');
+};
+
+// Split sanitized content at the middle h2 for ad insertion
+const splitContentAtMiddle = (htmlContent: string): { top: string; bottom: string; split: boolean } => {
+  if (typeof DOMParser === 'undefined') {
+    return { top: htmlContent, bottom: '', split: false };
+  }
+
   try {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlContent, 'text/html');
     const headings = doc.querySelectorAll('h2');
-    
-    if (headings.length === 0) return htmlContent;
-    
+
+    if (headings.length < 2) {
+      return { top: htmlContent, bottom: '', split: false };
+    }
+
     const middleIndex = Math.floor(headings.length / 2);
     const targetHeading = headings[middleIndex];
-    
-    const adContainer = doc.createElement('div');
-    adContainer.className = 'advertisement-middle my-6';
-    adContainer.innerHTML = `
-      <div class="text-xs text-gray-500 mb-2 text-center">Advertisement</div>
-      ${adCode}
-    `;
-    
-    targetHeading.parentNode?.insertBefore(adContainer, targetHeading);
-    
-    return doc.body.innerHTML;
-  } catch (error) {
-    return htmlContent;
+
+    // Collect nodes before and after the target heading
+    const allNodes = Array.from(doc.body.childNodes);
+    let foundTarget = false;
+    const topNodes: Node[] = [];
+    const bottomNodes: Node[] = [];
+
+    for (const node of allNodes) {
+      if (node === targetHeading || node.contains(targetHeading)) {
+        foundTarget = true;
+      }
+      if (foundTarget) {
+        bottomNodes.push(node);
+      } else {
+        topNodes.push(node);
+      }
+    }
+
+    const topDiv = doc.createElement('div');
+    topNodes.forEach(n => topDiv.appendChild(n.cloneNode(true)));
+
+    const bottomDiv = doc.createElement('div');
+    bottomNodes.forEach(n => bottomDiv.appendChild(n.cloneNode(true)));
+
+    return {
+      top: topDiv.innerHTML,
+      bottom: bottomDiv.innerHTML,
+      split: true,
+    };
+  } catch {
+    return { top: htmlContent, bottom: '', split: false };
   }
 };
 
 const ArticleContentWrapper: React.FC<ArticleContentWrapperProps> = ({ content }) => {
-  const [processedContent, setProcessedContent] = useState('');
+  // Sanitize CMS content first, then apply styling classes
+  const sanitizedContent = useMemo(() => sanitizeHTML(content), [content]);
 
-  useEffect(() => {
-    const processContentWithAds = async () => {
-      try {
-        // Fetch from proxy API route instead of direct CMS call
-        const response = await fetch('/api/advertisements');
-        const data = await response.json();
-        
-        if (data.success && data.data && data.data.ad_codes && data.data.ad_codes.single_middle) {
-          const middleAdCode = data.data.ad_codes.single_middle;
-          const withAds = insertMiddleAd(content, middleAdCode);
-          setProcessedContent(withAds);
-        } else {
-          setProcessedContent(content);
-        }
-      } catch (error) {
-        setProcessedContent(content);
-      }
+  const { topHtml, bottomHtml, hasMiddleSplit } = useMemo(() => {
+    const { top, bottom, split } = splitContentAtMiddle(sanitizedContent);
+    return {
+      topHtml: parseContent(top),
+      bottomHtml: parseContent(bottom),
+      hasMiddleSplit: split,
     };
-
-    if (content) {
-      processContentWithAds();
-    }
-  }, [content]);
-
-  const parseContent = (htmlContent: string) => {
-    let headingIndex = 0;
-    return htmlContent
-      .replace(/<h2>/g, () => {
-        const id = `heading-${headingIndex++}`;
-        return `<h2 id="${id}" class="text-2xl font-bold text-gray-900 mt-8 mb-4">`;
-      })
-      .replace(/<h3>/g, () => {
-        const id = `heading-${headingIndex++}`;
-        return `<h3 id="${id}" class="text-xl font-semibold text-gray-900 mt-6 mb-3">`;
-      })
-      .replace(/<p>/g, '<p class="text-gray-700 mb-4 leading-relaxed">')
-      .replace(/<ol>/g, '<ol class="list-decimal list-inside space-y-2 mb-4 text-gray-700 ml-4">')
-      .replace(/<ul>/g, '<ul class="list-disc list-inside space-y-2 mb-4 text-gray-700 ml-4">')
-      .replace(/<li>/g, '<li class="pl-2">')
-      .replace(/<img/g, '<img class="w-full h-auto my-6 rounded-lg"');
-  };
+  }, [sanitizedContent]);
 
   return (
     <>
       {/* Table of Contents - Below image and meta */}
-      <ArticleTableOfContents content={content} />
+      <ArticleTableOfContents content={sanitizedContent} />
 
       {/* Top Advertisement */}
       <div className="mb-8">
         <AdDisplay position="single_top_ad_code" className="mb-6" />
       </div>
 
-      {/* Article Content */}
-      <div 
+      {/* Article Content — Top Half */}
+      <div
         className="prose prose-lg max-w-none"
-        dangerouslySetInnerHTML={{ __html: parseContent(processedContent || content) }}
+        dangerouslySetInnerHTML={{ __html: topHtml }}
       />
+
+      {/* Middle Advertisement (rendered as React component, not raw HTML injection) */}
+      {hasMiddleSplit && (
+        <>
+          <div className="my-6">
+            <AdDisplay position="single_middle_ad_code" />
+          </div>
+
+          {/* Article Content — Bottom Half */}
+          <div
+            className="prose prose-lg max-w-none"
+            dangerouslySetInnerHTML={{ __html: bottomHtml }}
+          />
+        </>
+      )}
 
       {/* Bottom Advertisement */}
       <div className="mt-8 pt-8 border-t border-gray-200">
