@@ -21,7 +21,7 @@ interface HomePageProps {
   settings: any;
 }
 
-const HomePageV2: React.FC<HomePageProps> = ({ initialArticles, initialFilterData, settings }) => {
+const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData, settings }) => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
   const [articles] = useState<any[]>(initialArticles || []);
@@ -479,4 +479,4 @@ const HomePageV2: React.FC<HomePageProps> = ({ initialArticles, initialFilterDat
   );
 };
 
-export default HomePageV2;
+export default HomePage;
