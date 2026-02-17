@@ -11,6 +11,13 @@ export interface TemplateVariables {
 }
 
 /**
+ * Escape special regex characters in a string
+ */
+const escapeRegex = (str: string): string => {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
+
+/**
  * Renders a template string by replacing variables with actual values
  * @param template - Template string with {{variable}} placeholders
  * @param variables - Object containing variable values
@@ -22,7 +29,7 @@ export const renderTemplate = (template: string, variables: TemplateVariables): 
   let result = template;
   Object.entries(variables).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
-      const regex = new RegExp(`{{${key}}}`, 'g');
+      const regex = new RegExp(`\\{\\{${escapeRegex(key)}\\}\\}`, 'g');
       result = result.replace(regex, value);
     }
   });
