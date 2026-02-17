@@ -9,6 +9,7 @@ import { generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
 import { getCurrentDomain } from '@/lib/config';
 import { renderTemplate } from '@/lib/utils/templateUtils';
 import { normalizeSlug, normalizeSlugForMatching } from '@/lib/utils/textUtils';
+import { JOB_PAGE_SETTINGS } from '@/lib/constants/job-settings';
 
 function JobSearchPageFallback() {
   return (
@@ -38,15 +39,7 @@ interface JobLocationPageProps {
 }
 
 const getLocationData = cache(async function getLocationData(provinceSlug: string, regencySlug: string) {
-  // Hardcoded settings - no admin panel
-  const settings = {
-    site_title: 'Nexjob',
-    jobs_title: 'Lowongan Kerja {{lokasi}} {{kategori}} - {{site_title}}',
-    jobs_description: 'Temukan lowongan kerja terbaru {{lokasi}} {{kategori}} di Indonesia. Lamar sekarang!',
-    location_page_title_template: 'Lowongan Kerja di {{lokasi}} - {{site_title}}',
-    location_page_description_template: 'Temukan lowongan kerja terbaru di {{lokasi}} dari berbagai perusahaan terpercaya.',
-    jobs_og_image: '/og-jobs.jpg'
-  };
+  const settings = JOB_PAGE_SETTINGS;
   const currentUrl = getCurrentDomain();
 
   let provinceId = '';
@@ -180,6 +173,10 @@ export async function generateMetadata({ params }: JobLocationPageProps): Promis
       canonical: `${currentUrl}/lowongan-kerja/lokasi/${provinceSlug}/${regencySlug}/`,
     },
   };
+}
+
+export async function generateStaticParams() {
+  return [];
 }
 
 export const revalidate = 300;

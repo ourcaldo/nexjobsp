@@ -15,6 +15,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import Image from 'next/image';
 import { logger } from '@/lib/logger';
 import Link from 'next/link';
+import { transformArticle } from '@/lib/utils/article-transform';
 import { formatArticleDate } from '@/lib/utils/date';
 
 interface ArticleDetailPageProps {
@@ -34,27 +35,7 @@ const getArticleData = cache(async (categorySlug: string, slug: string) => {
     }
 
     const rawArticle = articleResponse.data as any;
-
-    const article = {
-      id: rawArticle.id,
-      title: rawArticle.title,
-      slug: rawArticle.slug,
-      excerpt: rawArticle.excerpt,
-      content: rawArticle.content,
-      featured_image: rawArticle.featured_image || rawArticle.featuredImage,
-      published_at: rawArticle.publish_date || rawArticle.publishDate,
-      post_date: rawArticle.publish_date || rawArticle.publishDate,
-      updated_at: rawArticle.updated_at || rawArticle.updatedAt,
-      seo_title: rawArticle.seo?.title || rawArticle.seo_title,
-      meta_description: rawArticle.seo?.metaDescription || rawArticle.meta_description,
-      categories: rawArticle.categories || [],
-      tags: rawArticle.tags || [],
-      author: rawArticle.author ? {
-        id: rawArticle.author.id,
-        full_name: rawArticle.author.full_name || rawArticle.author.name,
-        email: rawArticle.author.email
-      } : null
-    };
+    const article = transformArticle(rawArticle);
 
     const hasCategory = article.categories?.some((cat: any) => cat.slug === categorySlug);
     const isUncategorized = categorySlug === 'uncategorized' && (!article.categories || article.categories.length === 0);

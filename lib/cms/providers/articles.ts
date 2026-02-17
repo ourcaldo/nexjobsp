@@ -1,3 +1,4 @@
+// TODO: Add unit test coverage (see audit E-11)
 import { CMSHttpClient } from './http-client';
 import { logger } from '@/lib/logger';
 

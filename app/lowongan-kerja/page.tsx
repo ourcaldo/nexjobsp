@@ -8,16 +8,11 @@ import { generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
 import { renderTemplate } from '@/lib/utils/templateUtils';
 import { jobService } from '@/lib/services/JobService';
 import { logger } from '@/lib/logger';
+import { JOB_PAGE_SETTINGS } from '@/lib/constants/job-settings';
 import Link from 'next/link';
 
 const getJobsData = cache(async function getJobsData() {
-  // Hardcoded settings - no admin panel
-  const settings = {
-    site_title: 'Nexjob',
-    jobs_title: 'Lowongan Kerja {{lokasi}} {{kategori}} - {{site_title}}',
-    jobs_description: 'Temukan lowongan kerja terbaru {{lokasi}} {{kategori}} di Indonesia. Lamar sekarang!',
-    jobs_og_image: '/og-jobs.jpg'
-  };
+  const settings = JOB_PAGE_SETTINGS;
   const currentUrl = getCurrentDomain();
 
   // Server-side fetch: initial jobs + filter data in parallel

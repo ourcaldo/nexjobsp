@@ -422,12 +422,13 @@ export default function ArticleListPage({
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {tags.map((tag, index) => (
-                      <span
+                      <Link
                         key={index}
+                        href={`/artikel?tag=${encodeURIComponent(tag)}`}
                         className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer"
                       >
                         {tag}
-                      </span>
+                      </Link>
                     ))}
                   </div>
                 </div>

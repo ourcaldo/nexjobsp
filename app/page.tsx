@@ -6,7 +6,6 @@ import { seoTemplates } from '@/lib/seo-templates';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import HomePage from '@/components/pages/HomePage';
-import { generateWebsiteSchema, generateOrganizationSchema } from '@/lib/utils/schemaUtils';
 import { logger } from '@/lib/logger';
 
 async function getHomeData() {
@@ -66,24 +65,8 @@ export const revalidate = 3600; // ISR: Revalidate every 1 hour
 export default async function Home() {
   const { articles, filterData } = await getHomeData();
 
-  const websiteSchema = generateWebsiteSchema();
-  const organizationSchema = generateOrganizationSchema();
-
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(websiteSchema)
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(organizationSchema)
-        }}
-      />
-
       <Header />
       <main>
         <HomePage 

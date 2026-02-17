@@ -9,6 +9,7 @@ import { generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
 import { getCurrentDomain } from '@/lib/config';
 import { wpLocationMappings } from '@/lib/utils/urlUtils';
 import { renderTemplate } from '@/lib/utils/templateUtils';
+import { JOB_PAGE_SETTINGS } from '@/lib/constants/job-settings';
 import Link from 'next/link';
 
 function JobSearchPageFallback() {
@@ -38,15 +39,7 @@ interface JobLocationPageProps {
 }
 
 const getLocationData = cache(async function getLocationData(provinceSlug: string) {
-  // Hardcoded settings - no admin panel
-  const settings = {
-    site_title: 'Nexjob',
-    jobs_title: 'Lowongan Kerja {{lokasi}} {{kategori}} - {{site_title}}',
-    jobs_description: 'Temukan lowongan kerja terbaru {{lokasi}} {{kategori}} di Indonesia. Lamar sekarang!',
-    location_page_title_template: 'Lowongan Kerja di {{lokasi}} - {{site_title}}',
-    location_page_description_template: 'Temukan lowongan kerja terbaru di {{lokasi}} dari berbagai perusahaan terpercaya.',
-    jobs_og_image: '/og-jobs.jpg'
-  };
+  const settings = JOB_PAGE_SETTINGS;
   const currentUrl = getCurrentDomain();
 
   let provinceId = '';

@@ -39,8 +39,19 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
         url: window.location.href
       };
       
-      // TODO: Send to error tracking service (Sentry, LogRocket, etc.)
-      // Example: errorTrackingService.logError(errorData);
+      // Send error data to error reporting endpoint
+      try {
+        fetch('/api/error-report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(errorData),
+        }).catch(() => {
+          // Silently fail – error reporting should never break the app
+        });
+      } catch {
+        // Fallback: at minimum log the structured error
+        console.error('[ErrorBoundary] Failed to report error:', errorData);
+      }
     }
   }
 

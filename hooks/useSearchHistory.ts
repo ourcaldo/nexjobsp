@@ -1,3 +1,4 @@
+// TODO: Add unit test coverage (see audit E-11)
 import { useState, useEffect } from 'react';
 
 const SEARCH_HISTORY_KEY = 'job_search_history';

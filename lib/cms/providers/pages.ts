@@ -1,3 +1,4 @@
+// TODO: Add unit test coverage (see audit E-11)
 import { transformCMSPageToPage, CMSRawPage } from '@/lib/cms/utils/transformers';
 import { Page, AdvertisementSettings } from '../interface';
 import { CMSHttpClient } from './http-client';

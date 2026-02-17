@@ -2,6 +2,17 @@
 
 import React, { useEffect, useState } from 'react';
 
+// Module-level cache: deduplicates fetch() across all AdDisplay instances per render cycle
+let adDataPromise: Promise<any> | null = null;
+function getAdData(): Promise<any> {
+  if (!adDataPromise) {
+    adDataPromise = fetch('/api/advertisements').then(r => r.json());
+    // Clear cache after 5 minutes
+    setTimeout(() => { adDataPromise = null; }, 5 * 60 * 1000);
+  }
+  return adDataPromise;
+}
+
 interface AdDisplayProps {
   position: 'popup_ad_code' | 'sidebar_archive_ad_code' | 'sidebar_single_ad_code' | 'single_top_ad_code' | 'single_bottom_ad_code' | 'single_middle_ad_code' | 'popup' | 'sidebar_archive' | 'sidebar_single' | 'single_top' | 'single_bottom' | 'single_middle';
   className?: string;
@@ -20,9 +31,8 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '' }) => {
           adPosition = `${position}_ad_code` as any;
         }
 
-        // Fetch from proxy API route instead of direct CMS call
-        const response = await fetch('/api/advertisements');
-        const data = await response.json();
+        // Use shared cached fetch to avoid duplicate requests
+        const data = await getAdData();
 
         if (data.success && data.data && data.data.ad_codes) {
           // Map position to ad_codes field

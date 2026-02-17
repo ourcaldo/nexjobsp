@@ -1,3 +1,4 @@
+// TODO: Add unit test coverage (see audit E-11)
 /**
  * HTML Sanitization Utility
  * 

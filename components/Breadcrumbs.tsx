@@ -12,8 +12,33 @@ interface BreadcrumbsProps {
   showHome?: boolean;
 }
 
+const BASE_URL = 'https://nexjob.tech';
+
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items, showHome = false }) => {
+  const jsonLdItems = [
+    ...(showHome
+      ? [{ '@type': 'ListItem' as const, position: 1, name: 'Beranda', item: `${BASE_URL}/` }]
+      : []),
+    ...items.map((breadcrumb, index) => ({
+      '@type': 'ListItem' as const,
+      position: (showHome ? 2 : 1) + index,
+      name: breadcrumb.label,
+      ...(breadcrumb.href ? { item: `${BASE_URL}${breadcrumb.href}` } : {}),
+    })),
+  ];
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: jsonLdItems,
+  };
+
   return (
+    <>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
     <nav aria-label="Breadcrumb" className="text-sm text-gray-600 mb-6">
       <ol className="flex items-center space-x-2">
         {showHome && (
@@ -57,6 +82,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items, showHome = false }) =>
         ))}
       </ol>
     </nav>
+    </>
   );
 };
 

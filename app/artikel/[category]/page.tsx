@@ -12,6 +12,7 @@ import { Calendar, User, Folder, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { logger } from '@/lib/logger';
 import Image from 'next/image';
+import { transformArticle } from '@/lib/utils/article-transform';
 
 interface ArticleCategoryPageProps {
   params: Promise<{
@@ -39,26 +40,7 @@ async function getCategoryData(categorySlug: string) {
       return null;
     }
 
-    const articles = articlesResponse.data.posts.map((article: any) => ({
-      id: article.id,
-      title: article.title,
-      slug: article.slug,
-      excerpt: article.excerpt,
-      content: article.content,
-      featured_image: article.featured_image || article.featuredImage,
-      published_at: article.publish_date || article.publishDate,
-      post_date: article.publish_date || article.publishDate,
-      updated_at: article.updated_at || article.updatedAt,
-      seo_title: article.seo?.title || article.seo_title,
-      meta_description: article.seo?.metaDescription || article.meta_description,
-      categories: article.categories || [],
-      tags: article.tags || [],
-      author: article.author ? {
-        id: article.author.id,
-        full_name: article.author.full_name || article.author.name,
-        email: article.author.email
-      } : null
-    }));
+    const articles = articlesResponse.data.posts.map(transformArticle);
 
     return {
       articles,

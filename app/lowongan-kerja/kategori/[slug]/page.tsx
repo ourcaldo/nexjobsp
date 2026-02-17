@@ -9,6 +9,7 @@ import { wpCategoryMappings } from '@/lib/utils/urlUtils';
 import { renderTemplate } from '@/lib/utils/templateUtils';
 import { jobService } from '@/lib/services/JobService';
 import { logger } from '@/lib/logger';
+import { JOB_PAGE_SETTINGS } from '@/lib/constants/job-settings';
 
 interface JobCategoryPageProps {
   params: Promise<{
@@ -19,15 +20,7 @@ interface JobCategoryPageProps {
 const getCategoryData = cache(async function getCategoryData(slug: string) {
   const category = wpCategoryMappings[slug] || slug.charAt(0).toUpperCase() + slug.slice(1);
   const location = '';
-  // Hardcoded settings - no admin panel
-  const settings = {
-    site_title: 'Nexjob',
-    jobs_title: 'Lowongan Kerja {{lokasi}} {{kategori}} - {{site_title}}',
-    jobs_description: 'Temukan lowongan kerja terbaru {{lokasi}} {{kategori}} di Indonesia. Lamar sekarang!',
-    category_page_title_template: 'Lowongan Kerja {{kategori}} - {{site_title}}',
-    category_page_description_template: 'Temukan lowongan kerja {{kategori}} terbaru dari berbagai perusahaan terpercaya. Dapatkan pekerjaan impian Anda di bidang {{kategori}}.',
-    jobs_og_image: '/og-jobs.jpg'
-  };
+  const settings = JOB_PAGE_SETTINGS;
   const currentUrl = getCurrentDomain();
 
   // Server-side fetch: initial jobs for this category + filter data

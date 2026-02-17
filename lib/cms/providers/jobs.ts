@@ -1,3 +1,4 @@
+// TODO: Add unit test coverage (see audit E-11)
 import { Job } from '@/types/job';
 import { FilterData, JobsResponse } from '../interface';
 import { config } from '@/lib/config';
