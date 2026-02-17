@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { MapPin, Clock, Building, Banknote } from 'lucide-react';
+import { MapPin, Clock, Banknote } from 'lucide-react';
 import { Job } from '@/types/job';
 import { formatLocationName } from '@/lib/utils/textUtils';
 import { formatJobDate } from '@/lib/utils/date';
@@ -34,19 +34,21 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
     return '';
   };
 
+  const companyInitial = (job.company_name || 'P').charAt(0).toUpperCase();
+
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition-all duration-300 group hover:border-primary-200">
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex-1">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-150 group hover:border-primary-200">
+      <div className="flex items-start gap-3 mb-4">
+        <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
+          <span className="text-white text-sm font-bold">{companyInitial}</span>
+        </div>
+        <div className="flex-1 min-w-0">
           <Link href={getJobUrl()} className="block">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors line-clamp-2">
+            <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-primary-600 transition-colors line-clamp-2">
               {job.title}
             </h3>
           </Link>
-          <div className="flex items-center text-primary-600 mb-2">
-            <Building className="h-4 w-4 mr-2" />
-            <span className="font-medium">{job.company_name}</span>
-          </div>
+          <span className="text-sm font-medium text-gray-700">{job.company_name}</span>
         </div>
       </div>
 

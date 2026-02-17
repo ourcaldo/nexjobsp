@@ -225,20 +225,20 @@ export default async function JobLocationPage({ params }: JobLocationPageProps) 
             <nav className="mb-8">
               <ol className="flex items-center justify-center space-x-2 text-sm text-primary-100">
                 <li className="flex items-center">
-                  <span className="text-white">Home</span>
+                  <a href="/" className="hover:text-white transition-colors">Beranda</a>
                   <span className="mx-2">/</span>
-                  <span className="text-white">Lowongan Kerja</span>
+                  <a href="/lowongan-kerja/" className="hover:text-white transition-colors">Lowongan Kerja</a>
                   <span className="mx-2">/</span>
                   <span className="text-white">Lokasi: {provinceName}</span>
                   <span className="mx-2">/</span>
-                  <span className="text-white">{regencyName}</span>
+                  <span className="text-white font-medium">{regencyName}</span>
                 </li>
               </ol>
             </nav>
 
             <div className="text-center">
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                {pageTitle.replace(` - ${templateVars.site_title}`, '')}
+                Lowongan Kerja di {regencyName}, {provinceName}
               </h1>
               <p className="text-xl text-primary-100 max-w-3xl mx-auto leading-relaxed">
                 {pageDescription}

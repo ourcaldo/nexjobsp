@@ -21,7 +21,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items, showHome = false }) =>
             href="/" 
             className="hover:text-primary-600 transition-colors"
           >
-            Home
+            Beranda
           </Link>
           <ChevronRight className="h-4 w-4 text-gray-400" />
         </>

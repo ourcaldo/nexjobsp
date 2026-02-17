@@ -1,8 +1,109 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Briefcase, Clock, GraduationCap, Building, Users, Filter, MapPin, ChevronDown, ChevronUp, Star, Zap, Banknote } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Briefcase, Clock, GraduationCap, Building, Users, Filter, MapPin, ChevronDown, ChevronUp, Star, Zap, Banknote, Search } from 'lucide-react';
 import { FilterData } from '@/lib/cms/interface';
+
+// Searchable city filter sub-component
+function CityFilterSection({
+  cities,
+  selectedCities,
+  isExpanded,
+  onToggle,
+  onFilterChange,
+  isLoading,
+}: {
+  cities: Array<{ id: string; name: string }>;
+  selectedCities: string[];
+  isExpanded: boolean;
+  onToggle: () => void;
+  onFilterChange: (value: string, checked: boolean) => void;
+  isLoading: boolean;
+}) {
+  const [citySearch, setCitySearch] = useState('');
+
+  const filteredCities = useMemo(() => {
+    if (!citySearch.trim()) return cities;
+    const q = citySearch.toLowerCase();
+    return cities.filter((c) => c.name.toLowerCase().includes(q));
+  }, [cities, citySearch]);
+
+  return (
+    <div className="border-b border-gray-100 pb-6">
+      <div
+        className="flex items-center justify-between mb-3 cursor-pointer"
+        onClick={onToggle}
+      >
+        <div className="flex items-center">
+          <MapPin className="h-4 w-4 text-gray-400" />
+          <label className="text-sm font-medium text-gray-700 ml-2">Kota</label>
+        </div>
+        <button className="text-gray-400 hover:text-gray-600">
+          {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+        </button>
+      </div>
+
+      {isExpanded && (
+        <div>
+          {/* Search input */}
+          <div className="relative mb-2">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Cari kota..."
+              value={citySearch}
+              onChange={(e) => setCitySearch(e.target.value)}
+              className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-md focus:ring-1 focus:ring-primary-500 focus:border-primary-500 outline-none"
+            />
+          </div>
+
+          {/* Selected cities shown first */}
+          {selectedCities.length > 0 && (
+            <div className="mb-2 pb-2 border-b border-gray-50">
+              {selectedCities.map((cityId) => {
+                const city = cities.find((c) => c.id === cityId);
+                if (!city) return null;
+                return (
+                  <label key={cityId} className="flex items-center cursor-pointer group py-0.5">
+                    <input
+                      type="checkbox"
+                      checked
+                      onChange={(e) => onFilterChange(cityId, e.target.checked)}
+                      disabled={isLoading}
+                      className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 focus:ring-2 disabled:opacity-50"
+                    />
+                    <span className="ml-3 text-sm text-gray-900 font-medium">{city.name}</span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Filtered city list */}
+          <div className="max-h-48 overflow-y-auto space-y-0.5">
+            {filteredCities
+              .filter((c) => !selectedCities.includes(c.id))
+              .map((city) => (
+                <label key={city.id} className="flex items-center cursor-pointer group py-0.5">
+                  <input
+                    type="checkbox"
+                    checked={false}
+                    onChange={(e) => onFilterChange(city.id, e.target.checked)}
+                    disabled={isLoading}
+                    className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500 focus:ring-2 disabled:opacity-50"
+                  />
+                  <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">{city.name}</span>
+                </label>
+              ))}
+            {filteredCities.filter((c) => !selectedCities.includes(c.id)).length === 0 && (
+              <p className="text-sm text-gray-400 py-2 text-center">Tidak ditemukan</p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface JobSidebarProps {
   filters: {
@@ -264,14 +365,16 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
         {/* Sort Section */}
         {renderSortSection()}
 
-        {/* Cities Filter - Always show all cities */}
+        {/* Cities Filter - Searchable */}
         {getAllCities().length > 0 && (
-          renderCheckboxGroup(
-            'Kota',
-            <MapPin className="h-4 w-4 text-gray-400" />,
-            'cities',
-            getAllCities()
-          )
+          <CityFilterSection
+            cities={getAllCities()}
+            selectedCities={filters.cities}
+            isExpanded={expandedSections.cities}
+            onToggle={() => toggleSection('cities')}
+            onFilterChange={(value, checked) => handleFilterChange('cities', value, checked)}
+            isLoading={isLoading}
+          />
         )}
 
         {/* Job Categories */}

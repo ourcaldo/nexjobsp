@@ -145,7 +145,7 @@ export default function ArticleListPage({
   };
 
   const breadcrumbItems = [
-    { name: 'Home', href: '/' },
+    { name: 'Beranda', href: '/' },
     { name: 'Artikel', href: '/artikel' }
   ];
 
