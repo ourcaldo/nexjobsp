@@ -152,7 +152,7 @@ export default function ArticleListPage({
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-600 text-white">
+      <div className="bg-primary-700 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <nav className="mb-8 flex justify-center">
             <ol className="flex items-center space-x-2 text-sm text-primary-100">
@@ -261,8 +261,8 @@ export default function ArticleListPage({
                               blurDataURL={getBlurDataURL()}
                             />
                           ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-primary-400 to-secondary-400 flex items-center justify-center">
-                              <Folder className="h-16 w-16 text-white/50" />
+                            <div className="w-full h-full bg-primary-100 flex items-center justify-center">
+                              <Folder className="h-16 w-16 text-primary-300" />
                             </div>
                           )}
                         </div>

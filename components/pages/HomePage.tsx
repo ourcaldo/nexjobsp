@@ -133,7 +133,7 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
       <SchemaMarkup schema={generateOrganizationSchema()} />
 
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-primary-600 via-primary-700 to-secondary-600 text-white">
+      <div className="bg-primary-700 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="text-center mb-12">
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
@@ -146,7 +146,7 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
 
           {/* Search Form */}
           <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-2xl p-8">
+            <div className="bg-white rounded-2xl shadow-lg p-8">
               <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
                 {/* Keyword Search */}
                 <div className="md:col-span-6 relative">
@@ -176,7 +176,7 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
                 <div className="md:col-span-2">
                   <button
                     onClick={handleSearch}
-                    className="w-full bg-gradient-to-r from-primary-600 to-secondary-600 text-white px-8 py-4 rounded-xl hover:from-primary-700 hover:to-secondary-700 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105"
+                    className="w-full bg-primary-600 text-white px-8 py-4 rounded-xl hover:bg-primary-700 transition-colors duration-200 font-semibold text-lg"
                   >
                     Cari
                   </button>
@@ -223,7 +223,7 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
                 className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition-all duration-300 group hover:border-primary-200 block"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className={`w-12 h-12 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200`}>
+                <div className={`w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center mb-4`}>
                   <CategoryIcon />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">

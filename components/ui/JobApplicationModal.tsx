@@ -67,7 +67,7 @@ const JobApplicationModal: React.FC<JobApplicationModalProps> = ({
             </button>
             <button
               onClick={onProceed}
-              className="flex-1 bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-2.5 px-4 rounded-lg hover:from-primary-700 hover:to-secondary-700 transition-all duration-200 font-semibold inline-flex items-center justify-center shadow-lg hover:shadow-xl text-sm"
+              className="flex-1 bg-primary-600 text-white py-2.5 px-4 rounded-lg hover:bg-primary-700 transition-colors duration-200 font-semibold inline-flex items-center justify-center text-sm"
             >
               Kirim Lamaran
               <ExternalLink className="h-4 w-4 ml-1.5" />
