@@ -11,7 +11,7 @@ export async function GET(
   try {
     const { id } = await params;
     const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get('limit') || '3');
+    const limit = Math.max(1, Math.min(20, parseInt(searchParams.get('limit') || '3') || 3));
 
     const relatedArticles = await articleService.getRelatedArticles(id, limit);
 

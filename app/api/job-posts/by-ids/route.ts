@@ -15,7 +15,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const jobs = await jobService.getJobsByIds(jobIds);
+    // Limit to 50 IDs max to prevent excessive upstream load
+    const limitedIds = jobIds.slice(0, 50);
+
+    const jobs = await jobService.getJobsByIds(limitedIds);
 
     return NextResponse.json({
       success: true,

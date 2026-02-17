@@ -44,7 +44,7 @@ const getJobData = cache(async (category: string, id: string) => {
     }
 
     // Enrich job with province/regency names from filter data using IDs
-    if (job.job_province_id || job.job_regency_id) {
+    if ((job.job_province_id || job.job_regency_id) && filterData?.provinces && filterData?.regencies) {
       const locationNames = getLocationNamesFromIds(
         job.job_province_id,
         job.job_regency_id,

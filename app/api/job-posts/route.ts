@@ -94,8 +94,8 @@ export async function GET(request: NextRequest) {
       filters.deadline_before = searchParams.get('deadline_before');
     }
     
-    const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '24');
+    const page = Math.max(1, Math.min(1000, parseInt(searchParams.get('page') || '1') || 1));
+    const limit = Math.max(1, Math.min(100, parseInt(searchParams.get('limit') || '24') || 24));
     
     const response = await jobService.getJobs(filters, page, limit);
     
@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Failed to fetch jobs' 
+        error: 'Failed to fetch jobs' 
       },
       { status: 500 }
     );

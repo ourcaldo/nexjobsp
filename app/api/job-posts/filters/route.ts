@@ -22,7 +22,7 @@ export async function GET() {
     return NextResponse.json(
       { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Failed to fetch filter data' 
+        error: 'Failed to fetch filter data'
       },
       { status: 500 }
     );

@@ -11,7 +11,7 @@ export async function GET(
   try {
     const { id } = await params;
     const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get('limit') || '4');
+    const limit = Math.max(1, Math.min(20, parseInt(searchParams.get('limit') || '4') || 4));
 
     const relatedJobs = await jobService.getRelatedJobs(id, limit);
 
