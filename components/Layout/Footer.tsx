@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Briefcase, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -11,12 +11,9 @@ const Footer: React.FC = () => {
 
           {/* Brand — wider column */}
           <div className="lg:col-span-4">
-            <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                <Briefcase className="h-4 w-4 text-white" aria-hidden="true" />
-              </div>
-              <span className="text-lg font-bold tracking-tight">
-                Nex<span className="text-sky-300">job</span>
+            <div className="flex items-center mb-4">
+              <span className="text-2xl font-extrabold tracking-tight text-white">
+                Nexjob
               </span>
             </div>
             <p className="text-white/40 text-sm leading-relaxed max-w-xs mb-6">

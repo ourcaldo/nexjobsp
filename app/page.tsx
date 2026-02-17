@@ -6,7 +6,7 @@ import { config } from '@/lib/config';
 import { seoTemplates } from '@/lib/seo-templates';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
-import HomePage from '@/components/pages/HomePage';
+import HomePageV2 from '@/components/pages/HomePageV2';
 import { generateWebsiteSchema, generateOrganizationSchema } from '@/lib/utils/schemaUtils';
 import { logger } from '@/lib/logger';
 
@@ -86,7 +86,7 @@ export default async function Home() {
 
       <Header />
       <main>
-        <HomePage 
+        <HomePageV2 
           initialArticles={articles} 
           initialFilterData={filterData}
           settings={{

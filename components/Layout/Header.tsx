@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Search, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 const Header: React.FC = () => {
   const pathname = usePathname();
@@ -41,12 +41,9 @@ const Header: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center space-x-2" aria-label="Nexjob - Beranda">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
-                <Search className="h-5 w-5 text-white" aria-hidden="true" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">
-                Nex<span className="text-primary-600">job</span>
+            <Link href="/" className="flex items-center" aria-label="Nexjob - Beranda">
+              <span className="text-2xl font-extrabold tracking-tight text-gray-900">
+                Nexjob
               </span>
             </Link>
 
@@ -123,12 +120,9 @@ const Header: React.FC = () => {
           <div className="flex flex-col h-full">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <Link href="/" className="flex items-center space-x-2" onClick={handleMobileNavClick} aria-label="Nexjob - Beranda">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
-                  <Search className="h-5 w-5 text-white" aria-hidden="true" />
-                </div>
-                <span className="text-xl font-bold text-gray-900">
-                  Nex<span className="text-primary-600">job</span>
+              <Link href="/" className="flex items-center" onClick={handleMobileNavClick} aria-label="Nexjob - Beranda">
+                <span className="text-2xl font-extrabold tracking-tight text-gray-900">
+                  Nexjob
                 </span>
               </Link>
               <button
