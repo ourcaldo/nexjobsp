@@ -1,14 +1,21 @@
 export const ensureTrailingSlash = (url: string): string => {
-  // Don't add trailing slash to URLs with file extensions or query parameters
-  if (url.includes('.') || url.includes('?') || url.includes('#')) {
+  // Don't add trailing slash to URLs with query parameters or fragments
+  if (url.includes('?') || url.includes('#')) {
     return url;
   }
-  
+
   // Don't add trailing slash if it already exists
   if (url.endsWith('/')) {
     return url;
   }
-  
+
+  // Check only the last path segment for file extensions (not the full URL,
+  // since domain names like "nexjob.tech" also contain dots)
+  const lastSegment = url.split('/').pop() || '';
+  if (lastSegment.includes('.')) {
+    return url;
+  }
+
   return `${url}/`;
 };
 

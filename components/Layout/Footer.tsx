@@ -43,8 +43,8 @@ const Footer: React.FC = () => {
               <ul className="space-y-2.5">
                 <li><Link href="/lowongan-kerja/" className="text-sm text-white/50 hover:text-white transition-colors">Cari Lowongan</Link></li>
                 <li><Link href="/artikel/" className="text-sm text-white/50 hover:text-white transition-colors">Tips Karir</Link></li>
-                <li><a href="#" className="text-sm text-white/50 hover:text-white transition-colors">Panduan Interview</a></li>
-                <li><a href="#" className="text-sm text-white/50 hover:text-white transition-colors">Panduan CV</a></li>
+                <li><Link href="/artikel/interview" className="text-sm text-white/50 hover:text-white transition-colors">Panduan Interview</Link></li>
+                <li><Link href="/artikel/cv" className="text-sm text-white/50 hover:text-white transition-colors">Panduan CV</Link></li>
               </ul>
             </nav>
 
@@ -52,19 +52,20 @@ const Footer: React.FC = () => {
               <h3 className="text-xs font-semibold uppercase tracking-widest text-white/30 mb-4">Sumber Daya</h3>
               <ul className="space-y-2.5">
                 <li><Link href="/artikel/" className="text-sm text-white/50 hover:text-white transition-colors">Blog</Link></li>
-                <li><a href="#" className="text-sm text-white/50 hover:text-white transition-colors">Panduan Gaji</a></li>
-                <li><a href="#" className="text-sm text-white/50 hover:text-white transition-colors">Tren Industri</a></li>
-                <li><a href="#" className="text-sm text-white/50 hover:text-white transition-colors">FAQ</a></li>
+                <li><Link href="/artikel/gaji" className="text-sm text-white/50 hover:text-white transition-colors">Panduan Gaji</Link></li>
+                {/* TODO: Add actual routes when pages are created */}
+                <li><span className="text-sm text-white/50 cursor-default" aria-disabled="true">Tren Industri</span></li>
+                <li><span className="text-sm text-white/50 cursor-default" aria-disabled="true">FAQ</span></li>
               </ul>
             </nav>
 
             <nav aria-label="Informasi perusahaan">
               <h3 className="text-xs font-semibold uppercase tracking-widest text-white/30 mb-4">Perusahaan</h3>
               <ul className="space-y-2.5">
-                <li><a href="#" className="text-sm text-white/50 hover:text-white transition-colors">Tentang Kami</a></li>
-                <li><a href="#" className="text-sm text-white/50 hover:text-white transition-colors">Kontak</a></li>
-                <li><a href="#" className="text-sm text-white/50 hover:text-white transition-colors">Kebijakan Privasi</a></li>
-                <li><a href="#" className="text-sm text-white/50 hover:text-white transition-colors">Syarat & Ketentuan</a></li>
+                <li><Link href="/tentang-kami" className="text-sm text-white/50 hover:text-white transition-colors">Tentang Kami</Link></li>
+                <li><Link href="/kontak" className="text-sm text-white/50 hover:text-white transition-colors">Kontak</Link></li>
+                <li><Link href="/kebijakan-privasi" className="text-sm text-white/50 hover:text-white transition-colors">Kebijakan Privasi</Link></li>
+                <li><Link href="/syarat-ketentuan" className="text-sm text-white/50 hover:text-white transition-colors">Syarat & Ketentuan</Link></li>
               </ul>
             </nav>
           </div>
@@ -78,9 +79,9 @@ const Footer: React.FC = () => {
             &copy; {new Date().getFullYear()} Nexjob.tech. All rights reserved.
           </p>
           <div className="flex items-center gap-5">
-            <a href="#" className="text-xs text-white/25 hover:text-white/50 transition-colors">Privacy</a>
-            <a href="#" className="text-xs text-white/25 hover:text-white/50 transition-colors">Terms</a>
-            <a href="#" className="text-xs text-white/25 hover:text-white/50 transition-colors">Sitemap</a>
+            <Link href="/kebijakan-privasi" className="text-xs text-white/25 hover:text-white/50 transition-colors">Privacy</Link>
+            <Link href="/syarat-ketentuan" className="text-xs text-white/25 hover:text-white/50 transition-colors">Terms</Link>
+            <Link href="/sitemap.xml" className="text-xs text-white/25 hover:text-white/50 transition-colors">Sitemap</Link>
           </div>
         </div>
       </div>

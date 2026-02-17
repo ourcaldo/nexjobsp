@@ -76,6 +76,8 @@ const Toast: React.FC<ToastProps> = ({ type, message, onClose, duration = 5000 }
       className={`max-w-sm w-full transform transition-all duration-300 ${
         isVisible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
       }`}
+      role="alert"
+      aria-live="assertive"
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();

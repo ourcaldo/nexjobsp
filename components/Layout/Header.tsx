@@ -82,30 +82,30 @@ const Header: React.FC = () => {
             <nav className="hidden md:flex items-center space-x-8" aria-label="Navigasi utama">
               <Link 
                 href="/" 
-                className={`font-medium transition-all ${
+                className={`font-medium transition-all border-b-2 ${
                   isActive('/') 
-                    ? 'text-primary-600 font-bold' 
-                    : 'text-gray-700 hover:text-primary-600 hover:font-bold'
+                    ? 'text-primary-600 font-bold border-primary-600' 
+                    : 'text-gray-700 border-transparent hover:text-primary-600 hover:border-primary-600'
                 }`}
               >
                 Beranda
               </Link>
               <Link 
                 href="/lowongan-kerja/" 
-                className={`font-medium transition-all ${
+                className={`font-medium transition-all border-b-2 ${
                   isActive('/lowongan-kerja/')
-                    ? 'text-primary-600 font-bold' 
-                    : 'text-gray-700 hover:text-primary-600 hover:font-bold'
+                    ? 'text-primary-600 font-bold border-primary-600' 
+                    : 'text-gray-700 border-transparent hover:text-primary-600 hover:border-primary-600'
                 }`}
               >
                 Cari Lowongan
               </Link>
               <Link 
                 href="/artikel/" 
-                className={`font-medium transition-all ${
+                className={`font-medium transition-all border-b-2 ${
                   isActive('/artikel/')
-                    ? 'text-primary-600 font-bold' 
-                    : 'text-gray-700 hover:text-primary-600 hover:font-bold'
+                    ? 'text-primary-600 font-bold border-primary-600' 
+                    : 'text-gray-700 border-transparent hover:text-primary-600 hover:border-primary-600'
                 }`}
               >
                 Tips Karir

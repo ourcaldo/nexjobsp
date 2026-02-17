@@ -14,7 +14,7 @@ export default function NotFound() {
         <div className="mt-12 mb-4 w-[300px] h-[300px] sm:w-[240px] sm:h-[240px]">
           <Image
             src="https://nexjob.b-cdn.net/404.png"
-            alt="404 Illustration"
+            alt="Ilustrasi 404"
             width={300}
             height={300}
             className="w-full h-full object-contain animate-float"
@@ -22,11 +22,11 @@ export default function NotFound() {
         </div>
 
         <h1 className="text-4xl sm:text-3xl font-bold leading-tight mb-4 tracking-tight">
-          Uh-oh... I think I took<br />a wrong turn.
+          Ups... Halaman tidak<br />ditemukan.
         </h1>
 
         <p className="text-lg text-gray-500 mb-10">
-          Let&apos;s get you back to where everything makes sense.
+          Mari kembali ke halaman yang tepat.
         </p>
 
         <div className="flex gap-4 justify-center flex-wrap mb-12 sm:flex-col sm:items-center sm:w-full">
@@ -34,13 +34,13 @@ export default function NotFound() {
             href="/"
             className="px-8 py-3 rounded-full font-semibold text-sm bg-gray-100 text-gray-800 border border-transparent hover:bg-gray-200 hover:-translate-y-0.5 transition-all sm:w-full sm:max-w-[300px] sm:text-center"
           >
-            Go home
+            Ke Beranda
           </Link>
           <button
             onClick={() => router.back()}
             className="px-8 py-3 rounded-full font-semibold text-sm bg-transparent text-gray-500 border border-transparent hover:text-gray-900 hover:bg-gray-50 transition-all cursor-pointer sm:w-full sm:max-w-[300px] sm:text-center"
           >
-            Go back
+            Kembali
           </button>
         </div>
 

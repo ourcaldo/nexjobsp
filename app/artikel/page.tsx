@@ -188,15 +188,17 @@ export default async function ArtikelPage() {
         }}
       />
       <Header />
-      <ArticleListPage
-        initialArticles={articles}
-        categories={categories}
-        featuredArticle={featuredArticle}
-        latestArticles={latestArticles}
-        tags={tags}
-        seoTitle={seoTitle}
-        seoDescription={seoDescription}
-      />
+      <main>
+        <ArticleListPage
+          initialArticles={articles}
+          categories={categories}
+          featuredArticle={featuredArticle}
+          latestArticles={latestArticles}
+          tags={tags}
+          seoTitle={seoTitle}
+          seoDescription={seoDescription}
+        />
+      </main>
       <Footer />
     </>
   );

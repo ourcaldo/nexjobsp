@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const robotsContent = await cmsProvider.getRobotsTxt()
 
     if (!robotsContent) {
-      console.warn('No robots.txt content from CMS, using fallback')
+      logger.warn('No robots.txt content from CMS, using fallback')
 
       // Fallback robots.txt if CMS fails
       const fallbackRobots = `User-agent: *

@@ -193,23 +193,22 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
     }));
   };
 
-  const getAllCities = () => {
+  const allCities = useMemo(() => {
     if (!filterData) return [];
     
     // If province is selected, return cities for that province
     if (selectedProvince) {
-      const provinceCities = filterData.regencies
+      return filterData.regencies
         .filter(r => r.province_id === selectedProvince)
         .map(r => ({ id: r.id, name: r.name }))
         .sort((a, b) => a.name.localeCompare(b.name));
-      return provinceCities;
     }
     
     // Otherwise, return all cities from all regencies
     return filterData.regencies
       .map(r => ({ id: r.id, name: r.name }))
       .sort((a, b) => a.name.localeCompare(b.name));
-  };
+  }, [filterData, selectedProvince]);
 
   const renderSortSection = () => {
     const isExpanded = expandedSections.sort;
@@ -366,9 +365,9 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
         {renderSortSection()}
 
         {/* Cities Filter - Searchable */}
-        {getAllCities().length > 0 && (
+        {allCities.length > 0 && (
           <CityFilterSection
-            cities={getAllCities()}
+            cities={allCities}
             selectedCities={filters.cities}
             isExpanded={expandedSections.cities}
             onToggle={() => toggleSection('cities')}

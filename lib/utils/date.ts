@@ -4,18 +4,18 @@ export const formatRelativeDate = (dateStr?: string): string => {
   const date = new Date(dateStr);
   const now = new Date();
   const diffTime = Math.abs(now.getTime() - date.getTime());
-  const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
   if (diffHours < 24) {
-    if (diffHours === 1) return '1 jam lalu';
+    if (diffHours <= 1) return '1 jam lalu';
     return `${diffHours} jam lalu`;
   }
 
-  if (diffDays === 1) return '1 hari lalu';
+  if (diffDays <= 1) return '1 hari lalu';
   if (diffDays < 7) return `${diffDays} hari lalu`;
-  if (diffDays < 30) return `${Math.ceil(diffDays / 7)} minggu lalu`;
-  return `${Math.ceil(diffDays / 30)} bulan lalu`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} minggu lalu`;
+  return `${Math.floor(diffDays / 30)} bulan lalu`;
 };
 
 /**
@@ -51,7 +51,7 @@ export const isHotJob = (dateStr?: string): boolean => {
   const date = new Date(dateStr);
   const now = new Date();
   const diffTime = Math.abs(now.getTime() - date.getTime());
-  const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+  const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
   return diffHours <= 12;
 };
 
@@ -60,5 +60,5 @@ export const getHoursAgo = (dateStr?: string): number => {
   const date = new Date(dateStr);
   const now = new Date();
   const diffTime = Math.abs(now.getTime() - date.getTime());
-  return Math.ceil(diffTime / (1000 * 60 * 60));
+  return Math.floor(diffTime / (1000 * 60 * 60));
 };

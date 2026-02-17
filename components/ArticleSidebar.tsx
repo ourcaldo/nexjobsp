@@ -87,6 +87,7 @@ const ArticleSidebar: React.FC<ArticleSidebarProps> = ({
       )}
 
       {/* Popular Categories - Simple list */}
+      {/* TODO: These category links are hardcoded. They should be fetched dynamically from the CMS API to stay in sync with actual article categories. */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Kategori Populer

@@ -14,36 +14,48 @@ interface BreadcrumbsProps {
 
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items, showHome = false }) => {
   return (
-    <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-      {showHome && (
-        <>
-          <Link 
-            href="/" 
-            className="hover:text-primary-600 transition-colors"
-          >
-            Beranda
-          </Link>
-          <ChevronRight className="h-4 w-4 text-gray-400" />
-        </>
-      )}
-      
-      {items.map((item, index) => (
-        <React.Fragment key={index}>
-          {index > 0 && <ChevronRight className="h-4 w-4 text-gray-400" />}
-          {item.href && index < items.length - 1 ? (
-            <Link 
-              href={item.href} 
-              className="hover:text-primary-600 transition-colors"
-            >
-              {item.label}
-            </Link>
-          ) : (
-            <span className={index === items.length - 1 ? 'text-gray-900 font-medium' : ''}>
-              {item.label}
-            </span>
-          )}
-        </React.Fragment>
-      ))}
+    <nav aria-label="Breadcrumb" className="text-sm text-gray-600 mb-6">
+      <ol className="flex items-center space-x-2">
+        {showHome && (
+          <>
+            <li>
+              <Link 
+                href="/" 
+                className="hover:text-primary-600 transition-colors"
+              >
+                Beranda
+              </Link>
+            </li>
+            <li aria-hidden="true">
+              <ChevronRight className="h-4 w-4 text-gray-400" />
+            </li>
+          </>
+        )}
+        
+        {items.map((item, index) => (
+          <React.Fragment key={index}>
+            {index > 0 && (
+              <li aria-hidden="true">
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              </li>
+            )}
+            <li>
+              {item.href && index < items.length - 1 ? (
+                <Link 
+                  href={item.href} 
+                  className="hover:text-primary-600 transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <span className={index === items.length - 1 ? 'text-gray-900 font-medium' : ''} aria-current={index === items.length - 1 ? 'page' : undefined}>
+                  {item.label}
+                </span>
+              )}
+            </li>
+          </React.Fragment>
+        ))}
+      </ol>
     </nav>
   );
 };

@@ -1,7 +1,8 @@
 'use client';
 
 import { Share2, Facebook, Twitter, Linkedin, Link as LinkIcon, Check } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 interface ShareButtonProps {
   title: string;
@@ -13,7 +14,14 @@ interface ShareButtonProps {
 const ShareButton = ({ title, text, url, className = '' }: ShareButtonProps) => {
   const [showMenu, setShowMenu] = useState(false);
   const [copied, setCopied] = useState(false);
-  const shareUrl = url || (typeof window !== 'undefined' ? window.location.href : '');
+  const pathname = usePathname();
+  const [currentUrl, setCurrentUrl] = useState('');
+
+  useEffect(() => {
+    setCurrentUrl(window.location.href);
+  }, [pathname]);
+
+  const shareUrl = url || currentUrl;
 
   const handleNativeShare = async () => {
     if (navigator.share) {

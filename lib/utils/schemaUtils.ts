@@ -43,6 +43,7 @@ export const generateOrganizationSchema = () => {
       "contactType": "customer service",
       "availableLanguage": "Indonesian"
     },
+    // TODO: Social media URLs should come from config/CMS instead of being hardcoded
     "sameAs": [
       "https://www.facebook.com/nexjob",
       "https://www.twitter.com/nexjob",
@@ -132,7 +133,7 @@ export const generateJobPostingSchema = (job: Job) => {
 export const generateBreadcrumbSchema = (items: Array<{ label: string; href?: string }>) => {
   const itemListElement = items.map((item, index) => ({
     "@type": "ListItem",
-    "position": index + 1,
+    "position": index + 2, // Start at 2 since Home is position 1
     "name": item.label,
     ...(item.href && { "item": `${config.site.url}${item.href}` })
   }));

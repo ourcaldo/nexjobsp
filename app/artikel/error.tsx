@@ -29,6 +29,7 @@ export default function ArticlesError({
         <button
           onClick={reset}
           className="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
+          aria-label="Coba muat ulang halaman artikel"
         >
           Coba Lagi
         </button>

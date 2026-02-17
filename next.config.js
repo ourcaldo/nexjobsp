@@ -5,9 +5,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 
 const nextConfig = {
   reactStrictMode: true,
-  env: {
-    PORT: process.env.PORT,
-  },
   async headers() {
     return [
       {
