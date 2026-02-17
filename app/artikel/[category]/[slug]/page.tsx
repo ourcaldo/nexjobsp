@@ -121,8 +121,8 @@ export async function generateMetadata({ params }: ArticleDetailPageProps): Prom
       type: 'article',
       url: `${currentUrl}/artikel/${categorySlug}/${article.slug}`,
       images: article.featured_image ? [article.featured_image] : [],
-      publishedTime: article.published_at || article.post_date,
-      modifiedTime: article.updated_at,
+      publishedTime: article.published_at || article.post_date || undefined,
+      modifiedTime: article.updated_at ?? undefined,
       authors: [article.author?.full_name || article.author?.email || 'Nexjob'],
       section: article.categories?.[0]?.name || 'Article',
       tags: article.tags?.map((tag: any) => tag.name),
@@ -207,7 +207,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
                   <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6">
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 mr-2" />
-                      {formatDistance(new Date(article.published_at || article.post_date), new Date(), { addSuffix: true, locale: id })}
+                      {formatDistance(new Date(article.published_at || article.post_date || Date.now()), new Date(), { addSuffix: true, locale: id })}
                     </div>
 
                     {article.author && (
@@ -308,7 +308,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
             {/* Sidebar - 1/3 width */}
             <div className="lg:col-span-1">
               <ArticleSidebar
-                relatedArticles={relatedArticles}
+                relatedArticles={relatedArticles as any}
                 isArchive={false}
               />
             </div>

@@ -58,7 +58,7 @@ const splitContentAtMiddle = (htmlContent: string): { top: string; bottom: strin
     const bottomNodes: Node[] = [];
 
     for (const node of allNodes) {
-      if (node === targetHeading || node.contains(targetHeading)) {
+      if (targetHeading && (node === targetHeading || node.contains(targetHeading))) {
         foundTarget = true;
       }
       if (foundTarget) {

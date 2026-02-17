@@ -82,7 +82,7 @@ class Logger {
         case 'debug':
         case 'info':
         default:
-          process.stdout.write(jsonLine + '\n');
+          console.log(jsonLine);
       }
     } else {
       if (process.env.NODE_ENV === 'development') {

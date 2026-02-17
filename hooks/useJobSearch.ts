@@ -68,7 +68,7 @@ export function useJobSearch({
   const initialDataLoadedRef = useRef(false);
   const isSearchingRef = useRef(false);
   const currentFiltersRef = useRef<any>({});
-  const debounceTimeoutRef = useRef<NodeJS.Timeout>();
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const hasServerData = serverJobs !== null && serverJobs.length > 0;
 

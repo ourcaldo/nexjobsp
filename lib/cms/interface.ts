@@ -109,9 +109,9 @@ export interface Article {
   excerpt: string;
   featured_image: string | null;
   publish_date: string;
-  published_at?: string;
-  post_date?: string;
-  updated_at?: string;
+  published_at?: string | null;
+  post_date?: string | null;
+  updated_at?: string | null;
   status: string;
   author_id?: string;
   seo_title: string | null;

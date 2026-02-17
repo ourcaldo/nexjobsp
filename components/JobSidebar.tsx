@@ -369,7 +369,7 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
           <CityFilterSection
             cities={allCities}
             selectedCities={filters.cities}
-            isExpanded={expandedSections.cities}
+            isExpanded={expandedSections.cities ?? false}
             onToggle={() => toggleSection('cities')}
             onFilterChange={(value, checked) => handleFilterChange('cities', value, checked)}
             isLoading={isLoading}

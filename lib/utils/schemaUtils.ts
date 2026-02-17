@@ -153,7 +153,7 @@ export const generateBreadcrumbSchema = (items: Array<{ label: string; href?: st
   };
 };
 
-export const generateArticleSchema = (article: Article) => {
+export const generateArticleSchema = (article: Partial<Article> & Pick<Article, 'title' | 'slug'>) => {
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -221,7 +221,7 @@ export const generateJobListingSchema = (jobs: Job[]) => {
   };
 };
 
-export const generateArticleListingSchema = (articles: Article[]) => {
+export const generateArticleListingSchema = (articles: Array<Partial<Article> & Pick<Article, 'title' | 'slug'>>) => {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",

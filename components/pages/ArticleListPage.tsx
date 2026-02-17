@@ -20,10 +20,10 @@ interface Article {
   seo_title?: string | null;
   meta_description?: string | null;
   publish_date?: string;
-  published_at?: string;
-  post_date?: string;
+  published_at?: string | null;
+  post_date?: string | null;
   created_at?: string;
-  updated_at?: string;
+  updated_at?: string | null;
   author_id?: string;
   author?: { id?: string; full_name?: string; email?: string } | null;
   categories?: any[];

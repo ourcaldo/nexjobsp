@@ -9,7 +9,7 @@ interface RelatedArticle {
   slug: string;
   excerpt?: string;
   featured_image?: string;
-  published_at: string;
+  published_at?: string | null;
 }
 
 interface ArticleSidebarProps {
@@ -68,7 +68,7 @@ const ArticleSidebar: React.FC<ArticleSidebarProps> = ({
                         </p>
                       )}
                       <p className="text-xs text-gray-400 mt-1">
-                        {new Date(article.published_at).toLocaleDateString('id-ID')}
+                        {article.published_at ? new Date(article.published_at).toLocaleDateString('id-ID') : ''}
                       </p>
                     </div>
                   </div>

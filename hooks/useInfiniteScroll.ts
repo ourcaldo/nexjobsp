@@ -22,8 +22,8 @@ export const useInfiniteScroll = (
 
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
-      const [target] = entries;
-      if (target.isIntersecting && !isFetchingRef.current) {
+      const target = entries[0];
+      if (target?.isIntersecting && !isFetchingRef.current) {
         setIsFetching(true);
         callback();
       }

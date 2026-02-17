@@ -146,13 +146,7 @@ export class PageOperations {
       return await response.json();
     } catch (error) {
       log.error('Failed to fetch advertisements from CMS', {}, error);
-      return {
-        success: true,
-        data: {
-          popup_ad: { enabled: false, url: '', load_settings: [], max_executions: 0, device: 'all' },
-          ad_codes: { sidebar_archive: '', sidebar_single: '', single_top: '', single_bottom: '', single_middle: '' },
-        },
-      };
+      return null;
     }
   }
 }

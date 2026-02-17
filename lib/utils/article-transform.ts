@@ -16,7 +16,7 @@ export interface CommonArticle {
   updated_at: string | null;
   seo_title: string | null;
   meta_description: string | null;
-  status?: string;
+  status: string;
   author_id?: string;
   categories: any[];
   tags: any[];
@@ -43,7 +43,7 @@ export function transformArticle(raw: any): CommonArticle {
     updated_at: raw.updated_at || raw.updatedAt,
     seo_title: raw.seo?.title || raw.seo_title,
     meta_description: raw.seo?.metaDescription || raw.meta_description,
-    status: raw.status,
+    status: raw.status || 'published',
     author_id: raw.author_id || raw.authorId,
     categories: raw.categories || [],
     tags: raw.tags || [],

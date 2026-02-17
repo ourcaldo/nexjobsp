@@ -125,7 +125,7 @@ export function checkRateLimit(
 
   if (entry.timestamps.length >= maxRequests) {
     // Block for the remainder of the window
-    const oldestInWindow = entry.timestamps[0];
+    const oldestInWindow = entry.timestamps[0]!;
     const retryAfter = Math.ceil((oldestInWindow + windowMs - now) / 1000);
     entry.blockedUntil = now + retryAfter * 1000;
 

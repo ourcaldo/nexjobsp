@@ -127,12 +127,12 @@ export default async function ArtikelPage() {
 
   const articleListingSchema = generateArticleListingSchema(
     articles.map((article: any) => ({
-      title: { rendered: article.title },
-      seo_description: article.excerpt,
-      excerpt: { rendered: article.excerpt || '' },
-      author_info: { display_name: article.author?.full_name || article.author?.email || 'Nexjob' },
-      date: article.published_at || article.post_date,
-      slug: article.slug
+      title: article.title,
+      slug: article.slug,
+      meta_description: article.excerpt,
+      excerpt: article.excerpt || '',
+      author: { full_name: article.author?.full_name || article.author?.email || 'Nexjob' },
+      published_at: article.published_at || article.post_date,
     }))
   );
 
