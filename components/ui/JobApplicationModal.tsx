@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X, AlertTriangle, ExternalLink } from 'lucide-react';
 import AdDisplay from '@/components/Advertisement/AdDisplay';
 
@@ -17,11 +17,84 @@ const JobApplicationModal: React.FC<JobApplicationModalProps> = ({
   onProceed,
   jobLink
 }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (!isOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen]);
+
+  // Escape key handler & focus trap
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement.focus();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement.focus();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Focus first focusable element when modal opens
+    const timer = setTimeout(() => {
+      if (modalRef.current) {
+        const firstFocusable = modalRef.current.querySelector<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        firstFocusable?.focus();
+      }
+    }, 0);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      clearTimeout(timer);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 transform transition-all">
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="job-application-modal-title"
+      onClick={handleBackdropClick}
+    >
+      <div ref={modalRef} className="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 transform transition-all">
         {/* Header with close button */}
         <div className="flex items-center justify-end p-4 pb-0">
           <button
@@ -47,7 +120,7 @@ const JobApplicationModal: React.FC<JobApplicationModalProps> = ({
                 <AlertTriangle className="h-4 w-4 text-white" />
               </div>
               <div className="text-sm">
-                <p className="font-bold text-yellow-900 mb-2">
+                <p id="job-application-modal-title" className="font-bold text-yellow-900 mb-2">
                   Peringatan Penting!
                 </p>
                 <p className="text-yellow-900 leading-relaxed">

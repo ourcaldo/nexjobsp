@@ -88,7 +88,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
                   placeholder="Cari berdasarkan skill, posisi, atau perusahaan..."
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
-                  onKeyPress={handleKeyPress}
+                  onKeyDown={handleKeyPress}
                   onFocus={() => isSearchHistoryEnabled && setShowSearchHistory(true)}
                   onBlur={() => setTimeout(() => setShowSearchHistory(false), 200)}
                   className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-gray-900"

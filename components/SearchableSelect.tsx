@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useId } from 'react';
 import { ChevronDown, MapPin, Search } from 'lucide-react';
 
 interface Option {
@@ -30,6 +30,7 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
   const [hoveredIndex, setHoveredIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listboxId = useId();
 
   const filteredOptions = options.filter(option =>
     option.label.toLowerCase().includes(searchTerm.toLowerCase())
@@ -107,6 +108,12 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
       <div
+        role="combobox"
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        aria-controls={listboxId}
+        tabIndex={disabled ? -1 : 0}
+        onKeyDown={handleKeyDown}
         className={`relative ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
         onClick={handleToggleClick}
       >
@@ -139,6 +146,8 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
                   setHoveredIndex(-1);
                 }}
                 onKeyDown={handleKeyDown}
+                aria-controls={listboxId}
+                aria-activedescendant={hoveredIndex >= 0 ? `${listboxId}-option-${hoveredIndex}` : undefined}
                 className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-sm"
                 autoFocus
               />
@@ -146,9 +155,12 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
           </div>
 
           {/* Options */}
-          <div className="max-h-60 overflow-y-auto">
+          <div className="max-h-60 overflow-y-auto" role="listbox" id={listboxId}>
             {/* All option */}
             <div
+              role="option"
+              id={`${listboxId}-option-all`}
+              aria-selected={value === ''}
               className={`flex items-center px-4 py-3 cursor-pointer transition-colors ${
                 value === '' 
                   ? 'bg-primary-50 text-primary-700' 
@@ -167,6 +179,9 @@ const SearchableSelect: React.FC<SearchableSelectProps> = ({
               filteredOptions.map((option, index) => (
                 <div
                   key={option.value}
+                  role="option"
+                  id={`${listboxId}-option-${index}`}
+                  aria-selected={value === option.value}
                   className={`flex items-center px-4 py-3 cursor-pointer transition-colors ${
                     value === option.value 
                       ? 'bg-primary-50 text-primary-700' 

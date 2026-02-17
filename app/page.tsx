@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { FilterData } from '@/lib/cms/interface';
 import { articleService } from '@/lib/services/ArticleService';
 import { jobService } from '@/lib/services/JobService';
 import { config } from '@/lib/config';

@@ -7,8 +7,6 @@ import {
   Clock,
   Briefcase,
   GraduationCap,
-  Building,
-  Users,
   Banknote,
   ExternalLink,
   Bookmark,

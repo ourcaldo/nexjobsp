@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
+import { Suspense, cache } from 'react';
 import { redirect } from 'next/navigation';
 import { jobService } from '@/lib/services/JobService';
 import Header from '@/components/Layout/Header';
@@ -9,7 +9,7 @@ import { generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
 import { getCurrentDomain } from '@/lib/config';
 import { wpLocationMappings } from '@/lib/utils/urlUtils';
 import { renderTemplate } from '@/lib/utils/templateUtils';
-import { normalizeSlug, normalizeSlugForMatching } from '@/lib/utils/textUtils';
+import Link from 'next/link';
 
 function JobSearchPageFallback() {
   return (
@@ -37,7 +37,7 @@ interface JobLocationPageProps {
   }>;
 }
 
-async function getLocationData(provinceSlug: string) {
+const getLocationData = cache(async function getLocationData(provinceSlug: string) {
   // Hardcoded settings - no admin panel
   const settings = {
     site_title: 'Nexjob',
@@ -101,7 +101,7 @@ async function getLocationData(provinceSlug: string) {
       initialFilterData: null,
     };
   }
-}
+});
 
 export async function generateMetadata({ params }: JobLocationPageProps): Promise<Metadata> {
   const resolvedParams = await params;
@@ -203,9 +203,9 @@ export default async function JobLocationPage({ params }: JobLocationPageProps) 
             <nav className="mb-8">
               <ol className="flex items-center justify-center space-x-2 text-sm text-primary-100">
                 <li className="flex items-center">
-                  <a href="/" className="hover:text-white transition-colors">Beranda</a>
+                  <Link href="/" className="hover:text-white transition-colors">Beranda</Link>
                   <span className="mx-2">/</span>
-                  <a href="/lowongan-kerja/" className="hover:text-white transition-colors">Lowongan Kerja</a>
+                  <Link href="/lowongan-kerja/" className="hover:text-white transition-colors">Lowongan Kerja</Link>
                   <span className="mx-2">/</span>
                   <span className="text-white font-medium">Lokasi: {locationName}</span>
                 </li>

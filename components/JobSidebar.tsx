@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Briefcase, Clock, GraduationCap, Building, Users, Filter, MapPin, ChevronDown, ChevronUp, Star, Zap, Banknote, Search } from 'lucide-react';
+import { Briefcase, Clock, GraduationCap, Users, Filter, MapPin, ChevronDown, ChevronUp, Star, Zap, Banknote, Search } from 'lucide-react';
 import { FilterData } from '@/lib/cms/interface';
 
 // Searchable city filter sub-component

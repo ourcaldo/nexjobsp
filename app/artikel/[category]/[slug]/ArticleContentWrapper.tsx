@@ -26,7 +26,10 @@ const parseContent = (htmlContent: string, startIndex = 0): { html: string; next
     .replace(/<ol>/g, '<ol class="list-decimal list-inside space-y-2 mb-4 text-gray-700 ml-4">')
     .replace(/<ul>/g, '<ul class="list-disc list-inside space-y-2 mb-4 text-gray-700 ml-4">')
     .replace(/<li>/g, '<li class="pl-2">')
-    .replace(/<img/g, '<img class="w-full h-auto my-6 rounded-lg"');
+    .replace(/<img\b([^>]*?)>/g, (_match, attrs: string) => {
+      const hasAlt = /\balt\s*=/.test(attrs);
+      return `<img class="w-full h-auto my-6 rounded-lg"${hasAlt ? '' : ' alt=""'}${attrs}>`;
+    });
   return { html, nextIndex: headingIndex };
 };
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { formatDistance } from 'date-fns';
-import { Calendar, User, Tag, Folder, ArrowRight, Clock, Eye } from 'lucide-react';
+import { Calendar, User, Tag, Folder, ArrowRight, Clock } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import AdDisplay from '@/components/Advertisement/AdDisplay';

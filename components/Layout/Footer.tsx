@@ -21,18 +21,18 @@ const Footer: React.FC = () => {
             </p>
             {/* Quick action pills */}
             <div className="flex flex-wrap gap-2">
-              <a
+              <Link
                 href="/lowongan-kerja/"
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-white/10 text-sm text-white/60 hover:text-white hover:border-white/30 transition-colors"
               >
                 Cari Lowongan <ArrowUpRight className="h-3 w-3" />
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/artikel/"
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-white/10 text-sm text-white/60 hover:text-white hover:border-white/30 transition-colors"
               >
                 Tips Karir <ArrowUpRight className="h-3 w-3" />
-              </a>
+              </Link>
             </div>
           </div>
 

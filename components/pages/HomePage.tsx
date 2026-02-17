@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, ArrowRight, Briefcase, ChevronLeft, ChevronRight, MapPin, Clock, Banknote, FileText, UserCheck, Send } from 'lucide-react';
+import { Search, ArrowRight, Briefcase, ChevronLeft, ChevronRight, FileText, UserCheck, Send } from 'lucide-react';
 import { FilterData } from '@/lib/cms/interface';
 import SearchableSelect from '@/components/SearchableSelect';
 import SchemaMarkup from '@/components/SEO/SchemaMarkup';
@@ -153,7 +153,7 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
                         placeholder="Posisi, skill, atau perusahaan..."
                         value={searchKeyword}
                         onChange={(e) => setSearchKeyword(e.target.value)}
-                        onKeyPress={handleKeyPress}
+                        onKeyDown={handleKeyPress}
                         className="w-full pl-12 pr-4 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-gray-900"
                       />
                     </div>

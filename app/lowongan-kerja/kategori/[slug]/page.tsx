@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
+import { Suspense, cache } from 'react';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobSearchPage from '@/components/pages/JobSearchPage';
@@ -16,7 +16,7 @@ interface JobCategoryPageProps {
   }>;
 }
 
-async function getCategoryData(slug: string) {
+const getCategoryData = cache(async function getCategoryData(slug: string) {
   const category = wpCategoryMappings[slug] || slug.charAt(0).toUpperCase() + slug.slice(1);
   const location = '';
   // Hardcoded settings - no admin panel
@@ -64,7 +64,7 @@ async function getCategoryData(slug: string) {
       initialFilterData: null,
     };
   }
-}
+});
 
 export async function generateMetadata({ params }: JobCategoryPageProps): Promise<Metadata> {
   const resolvedParams = await params;

@@ -7,12 +7,13 @@ import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import { generateArticleSchema, generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
 import { formatDistance } from 'date-fns';
-import { Calendar, User, Tag, Folder, ArrowRight } from 'lucide-react';
+import { Calendar, User, Tag, Folder } from 'lucide-react';
 import ArticleContentWrapper from './ArticleContentWrapper';
 import ArticleSidebar from '@/components/ArticleSidebar';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import Image from 'next/image';
 import { logger } from '@/lib/logger';
+import Link from 'next/link';
 import { formatArticleDate } from '@/lib/utils/date';
 
 interface ArticleDetailPageProps {
@@ -285,7 +286,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
                   <h2 className="text-2xl font-bold text-gray-900 mb-8 px-8">Artikel Terkait</h2>
                   <div className="space-y-6">
                     {relatedArticles.map((relatedArticle: any) => (
-                      <a
+                      <Link
                         key={relatedArticle.id}
                         href={`/artikel/${relatedArticle.categories?.[0]?.slug || 'uncategorized'}/${relatedArticle.slug}`}
                         className="group flex gap-4 hover:bg-gray-50 p-4 -mx-4 rounded-lg transition-colors"
@@ -315,7 +316,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
                             </p>
                           )}
                         </div>
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 </div>

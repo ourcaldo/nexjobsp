@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CheckCircle, XCircle, AlertCircle, X } from 'lucide-react';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
@@ -14,6 +14,8 @@ interface ToastProps {
 
 const Toast: React.FC<ToastProps> = ({ type, message, onClose, duration = 5000 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     // Trigger animation
@@ -22,11 +24,11 @@ const Toast: React.FC<ToastProps> = ({ type, message, onClose, duration = 5000 }
     // Auto close
     const timer = setTimeout(() => {
       setIsVisible(false);
-      setTimeout(onClose, 300); // Wait for animation to complete
+      setTimeout(() => onCloseRef.current(), 300); // Wait for animation to complete
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [duration, onClose]);
+  }, [duration]);
 
   const getIcon = () => {
     switch (type) {
@@ -71,7 +73,7 @@ const Toast: React.FC<ToastProps> = ({ type, message, onClose, duration = 5000 }
 
   return (
     <div
-      className={`fixed bottom-4 right-4 z-50 max-w-sm w-full transform transition-all duration-300 ${
+      className={`max-w-sm w-full transform transition-all duration-300 ${
         isVisible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
       }`}
       onClick={(e) => {

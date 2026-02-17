@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
+import { Suspense, cache } from 'react';
 import { redirect } from 'next/navigation';
 import { jobService } from '@/lib/services/JobService';
 import Header from '@/components/Layout/Header';
@@ -37,7 +37,7 @@ interface JobLocationPageProps {
   }>;
 }
 
-async function getLocationData(provinceSlug: string, regencySlug: string) {
+const getLocationData = cache(async function getLocationData(provinceSlug: string, regencySlug: string) {
   // Hardcoded settings - no admin panel
   const settings = {
     site_title: 'Nexjob',
@@ -137,7 +137,7 @@ async function getLocationData(provinceSlug: string, regencySlug: string) {
       initialFilterData: filterData,
     };
   }
-}
+});
 
 export async function generateMetadata({ params }: JobLocationPageProps): Promise<Metadata> {
   const resolvedParams = await params;

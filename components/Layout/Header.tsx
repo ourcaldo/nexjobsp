@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
@@ -8,6 +8,37 @@ import { Menu, X } from 'lucide-react';
 const Header: React.FC = () => {
   const pathname = usePathname();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  const closeMobileMenu = useCallback(() => {
+    setShowMobileMenu(false);
+  }, []);
+
+  // Escape key handler, scroll lock, and focus management
+  useEffect(() => {
+    if (showMobileMenu) {
+      // Lock scroll
+      document.body.style.overflow = 'hidden';
+
+      // Focus close button
+      closeButtonRef.current?.focus();
+
+      // Escape key handler
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          closeMobileMenu();
+        }
+      };
+      document.addEventListener('keydown', handleKeyDown);
+
+      return () => {
+        document.body.style.overflow = '';
+        document.removeEventListener('keydown', handleKeyDown);
+      };
+    } else {
+      document.body.style.overflow = '';
+    }
+  }, [showMobileMenu, closeMobileMenu]);
 
   const handleMobileNavClick = () => {
     setShowMobileMenu(false);
@@ -126,6 +157,7 @@ const Header: React.FC = () => {
                 </span>
               </Link>
               <button
+                ref={closeButtonRef}
                 onClick={() => setShowMobileMenu(false)}
                 className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                 aria-label="Tutup menu"

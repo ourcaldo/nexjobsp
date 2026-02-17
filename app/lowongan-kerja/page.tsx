@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
+import { Suspense, cache } from 'react';
 import { getCurrentDomain } from '@/lib/config';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
@@ -8,8 +8,9 @@ import { generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
 import { renderTemplate } from '@/lib/utils/templateUtils';
 import { jobService } from '@/lib/services/JobService';
 import { logger } from '@/lib/logger';
+import Link from 'next/link';
 
-async function getJobsData() {
+const getJobsData = cache(async function getJobsData() {
   // Hardcoded settings - no admin panel
   const settings = {
     site_title: 'Nexjob',
@@ -47,7 +48,7 @@ async function getJobsData() {
       initialFilterData: null,
     };
   }
-}
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   const { settings, currentUrl } = await getJobsData();
@@ -122,7 +123,7 @@ export default async function Jobs() {
             <nav className="mb-8">
               <ol className="flex items-center justify-center space-x-2 text-sm text-primary-100">
                 <li className="flex items-center">
-                  <a href="/" className="hover:text-white transition-colors">Beranda</a>
+                  <Link href="/" className="hover:text-white transition-colors">Beranda</Link>
                   <span className="mx-2">/</span>
                   <span className="text-white font-medium">Lowongan Kerja</span>
                 </li>

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cache } from 'react';
 import { articleService } from '@/lib/services/ArticleService';
 import { categoryService } from '@/lib/services/CategoryService';
 import { getCurrentDomain } from '@/lib/config';
@@ -9,7 +10,7 @@ import { renderTemplate } from '@/lib/utils/templateUtils';
 import ArticleListPage from '@/components/pages/ArticleListPage';
 import { logger } from '@/lib/logger';
 
-async function getArticleData() {
+const getArticleData = cache(async function getArticleData() {
   try {
     const [articlesResponse, categoriesResponse] = await Promise.all([
       articleService.getArticles(1, 20),
@@ -92,7 +93,7 @@ async function getArticleData() {
       seoSettings: null
     };
   }
-}
+});
 
 export async function generateMetadata(): Promise<Metadata> {
   const { seoSettings } = await getArticleData();
