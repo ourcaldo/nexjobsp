@@ -2,6 +2,9 @@ import { Job } from '@/types/job';
 import { FilterData, JobsResponse } from '../interface';
 import { config } from '@/lib/config';
 import { CMSHttpClient } from './http-client';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('cms:jobs');
 
 // ─── CMS job post shape ──────────────────────────────────────────────
 export interface CMSJobPost {
@@ -152,9 +155,50 @@ export function transformCMSJobToJob(cmsJob: CMSJobPost): Job {
   };
 }
 
+// ─── Search params interface ─────────────────────────────────────────
+
+export interface JobSearchParams {
+  search?: string;
+  location?: string;
+  cities?: string[];
+  jobType?: string;
+  jobTypes?: string[];
+  experience?: string;
+  experiences?: string[];
+  education?: string;
+  educations?: string[];
+  category?: string;
+  categories?: string[];
+  workPolicies?: string[];
+  job_salary_min?: string;
+  job_salary_max?: string;
+  salaries?: string[];
+  salary?: string;
+  company?: string;
+  companies?: string[];
+  tag?: string;
+  tags?: string[];
+  skill?: string;
+  skills?: string[];
+  benefit?: string;
+  benefits?: string[];
+  district?: string;
+  districts?: string[];
+  village?: string;
+  villages?: string[];
+  currency?: string;
+  salary_currency?: string;
+  period?: string;
+  salary_period?: string;
+  negotiable?: boolean;
+  salary_negotiable?: boolean;
+  deadline_after?: string;
+  deadline_before?: string;
+}
+
 // ─── URL builder ─────────────────────────────────────────────────────
 
-export function buildJobsUrl(baseUrl: string, filters: any = {}, page: number = 1, perPage: number = 24): string {
+export function buildJobsUrl(baseUrl: string, filters: JobSearchParams = {}, page: number = 1, perPage: number = 24): string {
   const params = new URLSearchParams();
 
   params.set('page', page.toString());
@@ -256,6 +300,7 @@ export class JobOperations {
       this.filterDataCache = { data: data.data, timestamp: Date.now() };
       return data.data;
     } catch (error) {
+      log.error('Failed to fetch filter data from CMS', {}, error);
       if (this.filterDataCache) return this.filterDataCache.data;
       return this.getFallbackFiltersData();
     }
@@ -265,7 +310,7 @@ export class JobOperations {
     this.filterDataCache = null;
   }
 
-  async getJobs(filters?: any, page: number = 1, perPage: number = 24): Promise<JobsResponse> {
+  async getJobs(filters?: JobSearchParams, page: number = 1, perPage: number = 24): Promise<JobsResponse> {
     await this.http.ensureInitialized();
     try {
       const url = buildJobsUrl(this.http.getBaseUrl(), filters, page, perPage);
@@ -285,6 +330,7 @@ export class JobOperations {
         hasMore: pagination.hasNextPage,
       };
     } catch (error) {
+      log.error('Failed to fetch jobs', { page, perPage }, error);
       return { jobs: [], totalPages: 1, currentPage: 1, totalJobs: 0, hasMore: false };
     }
   }
@@ -298,6 +344,7 @@ export class JobOperations {
       if (!data.success || !data.data.posts || data.data.posts.length === 0) return null;
       return transformCMSJobToJob(data.data.posts[0]);
     } catch (error) {
+      log.error('Failed to fetch job by slug', { slug }, error);
       return null;
     }
   }
@@ -311,6 +358,7 @@ export class JobOperations {
       if (!data.success) return null;
       return transformCMSJobToJob(data.data);
     } catch (error) {
+      log.error('Failed to fetch job by ID', { id }, error);
       return null;
     }
   }
@@ -319,26 +367,36 @@ export class JobOperations {
     if (jobIds.length === 0) return [];
     await this.http.ensureInitialized();
 
-    try {
-      const promises = jobIds.map(async (jobId) => {
-        try {
-          const response = await this.http.fetchWithTimeout(`${this.http.getBaseUrl()}/api/v1/job-posts/${jobId}`);
-          const data: CMSResponse<CMSJobPost> = await response.json();
-          if (!data.success) return null;
-          return transformCMSJobToJob(data.data);
-        } catch (error) {
-          return null;
-        }
-      });
+    const BATCH_SIZE = 10;
+    const allJobs: Job[] = [];
 
-      const results = await Promise.allSettled(promises);
-      return results
-        .filter((result): result is PromiseFulfilledResult<Job> =>
-          result.status === 'fulfilled' && result.value !== null
-        )
-        .map(result => result.value);
+    try {
+      for (let i = 0; i < jobIds.length; i += BATCH_SIZE) {
+        const batch = jobIds.slice(i, i + BATCH_SIZE);
+        const promises = batch.map(async (jobId) => {
+          try {
+            const response = await this.http.fetchWithTimeout(`${this.http.getBaseUrl()}/api/v1/job-posts/${jobId}`);
+            const data: CMSResponse<CMSJobPost> = await response.json();
+            if (!data.success) return null;
+            return transformCMSJobToJob(data.data);
+          } catch {
+            return null;
+          }
+        });
+
+        const results = await Promise.allSettled(promises);
+        const jobs = results
+          .filter((result): result is PromiseFulfilledResult<Job> =>
+            result.status === 'fulfilled' && result.value !== null
+          )
+          .map(result => result.value);
+        allJobs.push(...jobs);
+      }
+
+      return allJobs;
     } catch (error) {
-      return [];
+      log.error('Failed to fetch jobs by IDs', { count: jobIds.length }, error);
+      return allJobs;
     }
   }
 
@@ -354,6 +412,7 @@ export class JobOperations {
       const relatedResponse = await this.getJobs({ categories: [categoryId] }, 1, limit + 1);
       return relatedResponse.jobs.filter(job => job.id !== jobId).slice(0, limit);
     } catch (error) {
+      log.error('Failed to fetch related jobs', { jobId, limit }, error);
       return [];
     }
   }
@@ -375,17 +434,19 @@ export class JobOperations {
             page++;
           }
         } catch (error) {
+          log.error(`Failed to fetch sitemap jobs page ${page}`, {}, error);
           hasMore = false;
         }
       }
 
       return allJobs;
     } catch (error) {
+      log.error('Failed to fetch all jobs for sitemap', {}, error);
       return [];
     }
   }
 
-  async testConnection(): Promise<{ success: boolean; data?: any; error?: string }> {
+  async testConnection(): Promise<{ success: boolean; data?: unknown; error?: string }> {
     await this.http.ensureInitialized();
     try {
       const response = await this.http.fetchWithTimeout(`${this.http.getBaseUrl()}/api/v1/job-posts?limit=1`);

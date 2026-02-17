@@ -1,4 +1,5 @@
 import { Job } from '@/types/job';
+import { Article } from '@/lib/cms/interface';
 import { config } from '@/lib/config';
 
 export const generateWebsiteSchema = () => {
@@ -151,7 +152,7 @@ export const generateBreadcrumbSchema = (items: Array<{ label: string; href?: st
   };
 };
 
-export const generateArticleSchema = (article: any) => {
+export const generateArticleSchema = (article: Article) => {
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -177,7 +178,7 @@ export const generateArticleSchema = (article: any) => {
       "@id": `${config.site.url}/artikel/${article.categories?.[0]?.slug || 'uncategorized'}/${article.slug}/`
     },
     "articleSection": article.categories?.[0]?.name || "Career Tips",
-    "keywords": article.tags?.map((tag: any) => tag.name).join(", ") || "",
+    "keywords": article.tags?.map((tag: { name: string }) => tag.name).join(", ") || "",
     "url": `${config.site.url}/artikel/${article.categories?.[0]?.slug || 'uncategorized'}/${article.slug}/`
   };
 };
@@ -219,7 +220,7 @@ export const generateJobListingSchema = (jobs: Job[]) => {
   };
 };
 
-export const generateArticleListingSchema = (articles: any[]) => {
+export const generateArticleListingSchema = (articles: Article[]) => {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -245,7 +246,7 @@ export const generateArticleListingSchema = (articles: any[]) => {
   };
 };
 
-export const generateAuthorSchema = (author: any) => {
+export const generateAuthorSchema = (author: { full_name?: string; name?: string; email?: string; description?: string; slug?: string; id?: string; avatar?: string }) => {
   return {
     "@context": "https://schema.org",
     "@type": "Person",

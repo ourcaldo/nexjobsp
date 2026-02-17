@@ -9,7 +9,7 @@
  */
 
 import { Job } from '@/types/job';
-import { CMSProvider, FilterData, JobsResponse } from '../interface';
+import { CMSProvider, FilterData, JobsResponse, JobFilters, AdvertisementSettings } from '../interface';
 import { CMSHttpClient } from './http-client';
 import { JobOperations } from './jobs';
 import { ArticleOperations } from './articles';
@@ -30,7 +30,7 @@ export class TugasCMSProvider implements CMSProvider {
 
   // --- Job methods ---
 
-  async getJobs(filters?: any, page?: number, perPage?: number): Promise<JobsResponse> {
+  async getJobs(filters?: JobFilters, page?: number, perPage?: number): Promise<JobsResponse> {
     return this.jobOps.getJobs(filters, page, perPage);
   }
 
@@ -62,7 +62,7 @@ export class TugasCMSProvider implements CMSProvider {
     this.jobOps.clearFilterCache();
   }
 
-  async testConnection(): Promise<{ success: boolean; data?: any; error?: string }> {
+  async testConnection(): Promise<{ success: boolean; data?: unknown; error?: string }> {
     return this.jobOps.testConnection();
   }
 
@@ -122,7 +122,7 @@ export class TugasCMSProvider implements CMSProvider {
     return this.pageOps.getRobotsTxt();
   }
 
-  async getAdvertisements(): Promise<any> {
+  async getAdvertisements(): Promise<AdvertisementSettings | null> {
     return this.pageOps.getAdvertisements();
   }
 }

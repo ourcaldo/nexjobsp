@@ -1,4 +1,5 @@
-import { transformCMSPageToPage } from '@/lib/cms/utils/transformers';
+import { transformCMSPageToPage, CMSRawPage } from '@/lib/cms/utils/transformers';
+import { Page, AdvertisementSettings } from '../interface';
 import { CMSHttpClient } from './http-client';
 import { logger } from '@/lib/logger';
 
@@ -31,7 +32,7 @@ export class PageOperations {
         return { success: false, data: { pages: [], pagination: { page: 1, limit: 20, total: 0, total_pages: 0 } } };
       }
 
-      const transformedPages = data.data.pages.map((page: any) => transformCMSPageToPage(page));
+      const transformedPages = data.data.pages.map((page: CMSRawPage) => transformCMSPageToPage(page));
       return {
         success: true,
         data: { pages: transformedPages, pagination: data.data.pagination },
@@ -65,7 +66,7 @@ export class PageOperations {
   async getAllPagesForSitemap() {
     await this.http.ensureInitialized();
     try {
-      const allPages: any[] = [];
+      const allPages: Page[] = [];
       let page = 1;
       let hasMore = true;
 
@@ -131,7 +132,7 @@ export class PageOperations {
     }
   }
 
-  async getAdvertisements(): Promise<any> {
+  async getAdvertisements(): Promise<AdvertisementSettings | null> {
     await this.http.ensureInitialized();
     try {
       const response = await this.http.fetchWithTimeout(

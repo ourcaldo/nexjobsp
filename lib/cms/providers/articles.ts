@@ -1,4 +1,7 @@
 import { CMSHttpClient } from './http-client';
+import { logger } from '@/lib/logger';
+
+const log = logger.child('cms:articles');
 
 /**
  * Article, Category, and Tag operations for the CMS.
@@ -22,6 +25,7 @@ export class ArticleOperations {
       );
       return await response.json();
     } catch (error) {
+      log.error('Failed to fetch articles', { page, limit, category, search }, error);
       return { success: false, data: { posts: [], pagination: {} } };
     }
   }
@@ -32,6 +36,7 @@ export class ArticleOperations {
       const response = await this.http.fetchWithTimeout(`${this.http.getBaseUrl()}/api/v1/posts/${slug}`);
       return await response.json();
     } catch (error) {
+      log.error('Failed to fetch article by slug', { slug }, error);
       return { success: false, data: null };
     }
   }
@@ -48,7 +53,7 @@ export class ArticleOperations {
         return {
           success: true,
           data: response.data.posts
-            .filter((article: any) => article.slug !== articleSlug)
+            .filter((article: { slug: string }) => article.slug !== articleSlug)
             .slice(0, limit),
         };
       }
@@ -60,10 +65,11 @@ export class ArticleOperations {
       return {
         success: true,
         data: relatedResponse.data.posts
-          .filter((article: any) => article.slug !== articleSlug)
+          .filter((article: { slug: string }) => article.slug !== articleSlug)
           .slice(0, limit),
       };
     } catch (error) {
+      log.error('Failed to fetch related articles', { articleSlug, limit }, error);
       return { success: false, data: [] };
     }
   }
@@ -79,6 +85,7 @@ export class ArticleOperations {
       );
       return await response.json();
     } catch (error) {
+      log.error('Failed to fetch categories', { page, limit, search }, error);
       return { success: false, data: { categories: [], pagination: {} } };
     }
   }
@@ -94,6 +101,7 @@ export class ArticleOperations {
       );
       return await response.json();
     } catch (error) {
+      log.error('Failed to fetch tags', { page, limit, search }, error);
       return { success: false, data: { tags: [], pagination: {} } };
     }
   }
@@ -107,6 +115,7 @@ export class ArticleOperations {
       );
       return await response.json();
     } catch (error) {
+      log.error('Failed to fetch category with posts', { idOrSlug, page, limit }, error);
       return { success: false, data: { category: null, posts: [], pagination: {} } };
     }
   }
@@ -120,6 +129,7 @@ export class ArticleOperations {
       );
       return await response.json();
     } catch (error) {
+      log.error('Failed to fetch tag with posts', { idOrSlug, page, limit }, error);
       return { success: false, data: { tag: null, posts: [], pagination: {} } };
     }
   }

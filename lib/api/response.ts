@@ -43,7 +43,7 @@ export interface ApiResponse<T = any> {
  * @example
  * return successResponse({ user: userData });
  */
-export const successResponse = <T>(data: T, metadata?: any): Response => {
+export const successResponse = <T>(data: T, metadata?: ApiResponse['metadata']): Response => {
   return Response.json({
     success: true,
     data,
@@ -82,7 +82,7 @@ export const errorResponse = (error: string, status: number = 400): Response => 
  * // With pagination
  * return apiSuccess(jobs, { page: 1, limit: 20, total: 150, hasMore: true });
  */
-export const apiSuccess = <T>(data: T, metadata?: any) => {
+export const apiSuccess = <T>(data: T, metadata?: ApiResponse['metadata']) => {
   return NextResponse.json({
     success: true,
     data,
