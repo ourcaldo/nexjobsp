@@ -34,52 +34,15 @@ export interface ApiResponse<T = any> {
 }
 
 /**
- * Create a successful API response using standard Response
- * 
+ * Create a successful API response (NextResponse).
+ * This is the canonical helper — use this in all API routes.
+ *
  * @param data - The data to return
  * @param metadata - Optional pagination metadata
- * @returns Response object with standardized success format
- * 
- * @example
- * return successResponse({ user: userData });
- */
-export const successResponse = <T>(data: T, metadata?: ApiResponse['metadata']): Response => {
-  return Response.json({
-    success: true,
-    data,
-    ...(metadata && { metadata })
-  });
-};
-
-/**
- * Create an error API response using standard Response
- * 
- * @param error - Error message
- * @param status - HTTP status code (default: 400)
- * @returns Response object with standardized error format
- * 
- * @example
- * return errorResponse('User not found', 404);
- */
-export const errorResponse = (error: string, status: number = 400): Response => {
-  return Response.json({
-    success: false,
-    error
-  }, { status });
-};
-
-/**
- * Create a successful API response using NextResponse (for Next.js API routes)
- * 
- * @param data - The data to return
- * @param metadata - Optional pagination metadata
- * @returns NextResponse object with standardized success format
- * 
+ * @returns NextResponse with standardized success format
+ *
  * @example
  * return apiSuccess({ bookmarks: bookmarkList });
- * 
- * @example
- * // With pagination
  * return apiSuccess(jobs, { page: 1, limit: 20, total: 150, hasMore: true });
  */
 export const apiSuccess = <T>(data: T, metadata?: ApiResponse['metadata']) => {
@@ -91,16 +54,15 @@ export const apiSuccess = <T>(data: T, metadata?: ApiResponse['metadata']) => {
 };
 
 /**
- * Create an error API response using NextResponse (for Next.js API routes)
- * 
+ * Create an error API response (NextResponse).
+ * This is the canonical helper — use this in all API routes.
+ *
  * @param error - Error message
  * @param status - HTTP status code (default: 400)
- * @returns NextResponse object with standardized error format
- * 
+ * @returns NextResponse with standardized error format
+ *
  * @example
  * return apiError('No authorization token provided', 401);
- * 
- * @example
  * return apiError('Internal server error', 500);
  */
 export const apiError = (error: string, status: number = 400) => {
@@ -108,4 +70,20 @@ export const apiError = (error: string, status: number = 400) => {
     success: false,
     error
   }, { status });
+};
+
+/**
+ * @deprecated Use {@link apiSuccess} instead.
+ * Kept for backwards-compatibility; delegates to apiSuccess.
+ */
+export const successResponse = <T>(data: T, metadata?: ApiResponse['metadata']): Response => {
+  return apiSuccess(data, metadata) as unknown as Response;
+};
+
+/**
+ * @deprecated Use {@link apiError} instead.
+ * Kept for backwards-compatibility; delegates to apiError.
+ */
+export const errorResponse = (error: string, status: number = 400): Response => {
+  return apiError(error, status) as unknown as Response;
 };

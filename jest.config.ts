@@ -13,6 +13,16 @@ const config: Config = {
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/$1',
     },
+    collectCoverageFrom: [
+        'app/**/*.{ts,tsx}',
+        'components/**/*.{ts,tsx}',
+        'lib/**/*.{ts,tsx}',
+        'hooks/**/*.{ts,tsx}',
+        'utils/**/*.{ts,tsx}',
+        '!**/*.d.ts',
+        '!**/node_modules/**',
+        '!**/.next/**',
+    ],
 }
 
 export default createJestConfig(config)

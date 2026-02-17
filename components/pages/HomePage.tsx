@@ -140,7 +140,7 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
                   </span>
                 </h1>
                 <p className="text-primary-200 text-lg leading-relaxed mb-8 max-w-lg">
-                  {settings.site_description || settings.siteDescription || 'Platform pencarian kerja terpercaya di Indonesia'}
+                  {settings.site_description || 'Platform pencarian kerja terpercaya di Indonesia'}
                 </p>
 
                 {/* Search Card */}

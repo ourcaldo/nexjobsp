@@ -51,9 +51,12 @@ export async function middleware(request: NextRequest) {
       if (response.ok) {
         let sitemapXml = await response.text();
 
-        // Transform CMS URLs to frontend URLs
-        sitemapXml = sitemapXml.replace(/https:\/\/cms\.nexjob\.tech\/api\/v1\/sitemaps\//g, `${appConfig.site.url}/`);
-        sitemapXml = sitemapXml.replace(/\/api\/v1\/sitemaps\//g, '/');
+        // Transform CMS URLs to frontend URLs (scoped to <loc> tags for XML safety)
+        sitemapXml = sitemapXml.replace(/<loc>(.*?)<\/loc>/g, (_match, url) => {
+          let rewritten = url.replace(/https:\/\/cms\.nexjob\.tech\/api\/v1\/sitemaps\//g, `${appConfig.site.url}/`);
+          rewritten = rewritten.replace(/\/api\/v1\/sitemaps\//g, '/');
+          return `<loc>${rewritten}</loc>`;
+        });
 
         return new NextResponse(sitemapXml, {
           headers: {
@@ -155,11 +158,14 @@ export async function middleware(request: NextRequest) {
         }
       }
 
-      // URL transformations
-      xml = xml.replace(/https:\/\/cms\.nexjob\.tech\/api\/v1\/sitemaps\//g, `${appConfig.site.url}/`);
-      xml = xml.replace(/\/api\/v1\/sitemaps\//g, '/');
-      xml = xml.replace(/\/jobs\//g, '/lowongan-kerja/');
-      xml = xml.replace(/\/blog\//g, '/artikel/');
+      // URL transformations (scoped to <loc> tags for XML safety)
+      xml = xml.replace(/<loc>(.*?)<\/loc>/g, (_match, url) => {
+        let rewritten = url.replace(/https:\/\/cms\.nexjob\.tech\/api\/v1\/sitemaps\//g, `${appConfig.site.url}/`);
+        rewritten = rewritten.replace(/\/api\/v1\/sitemaps\//g, '/');
+        rewritten = rewritten.replace(/\/jobs\//g, '/lowongan-kerja/');
+        rewritten = rewritten.replace(/\/blog\//g, '/artikel/');
+        return `<loc>${rewritten}</loc>`;
+      });
 
       return new NextResponse(xml, {
         headers: {

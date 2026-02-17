@@ -50,19 +50,19 @@ export const config = {
   isProduction: process.env.NODE_ENV === 'production',
 } as const;
 
-// Validation function
+// Validation function — runs on both client and server
 export const validateConfig = () => {
-  // Skip validation during build time completely
-  if (typeof window === 'undefined') {
-    return true;
-  }
-
   const missing: string[] = [];
+  const isServer = typeof window === 'undefined';
 
-  // Only validate client-accessible (NEXT_PUBLIC_) variables here
-  // CMS_TOKEN is server-only and won't be available on client
+  // Public variables — required in all environments
   if (!config.cms.endpoint) missing.push('NEXT_PUBLIC_CMS_ENDPOINT');
   if (!config.site.url) missing.push('NEXT_PUBLIC_SITE_URL');
+
+  // Server-only variables — only checked on the server
+  if (isServer) {
+    if (!config.cms.token) missing.push('CMS_TOKEN');
+  }
 
   if (missing.length > 0) {
     const errorMessage = `Missing required environment variables: ${missing.join(', ')}`;
@@ -112,7 +112,7 @@ export const env = {
   IS_DEVELOPMENT: config.isDevelopment,
 } as const;
 
-// Only validate in development and client-side only
-if (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') {
+// Validate in development on both client and server
+if (process.env.NODE_ENV === 'development') {
   validateConfig();
 }

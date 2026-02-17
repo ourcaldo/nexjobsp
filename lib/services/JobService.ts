@@ -2,6 +2,11 @@ import { Job, JobFilters } from '@/types/job';
 import { CMSProvider, FilterData, JobsResponse } from '@/lib/cms/interface';
 import { getCMSProvider } from '@/lib/cms/factory';
 
+/**
+ * @deprecated This service is a trivial pass-through that adds no value (no caching,
+ * error handling, or transformation). Consumers should use CMS providers directly
+ * via `getCMSProvider()` from `@/lib/cms/factory`.
+ */
 export class JobService {
   private cms: CMSProvider;
   

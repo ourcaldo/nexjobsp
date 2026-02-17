@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { formatDistance } from 'date-fns';
+import { id } from 'date-fns/locale/id';
 import { Calendar, User, Tag, Folder, ArrowRight, Clock } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -302,7 +303,7 @@ export default function ArticleListPage({
                             <div className="flex items-center">
                               <Clock className="h-3.5 w-3.5 mr-1" />
                               <span>
-                                {formatDistance(new Date(article.published_at || article.post_date || article.created_at || new Date()), new Date(), { addSuffix: true })}
+                                {formatDistance(new Date(article.published_at || article.post_date || article.created_at || new Date()), new Date(), { addSuffix: true, locale: id })}
                               </span>
                             </div>
                           </div>
@@ -402,7 +403,7 @@ export default function ArticleListPage({
                             </h4>
                             <p className="text-xs text-gray-500 flex items-center">
                               <Calendar className="h-3 w-3 mr-1" />
-                              {formatDistance(new Date(article.published_at || article.post_date || article.created_at || new Date()), new Date(), { addSuffix: true })}
+                              {formatDistance(new Date(article.published_at || article.post_date || article.created_at || new Date()), new Date(), { addSuffix: true, locale: id })}
                             </p>
                           </div>
                         </div>

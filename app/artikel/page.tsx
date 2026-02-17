@@ -134,7 +134,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export const revalidate = 300;
+// Revalidation strategy: Article listings don't change frequently, 1-hour refresh is sufficient
+export const revalidate = 3600;
 
 export default async function ArtikelPage() {
   const { articles, categories, featuredArticle, latestArticles, tags, seoSettings } = await getArticleData();

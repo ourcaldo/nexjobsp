@@ -60,7 +60,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export const revalidate = 86400; // ISR: Revalidate every 24 hours
+// Revalidation strategy: Homepage aggregates jobs + articles, 1-hour refresh is sufficient
+export const revalidate = 3600; // ISR: Revalidate every 1 hour
 
 export default async function Home() {
   const { articles, filterData } = await getHomeData();
@@ -90,7 +91,7 @@ export default async function Home() {
           initialFilterData={filterData}
           settings={{
             site_title: 'Nexjob',
-            siteDescription: 'Platform pencarian kerja terpercaya di Indonesia'
+            site_description: 'Platform pencarian kerja terpercaya di Indonesia'
           }}
         />
       </main>

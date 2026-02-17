@@ -7,6 +7,7 @@ import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import { generateArticleListingSchema, generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
 import { formatDistance } from 'date-fns';
+import { id } from 'date-fns/locale/id';
 import { Calendar, User, Folder, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { logger } from '@/lib/logger';
@@ -133,6 +134,7 @@ export async function generateMetadata({ params }: ArticleCategoryPageProps): Pr
   };
 }
 
+// Revalidation strategy: Article category pages don't change frequently, 1-hour refresh is sufficient
 export const revalidate = 3600;
 
 export default async function ArticleCategoryPage({ params }: ArticleCategoryPageProps) {
@@ -316,7 +318,7 @@ export default async function ArticleCategoryPage({ params }: ArticleCategoryPag
                               <div className="flex items-center">
                                 <Calendar className="h-4 w-4 mr-1" />
                                 <span>
-                                  {formatDistance(new Date(article.published_at || article.post_date), new Date(), { addSuffix: true })}
+                                  {formatDistance(new Date(article.published_at || article.post_date), new Date(), { addSuffix: true, locale: id })}
                                 </span>
                               </div>
                             </div>

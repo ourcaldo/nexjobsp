@@ -24,6 +24,9 @@ export interface Job {
   link: string;
   sumber_lowongan: string;
   created_at?: string;
+  updated_at?: string;
+  deadline?: string;
+  status?: string;
   seo_title?: string;
   seo_description?: string;
   _id: { $oid: string };
@@ -48,7 +51,6 @@ export interface AdminSettings {
   site_title?: string;
   site_description?: string;
   site_tagline?: string;
-  siteDescription?: string;
   homeTitle?: string;
   homeDescription?: string;
   jobs_title?: string;
@@ -166,7 +168,7 @@ export interface PaginationData {
   page: number;
   limit: number;
   total: number;
-  total_pages: number;
+  totalPages: number;
   hasNextPage?: boolean;
   hasPrevPage?: boolean;
 }

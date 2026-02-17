@@ -28,10 +28,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       articles: response.data.posts,
-      totalPages: response.data.pagination.total_pages,
+      totalPages: response.data.pagination.totalPages,
       currentPage: response.data.pagination.page,
       totalArticles: response.data.pagination.total,
-      hasMore: response.data.pagination.page < response.data.pagination.total_pages
+      hasMore: response.data.pagination.page < response.data.pagination.totalPages
     }, {
       headers: {
         'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',

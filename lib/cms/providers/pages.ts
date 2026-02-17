@@ -29,7 +29,7 @@ export class PageOperations {
       const data = await response.json();
 
       if (!data.success) {
-        return { success: false, data: { pages: [], pagination: { page: 1, limit: 20, total: 0, total_pages: 0 } } };
+        return { success: false, data: { pages: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } } };
       }
 
       const transformedPages = data.data.pages.map((page: CMSRawPage) => transformCMSPageToPage(page));
@@ -40,7 +40,7 @@ export class PageOperations {
       };
     } catch (error) {
       log.error('Failed to fetch pages', {}, error);
-      return { success: false, data: { pages: [], pagination: { page: 1, limit: 20, total: 0, total_pages: 0 } } };
+      return { success: false, data: { pages: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 0 } } };
     }
   }
 
@@ -111,8 +111,12 @@ export class PageOperations {
       let xmlContent = await response.text();
 
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nexjob.tech';
-      xmlContent = xmlContent.replace(/\/api\/v1\/sitemaps\//g, '/');
-      xmlContent = xmlContent.replace(/https?:\/\/cms\.nexjob\.tech\//g, `${siteUrl}/`);
+      // Replace URLs only within <loc> tags for XML safety (M-21)
+      xmlContent = xmlContent.replace(/<loc>(.*?)<\/loc>/g, (_match, url) => {
+        let rewritten = url.replace(/\/api\/v1\/sitemaps\//g, '/');
+        rewritten = rewritten.replace(/https?:\/\/cms\.nexjob\.tech\//g, `${siteUrl}/`);
+        return `<loc>${rewritten}</loc>`;
+      });
 
       return xmlContent;
     } catch (error) {

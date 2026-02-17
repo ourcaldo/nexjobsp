@@ -5,11 +5,12 @@
 import { GET } from '../route'
 import { NextRequest } from 'next/server'
 
-// Mock the TugasCMS provider
+// Mock the TugasCMS provider class to match production usage (new TugasCMSProvider())
+const mockGetRobotsTxt = jest.fn()
 jest.mock('@/lib/cms/providers/tugascms', () => ({
-  tugasCMSProvider: {
-    getRobotsTxt: jest.fn(),
-  },
+  TugasCMSProvider: jest.fn().mockImplementation(() => ({
+    getRobotsTxt: mockGetRobotsTxt,
+  })),
 }))
 
 describe('Robots.txt ISR Route', () => {
@@ -20,12 +21,11 @@ describe('Robots.txt ISR Route', () => {
   })
 
   it('should return robots.txt content from CMS', async () => {
-    const { tugasCMSProvider } = require('@/lib/cms/providers/tugascms')
     const mockRobotsContent = `User-agent: *
 Allow: /
 Sitemap: https://nexjob.tech/sitemap.xml`
 
-    tugasCMSProvider.getRobotsTxt.mockResolvedValue(mockRobotsContent)
+    mockGetRobotsTxt.mockResolvedValue(mockRobotsContent)
 
     const request = new NextRequest('https://nexjob.tech/robots.txt')
     const response = await GET(request)
@@ -40,8 +40,7 @@ Sitemap: https://nexjob.tech/sitemap.xml`
   })
 
   it('should return fallback content when CMS returns null', async () => {
-    const { tugasCMSProvider } = require('@/lib/cms/providers/tugascms')
-    tugasCMSProvider.getRobotsTxt.mockResolvedValue(null)
+    mockGetRobotsTxt.mockResolvedValue(null)
 
     const request = new NextRequest('https://nexjob.tech/robots.txt')
     const response = await GET(request)
@@ -58,8 +57,7 @@ Sitemap: https://nexjob.tech/sitemap.xml`
   })
 
   it('should return emergency fallback when CMS throws error', async () => {
-    const { tugasCMSProvider } = require('@/lib/cms/providers/tugascms')
-    tugasCMSProvider.getRobotsTxt.mockRejectedValue(new Error('CMS connection failed'))
+    mockGetRobotsTxt.mockRejectedValue(new Error('CMS connection failed'))
 
     const request = new NextRequest('https://nexjob.tech/robots.txt')
     const response = await GET(request)
@@ -78,8 +76,7 @@ Sitemap: https://nexjob.tech/sitemap.xml`
   it('should use environment variable for sitemap URL', async () => {
     process.env.NEXT_PUBLIC_SITE_URL = 'https://custom-domain.com'
     
-    const { tugasCMSProvider } = require('@/lib/cms/providers/tugascms')
-    tugasCMSProvider.getRobotsTxt.mockResolvedValue(null)
+    mockGetRobotsTxt.mockResolvedValue(null)
 
     const request = new NextRequest('https://custom-domain.com/robots.txt')
     const response = await GET(request)
@@ -89,8 +86,7 @@ Sitemap: https://nexjob.tech/sitemap.xml`
   })
 
   it('should include X-Generated-At header for CMS content', async () => {
-    const { tugasCMSProvider } = require('@/lib/cms/providers/tugascms')
-    tugasCMSProvider.getRobotsTxt.mockResolvedValue('User-agent: *\nAllow: /')
+    mockGetRobotsTxt.mockResolvedValue('User-agent: *\nAllow: /')
 
     const request = new NextRequest('https://nexjob.tech/robots.txt')
     const response = await GET(request)

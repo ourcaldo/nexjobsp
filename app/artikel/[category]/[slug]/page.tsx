@@ -7,6 +7,7 @@ import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import { generateArticleSchema, generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
 import { formatDistance } from 'date-fns';
+import { id } from 'date-fns/locale/id';
 import { Calendar, User, Tag, Folder } from 'lucide-react';
 import ArticleContentWrapper from './ArticleContentWrapper';
 import ArticleSidebar from '@/components/ArticleSidebar';
@@ -225,7 +226,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
                   <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6">
                     <div className="flex items-center">
                       <Calendar className="h-4 w-4 mr-2" />
-                      {formatDistance(new Date(article.published_at || article.post_date), new Date(), { addSuffix: true })}
+                      {formatDistance(new Date(article.published_at || article.post_date), new Date(), { addSuffix: true, locale: id })}
                     </div>
 
                     {article.author && (
@@ -326,7 +327,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
             {/* Sidebar - 1/3 width */}
             <div className="lg:col-span-1">
               <ArticleSidebar
-                relatedArticles={[]}
+                relatedArticles={relatedArticles}
                 isArchive={false}
               />
             </div>

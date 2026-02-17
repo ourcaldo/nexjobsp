@@ -166,7 +166,8 @@ export async function generateStaticParams() {
   }
 }
 
-export const revalidate = 300; // ISR: Revalidate every 5 minutes
+// Revalidation strategy: Job detail pages may need faster updates (status changes, deadlines)
+export const revalidate = 1800; // ISR: Revalidate every 30 minutes
 export const dynamicParams = true; // Enable dynamic params for jobs not in static paths
 
 export default async function JobPage({ params }: JobPageProps) {

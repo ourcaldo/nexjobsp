@@ -20,6 +20,15 @@ export interface SidebarFilters {
   salaries: string[];
 }
 
+/**
+ * @todo This hook is ~488 lines and handles too many responsibilities.
+ * It should be refactored into smaller, composable hooks:
+ *  - useJobFilters: filter state and URL sync
+ *  - useJobPagination: page tracking, infinite scroll, load-more
+ *  - useJobAnalytics: page-view and search tracking
+ *  - useJobFetch: data fetching and caching logic
+ * Refactoring deferred until adequate test coverage is in place.
+ */
 interface UseJobSearchProps {
   initialCategory?: string;
   initialLocation?: string;

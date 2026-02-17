@@ -1,7 +1,12 @@
 class BookmarkService {
   private storageKey = 'nexjob_bookmarks';
 
+  private get isClient(): boolean {
+    return typeof window !== 'undefined';
+  }
+
   getBookmarks(): string[] {
+    if (!this.isClient) return [];
     try {
       const bookmarks = localStorage.getItem(this.storageKey);
       return bookmarks ? JSON.parse(bookmarks) : [];
@@ -12,6 +17,7 @@ class BookmarkService {
   }
 
   addBookmark(jobId: string): void {
+    if (!this.isClient) return;
     try {
       const bookmarks = this.getBookmarks();
       if (!bookmarks.includes(jobId)) {
@@ -25,6 +31,7 @@ class BookmarkService {
   }
 
   removeBookmark(jobId: string): void {
+    if (!this.isClient) return;
     try {
       const bookmarks = this.getBookmarks();
       const updatedBookmarks = bookmarks.filter(id => id !== jobId);
@@ -55,6 +62,7 @@ class BookmarkService {
   }
 
   private notifyBookmarkChange(): void {
+    if (!this.isClient) return;
     // Dispatch custom event for bookmark changes
     const event = new CustomEvent('bookmarkUpdated', {
       detail: { bookmarks: this.getBookmarks() }

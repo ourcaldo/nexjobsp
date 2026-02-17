@@ -207,21 +207,21 @@ export function buildJobsUrl(baseUrl: string, filters: JobSearchParams = {}, pag
 
   if (filters.search && filters.search.trim()) params.set('search', filters.search.trim());
   if (filters.location) params.set('province', filters.location);
-  if (filters.cities && filters.cities.length > 0) params.set('city', filters.cities[0]);
+  if (filters.cities && filters.cities.length > 0) params.set('city', filters.cities[0]!);
 
   if (filters.jobType) params.set('employment_type', filters.jobType);
-  if (filters.jobTypes && filters.jobTypes.length > 0) params.set('employment_type', filters.jobTypes[0]);
+  if (filters.jobTypes && filters.jobTypes.length > 0) params.set('employment_type', filters.jobTypes[0]!);
 
   if (filters.experience) params.set('experience_level', filters.experience);
-  if (filters.experiences && filters.experiences.length > 0) params.set('experience_level', filters.experiences[0]);
+  if (filters.experiences && filters.experiences.length > 0) params.set('experience_level', filters.experiences[0]!);
 
   if (filters.education) params.set('education_level', filters.education);
-  if (filters.educations && filters.educations.length > 0) params.set('education_level', filters.educations[0]);
+  if (filters.educations && filters.educations.length > 0) params.set('education_level', filters.educations[0]!);
 
   if (filters.category) params.set('job_category', filters.category);
-  if (filters.categories && filters.categories.length > 0) params.set('job_category', filters.categories[0]);
+  if (filters.categories && filters.categories.length > 0) params.set('job_category', filters.categories[0]!);
 
-  if (filters.workPolicies && filters.workPolicies.length > 0) params.set('work_policy', filters.workPolicies[0]);
+  if (filters.workPolicies && filters.workPolicies.length > 0) params.set('work_policy', filters.workPolicies[0]!);
 
   if (filters.job_salary_min) params.set('job_salary_min', filters.job_salary_min);
   if (filters.job_salary_max) params.set('job_salary_max', filters.job_salary_max);
@@ -234,17 +234,17 @@ export function buildJobsUrl(baseUrl: string, filters: JobSearchParams = {}, pag
   }
 
   if (filters.company) params.set('company', filters.company);
-  if (filters.companies && filters.companies.length > 0) params.set('company', filters.companies[0]);
+  if (filters.companies && filters.companies.length > 0) params.set('company', filters.companies[0]!);
   if (filters.tag) params.set('job_tag', filters.tag);
-  if (filters.tags && filters.tags.length > 0) params.set('job_tag', filters.tags[0]);
+  if (filters.tags && filters.tags.length > 0) params.set('job_tag', filters.tags[0]!);
   if (filters.skill) params.set('skill', filters.skill);
-  if (filters.skills && filters.skills.length > 0) params.set('skill', filters.skills[0]);
+  if (filters.skills && filters.skills.length > 0) params.set('skill', filters.skills[0]!);
   if (filters.benefit) params.set('benefit', filters.benefit);
-  if (filters.benefits && filters.benefits.length > 0) params.set('benefit', filters.benefits[0]);
+  if (filters.benefits && filters.benefits.length > 0) params.set('benefit', filters.benefits[0]!);
   if (filters.district) params.set('district', filters.district);
-  if (filters.districts && filters.districts.length > 0) params.set('district', filters.districts[0]);
+  if (filters.districts && filters.districts.length > 0) params.set('district', filters.districts[0]!);
   if (filters.village) params.set('village', filters.village);
-  if (filters.villages && filters.villages.length > 0) params.set('village', filters.villages[0]);
+  if (filters.villages && filters.villages.length > 0) params.set('village', filters.villages[0]!);
   if (filters.currency) params.set('salary_currency', filters.currency);
   if (filters.salary_currency) params.set('salary_currency', filters.salary_currency);
   if (filters.period) params.set('salary_period', filters.period);
@@ -342,7 +342,7 @@ export class JobOperations {
       const response = await this.http.fetchWithTimeout(`${this.http.getBaseUrl()}/api/v1/job-posts?${params.toString()}`);
       const data: CMSResponse<{ posts: CMSJobPost[]; pagination: PaginationMeta }> = await response.json();
       if (!data.success || !data.data.posts || data.data.posts.length === 0) return null;
-      return transformCMSJobToJob(data.data.posts[0]);
+      return transformCMSJobToJob(data.data.posts[0]!);
     } catch (error) {
       log.error('Failed to fetch job by slug', { slug }, error);
       return null;
@@ -408,7 +408,7 @@ export class JobOperations {
 
       if (!data.success || !data.data.job_categories || data.data.job_categories.length === 0) return [];
 
-      const categoryId = data.data.job_categories[0].id;
+      const categoryId = data.data.job_categories[0]!.id;
       const relatedResponse = await this.getJobs({ categories: [categoryId] }, 1, limit + 1);
       return relatedResponse.jobs.filter(job => job.id !== jobId).slice(0, limit);
     } catch (error) {
@@ -418,12 +418,13 @@ export class JobOperations {
   }
 
   async getAllJobsForSitemap(): Promise<Job[]> {
+    const MAX_PAGES = 100; // Upper bound to prevent infinite loops
     try {
       const allJobs: Job[] = [];
       let page = 1;
       let hasMore = true;
 
-      while (hasMore) {
+      while (hasMore && page <= MAX_PAGES) {
         try {
           const response = await this.getJobs({}, page, 100);
           if (response.jobs.length === 0) {
@@ -437,6 +438,10 @@ export class JobOperations {
           log.error(`Failed to fetch sitemap jobs page ${page}`, {}, error);
           hasMore = false;
         }
+      }
+
+      if (page > MAX_PAGES) {
+        log.warn(`Sitemap job fetch hit max page limit (${MAX_PAGES}), returning ${allJobs.length} jobs`);
       }
 
       return allJobs;
