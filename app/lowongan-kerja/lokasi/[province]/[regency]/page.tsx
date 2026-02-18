@@ -176,7 +176,36 @@ export async function generateMetadata({ params }: JobLocationPageProps): Promis
 }
 
 export async function generateStaticParams() {
-  return [];
+  try {
+    const filterData = await jobService.getFiltersData();
+    if (!filterData?.provinces || !filterData?.regencies) return [];
+
+    const params: Array<{ province: string; regency: string }> = [];
+
+    for (const province of filterData.provinces) {
+      const provinceSlug = normalizeSlugForMatching(province.name);
+      const provinceRegencies = filterData.regencies.filter(
+        (r: any) => r.province_id === province.id
+      );
+
+      for (const regency of provinceRegencies) {
+        // Strip common prefixes for the slug
+        const regencyNameClean = regency.name
+          .replace(/^Kab\.\s*/i, '')
+          .replace(/^Kabupaten\s*/i, '')
+          .replace(/^Kota\s*/i, '');
+        const regencySlug = normalizeSlugForMatching(regencyNameClean);
+
+        if (provinceSlug && regencySlug) {
+          params.push({ province: provinceSlug, regency: regencySlug });
+        }
+      }
+    }
+
+    return params;
+  } catch {
+    return [];
+  }
 }
 
 export const revalidate = 300;

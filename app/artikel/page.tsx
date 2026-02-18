@@ -117,7 +117,13 @@ export async function generateMetadata(): Promise<Metadata> {
 // Revalidation strategy: Article listings don't change frequently, 1-hour refresh is sufficient
 export const revalidate = 3600;
 
-export default async function ArtikelPage() {
+interface ArtikelPageProps {
+  searchParams: Promise<{ tag?: string }>;
+}
+
+export default async function ArtikelPage({ searchParams }: ArtikelPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const initialTag = resolvedSearchParams.tag || '';
   const { articles, categories, featuredArticle, latestArticles, tags, seoSettings } = await getArticleData();
 
   const breadcrumbItems = [
@@ -177,6 +183,7 @@ export default async function ArtikelPage() {
           tags={tags}
           seoTitle={seoTitle}
           seoDescription={seoDescription}
+          initialTag={initialTag}
         />
       </main>
       <Footer />

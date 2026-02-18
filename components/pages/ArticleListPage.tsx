@@ -45,6 +45,7 @@ interface ArticleListPageProps {
   tags: string[];
   seoTitle: string;
   seoDescription: string;
+  initialTag?: string;
 }
 
 const categoryColors = [
@@ -67,10 +68,19 @@ export default function ArticleListPage({
   latestArticles,
   tags,
   seoTitle,
-  seoDescription
+  seoDescription,
+  initialTag = ''
 }: ArticleListPageProps) {
-  const [articles, setArticles] = useState<Article[]>(initialArticles);
+  const [articles, setArticles] = useState<Article[]>(() => {
+    if (initialTag) {
+      return initialArticles.filter(a =>
+        a.tags?.some((t: any) => t.name === initialTag)
+      );
+    }
+    return initialArticles;
+  });
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedTag, setSelectedTag] = useState<string>(initialTag);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -118,7 +128,14 @@ export default function ArticleListPage({
           } : null
         }));
 
-        setArticles(formattedArticles);
+        let filteredArticles = formattedArticles;
+        if (selectedTag) {
+          filteredArticles = formattedArticles.filter((a: Article) =>
+            a.tags?.some((t: any) => t.name === selectedTag)
+          );
+        }
+
+        setArticles(filteredArticles);
         setTotalPages(articlesResponse.totalPages || 1);
         setHasNextPage(articlesResponse.hasMore || false);
       }
@@ -131,8 +148,34 @@ export default function ArticleListPage({
 
   const handleCategoryChange = async (categorySlug: string) => {
     setSelectedCategory(categorySlug);
+    setSelectedTag('');
     setCurrentPage(1);
     await fetchArticles(1, categorySlug);
+  };
+
+  const handleTagSelect = (tag: string) => {
+    const newTag = selectedTag === tag ? '' : tag;
+    setSelectedTag(newTag);
+    setCurrentPage(1);
+
+    // Client-side filter from the current full article set
+    if (newTag) {
+      const filtered = initialArticles.filter(a =>
+        a.tags?.some((t: any) => t.name === newTag)
+      );
+      setArticles(filtered);
+    } else {
+      setArticles(initialArticles);
+    }
+
+    // Update URL without full reload
+    const url = new URL(window.location.href);
+    if (newTag) {
+      url.searchParams.set('tag', newTag);
+    } else {
+      url.searchParams.delete('tag');
+    }
+    window.history.replaceState({}, '', url.toString());
   };
 
   const handlePageChange = async (page: number) => {
@@ -422,13 +465,17 @@ export default function ArticleListPage({
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {tags.map((tag, index) => (
-                      <Link
+                      <button
                         key={index}
-                        href={`/artikel?tag=${encodeURIComponent(tag)}`}
-                        className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer"
+                        onClick={() => handleTagSelect(tag)}
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium transition-colors cursor-pointer ${
+                          selectedTag === tag
+                            ? 'bg-primary-600 text-white'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
                       >
                         {tag}
-                      </Link>
+                      </button>
                     ))}
                   </div>
                 </div>

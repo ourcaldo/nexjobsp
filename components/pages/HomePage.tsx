@@ -6,8 +6,6 @@ import Image from 'next/image';
 import { Search, ArrowRight, Briefcase, ChevronLeft, ChevronRight, FileText, UserCheck, Send } from 'lucide-react';
 import { FilterData } from '@/lib/cms/interface';
 import SearchableSelect from '@/components/SearchableSelect';
-import SchemaMarkup from '@/components/SEO/SchemaMarkup';
-import { generateWebsiteSchema, generateOrganizationSchema } from '@/lib/utils/schemaUtils';
 import { Job } from '@/types/job';
 import JobCard from '@/components/JobCard';
 import { sanitizeHTML } from '@/lib/utils/sanitize';
@@ -118,8 +116,7 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <SchemaMarkup schema={generateWebsiteSchema()} />
-      <SchemaMarkup schema={generateOrganizationSchema()} />
+      {/* Organization/WebSite schemas are emitted globally in app/layout.tsx */}
 
       {/* ─── Hero: Split Layout ─── */}
       <section className="bg-primary-800 text-white overflow-hidden">
