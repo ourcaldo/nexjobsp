@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
+import { ClerkProvider } from '@clerk/nextjs';
+import { idID } from '@clerk/localizations';
 import { ToastProvider } from '@/components/ui/ToastProvider';
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -25,5 +27,17 @@ export function Providers({ children }: { children: React.ReactNode }) {
     validateAndInitialize();
   }, []);
 
-  return <ToastProvider>{children}</ToastProvider>;
+  return (
+    <ClerkProvider
+      localization={idID}
+      appearance={{
+        variables: {
+          colorPrimary: '#0f2b3c',
+          colorTextOnPrimaryBackground: '#ffffff',
+        },
+      }}
+    >
+      <ToastProvider>{children}</ToastProvider>
+    </ClerkProvider>
+  );
 }

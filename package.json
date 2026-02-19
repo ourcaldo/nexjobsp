@@ -13,6 +13,8 @@
     "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
+    "@clerk/localizations": "^3.36.0",
+    "@clerk/nextjs": "^6.38.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/sanitize-html": "^2.16.0",
     "@vercel/og": "^0.8.5",

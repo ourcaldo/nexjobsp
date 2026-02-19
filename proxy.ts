@@ -1,11 +1,22 @@
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { config as appConfig } from '@/lib/config';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
-export async function proxy(request: NextRequest) {
+// Routes that require authentication
+const isProtectedRoute = createRouteMatcher([
+  '/profil(.*)',
+]);
+
+export const proxy = clerkMiddleware(async (auth, request) => {
   const { pathname } = request.nextUrl;
+
+  // Protect authenticated routes — redirect to /signin if not logged in
+  if (isProtectedRoute(request)) {
+    await auth.protect();
+  }
 
   // Rate limit API routes (except sitemap XML which are public/cached)
   if (pathname.startsWith('/api/')) {
@@ -187,8 +198,13 @@ export async function proxy(request: NextRequest) {
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
-  matcher: ['/api/:path*', '/sitemap.xml', '/:path*.xml'],
+  matcher: [
+    // Skip Next.js internals and static files
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+  ],
 };
