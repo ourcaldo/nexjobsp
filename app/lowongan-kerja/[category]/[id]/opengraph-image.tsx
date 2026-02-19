@@ -1,8 +1,7 @@
-import { ImageResponse } from '@vercel/og';
+import { ImageResponse } from 'next/og';
 import { jobService } from '@/lib/services/JobService';
 import { config } from '@/lib/config';
 
-export const runtime = 'edge';
 export const alt = `Lowongan Kerja - ${config.site.name}`;
 export const size = {
   width: 1200,

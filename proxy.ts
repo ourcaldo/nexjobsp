@@ -4,7 +4,7 @@ import { config as appConfig } from '@/lib/config';
 import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Rate limit API routes (except sitemap XML which are public/cached)
