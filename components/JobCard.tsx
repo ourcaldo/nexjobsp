@@ -5,6 +5,29 @@ import { Job } from '@/types/job';
 import { formatLocationName } from '@/lib/utils/textUtils';
 import { formatJobDate } from '@/lib/utils/date';
 
+// Tag color palette — each tag gets a consistent color based on its text
+const TAG_COLORS = [
+  'bg-blue-100 text-blue-700',
+  'bg-green-100 text-green-700',
+  'bg-purple-100 text-purple-700',
+  'bg-orange-100 text-orange-700',
+  'bg-pink-100 text-pink-700',
+  'bg-teal-100 text-teal-700',
+  'bg-indigo-100 text-indigo-700',
+  'bg-yellow-100 text-yellow-800',
+  'bg-red-100 text-red-700',
+  'bg-cyan-100 text-cyan-700',
+];
+
+function getTagColor(tag: string): string {
+  let hash = 0;
+  for (let i = 0; i < tag.length; i++) {
+    hash = tag.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const idx = Math.abs(hash) % TAG_COLORS.length;
+  return TAG_COLORS[idx] as string;
+}
+
 interface JobCardProps {
   job: Job;
 }
@@ -36,7 +59,7 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
   const companyInitial = (job.company_name || 'P').charAt(0).toUpperCase();
 
   return (
-    <div className="relative bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow duration-150 group hover:border-primary-300">
+    <div className="relative bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow duration-150 group hover:border-primary-300 flex flex-col h-full">
       {/* Header: avatar + title + company */}
       <div className="flex items-start gap-3 mb-3">
         <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -58,7 +81,7 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
           {visibleTags.map((tag, i) => (
             <span
               key={i}
-              className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700"
+              className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${getTagColor(tag)}`}
             >
               {tag}
             </span>
@@ -89,8 +112,8 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="flex items-center justify-end">
+      {/* Footer — pushed to bottom */}
+      <div className="flex items-center justify-end mt-auto pt-3">
         <span
           className="relative z-10 text-primary-600 hover:text-primary-700 font-medium text-sm transition-colors pointer-events-none"
           aria-hidden="true"

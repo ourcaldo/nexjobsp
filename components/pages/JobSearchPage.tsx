@@ -76,7 +76,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   return (
     <div className="bg-white">
       {/* Search Section */}
-      <div className="bg-[#f0f0f0]">
+      <div className="bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
               {/* Keyword Search */}
@@ -90,7 +90,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
                   onKeyDown={handleKeyPress}
                   onFocus={() => isSearchHistoryEnabled && setShowSearchHistory(true)}
                   onBlur={() => setTimeout(() => setShowSearchHistory(false), 200)}
-                  className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg bg-[#f7f7f8] focus:ring-2 focus:ring-primary-500 focus:border-transparent focus:bg-white outline-none text-gray-900"
+                  className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-gray-900"
                 />
 
                 {/* Search History Dropdown */}
