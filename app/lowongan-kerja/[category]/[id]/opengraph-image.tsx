@@ -1,8 +1,9 @@
 import { ImageResponse } from '@vercel/og';
 import { jobService } from '@/lib/services/JobService';
+import { config } from '@/lib/config';
 
 export const runtime = 'edge';
-export const alt = 'Lowongan Kerja - Nexjob';
+export const alt = `Lowongan Kerja - ${config.site.name}`;
 export const size = {
   width: 1200,
   height: 630,
@@ -92,7 +93,7 @@ export default async function Image({ params }: { params: Promise<{ category: st
                   color: '#1f2937',
                 }}
               >
-                Nexjob
+                {config.site.name}
               </div>
             </div>
 
@@ -220,7 +221,7 @@ export default async function Image({ params }: { params: Promise<{ category: st
                   color: '#2d607f',
                 }}
               >
-                nexjob.tech
+                {config.site.url.replace(/^https?:\/\//, '')}
               </div>
             </div>
           </div>

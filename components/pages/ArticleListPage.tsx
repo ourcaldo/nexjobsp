@@ -8,6 +8,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import AdDisplay from '@/components/Advertisement/AdDisplay';
 import { getBlurDataURL } from '@/lib/utils/image';
+import { config } from '@/lib/config';
 
 interface Article {
   id: string;
@@ -340,7 +341,7 @@ export default function ArticleListPage({
                             <div className="flex items-center">
                               <User className="h-3.5 w-3.5 mr-1" />
                               <span className="truncate max-w-[100px]">
-                                {article.author?.full_name || article.author?.email || 'Nexjob'}
+                                {article.author?.full_name || article.author?.email || config.site.name}
                               </span>
                             </div>
                             <div className="flex items-center">

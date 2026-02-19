@@ -6,7 +6,7 @@ import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobSearchPage from '@/components/pages/JobSearchPage';
 import { generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
-import { getCurrentDomain } from '@/lib/config';
+import { getCurrentDomain, config } from '@/lib/config';
 import { wpLocationMappings } from '@/lib/utils/urlUtils';
 import { renderTemplate } from '@/lib/utils/templateUtils';
 import { JOB_PAGE_SETTINGS } from '@/lib/constants/job-settings';
@@ -110,7 +110,7 @@ export async function generateMetadata({ params }: JobLocationPageProps): Promis
 
   // Prepare template variables
   const templateVars = {
-    site_title: settings?.site_title || 'Nexjob',
+    site_title: settings?.site_title || config.site.name,
     lokasi: locationName,
     kategori: category
   };
@@ -170,7 +170,7 @@ export default async function JobLocationPage({ params }: JobLocationPageProps) 
 
   // Prepare template variables
   const templateVars = {
-    site_title: settings?.site_title || 'Nexjob',
+    site_title: settings?.site_title || config.site.name,
     lokasi: locationName,
     kategori: category
   };

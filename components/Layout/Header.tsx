@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
+import { config } from '@/lib/config';
 
 const Header: React.FC = () => {
   const pathname = usePathname();
@@ -72,9 +73,9 @@ const Header: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center" aria-label="Nexjob - Beranda">
+            <Link href="/" className="flex items-center" aria-label={`${config.site.name} - Beranda`}>
               <span className="text-2xl font-extrabold tracking-tight text-gray-900">
-                Nexjob
+                {config.site.name}
               </span>
             </Link>
 

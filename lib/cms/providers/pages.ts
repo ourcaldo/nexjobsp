@@ -112,10 +112,13 @@ export class PageOperations {
       let xmlContent = await response.text();
 
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nexjob.tech';
+      const cmsEndpoint = process.env.NEXT_PUBLIC_CMS_ENDPOINT || 'https://cms.nexjob.tech';
+      const cmsHost = cmsEndpoint.replace(/https?:\/\//, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const cmsRegex = new RegExp(`https?://${cmsHost}/`, 'g');
       // Replace URLs only within <loc> tags for XML safety (M-21)
       xmlContent = xmlContent.replace(/<loc>(.*?)<\/loc>/g, (_match, url) => {
         let rewritten = url.replace(/\/api\/v1\/sitemaps\//g, '/');
-        rewritten = rewritten.replace(/https?:\/\/cms\.nexjob\.tech\//g, `${siteUrl}/`);
+        rewritten = rewritten.replace(cmsRegex, `${siteUrl}/`);
         return `<loc>${rewritten}</loc>`;
       });
 

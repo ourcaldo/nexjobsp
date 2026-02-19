@@ -162,7 +162,7 @@ export const generateArticleSchema = (article: Partial<Article> & Pick<Article, 
     "image": article.featured_image || `${config.site.url}/default-article-image.jpg`,
     "author": {
       "@type": "Person",
-      "name": article.author?.full_name || article.author?.email || "Nexjob Team"
+      "name": article.author?.full_name || article.author?.email || `${config.site.name} Team`
     },
     "publisher": {
       "@type": "Organization",
@@ -189,7 +189,7 @@ export const generateJobListingSchema = (jobs: Job[]) => {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "name": "Job Listings",
-    "description": "Latest job opportunities available on Nexjob",
+    "description": `Latest job opportunities available on ${config.site.name}`,
     "url": `${config.site.url}/lowongan-kerja/`,
     "numberOfItems": jobs.length,
     "itemListElement": jobs.slice(0, 10).map((job, index) => ({
@@ -238,7 +238,7 @@ export const generateArticleListingSchema = (articles: Array<Partial<Article> & 
         "description": article.meta_description || article.excerpt?.replace(/<[^>]*>/g, '').substring(0, 160) || "",
         "author": {
           "@type": "Person",
-          "name": article.author?.full_name || article.author?.email || "Nexjob Team"
+          "name": article.author?.full_name || article.author?.email || `${config.site.name} Team`
         },
         "datePublished": article.published_at || article.post_date,
         "url": `${config.site.url}/artikel/${article.categories?.[0]?.slug || 'uncategorized'}/${article.slug}/`
@@ -252,7 +252,7 @@ export const generateAuthorSchema = (author: { full_name?: string; name?: string
     "@context": "https://schema.org",
     "@type": "Person",
     "name": author.full_name || author.name || author.email,
-    "description": author.description || "Content writer at Nexjob",
+    "description": author.description || `Content writer at ${config.site.name}`,
     "url": `${config.site.url}/author/${author.slug || author.id}/`,
     "image": author.avatar || `${config.site.url}/default-avatar.png`,
     "worksFor": {

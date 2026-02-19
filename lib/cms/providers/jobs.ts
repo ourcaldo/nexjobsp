@@ -146,8 +146,8 @@ export function transformCMSJobToJob(cmsJob: CMSJobPost): Job {
     industry: cmsJob.job_categories?.[0]?.name || '',
     link: cmsJob.job_application_url || cmsJob.job_application_email ?
       (cmsJob.job_application_url || `mailto:${cmsJob.job_application_email}`) :
-      `https://nexjob.tech/lowongan-kerja/${cmsJob.job_categories?.[0]?.slug || 'uncategorized'}/${cmsJob.id}`,
-    sumber_lowongan: 'Nexjob',
+      `${process.env.NEXT_PUBLIC_SITE_URL || 'https://nexjob.tech'}/lowongan-kerja/${cmsJob.job_categories?.[0]?.slug || 'uncategorized'}/${cmsJob.id}`,
+    sumber_lowongan: process.env.NEXT_PUBLIC_SITE_NAME || 'Nexjob',
     created_at: cmsJob.created_at,
     seo_title: cmsJob.seo_title || cmsJob.title,
     seo_description: cmsJob.meta_description || cmsJob.excerpt || '',

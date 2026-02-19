@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { articleService } from '@/lib/services/ArticleService';
-import { getCurrentDomain } from '@/lib/config';
+import { getCurrentDomain, config } from '@/lib/config';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import { generateArticleSchema, generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
@@ -112,7 +112,7 @@ export async function generateMetadata({ params }: ArticleDetailPageProps): Prom
   const currentUrl = getCurrentDomain();
 
   return {
-    title: `${article.seo_title || article.title} - Nexjob`,
+    title: `${article.seo_title || article.title} - ${config.site.name}`,
     description: article.meta_description || article.excerpt,
     keywords: article.tags?.map((tag: any) => tag.name).join(', '),
     openGraph: {
@@ -123,7 +123,7 @@ export async function generateMetadata({ params }: ArticleDetailPageProps): Prom
       images: article.featured_image ? [article.featured_image] : [],
       publishedTime: article.published_at || article.post_date || undefined,
       modifiedTime: article.updated_at ?? undefined,
-      authors: [article.author?.full_name || article.author?.email || 'Nexjob'],
+      authors: [article.author?.full_name || article.author?.email || config.site.name],
       section: article.categories?.[0]?.name || 'Article',
       tags: article.tags?.map((tag: any) => tag.name),
     },

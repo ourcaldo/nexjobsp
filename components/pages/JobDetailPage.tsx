@@ -24,6 +24,7 @@ import dynamic from 'next/dynamic';
 import { sanitizeHTML } from '@/lib/utils/sanitize';
 import { formatLocationName } from '@/lib/utils/textUtils';
 import { formatJobDate } from '@/lib/utils/date';
+import { config } from '@/lib/config';
 
 const JobApplicationModal = dynamic(() => import('@/components/ui/JobApplicationModal'), { ssr: false });
 const ShareButton = dynamic(() => import('@/components/ui/ShareButton'), { ssr: false });
@@ -241,7 +242,7 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, bre
               </button>
               <ShareButton
                 title={job.title}
-                text={`${job.title} - ${job.company_name} | Nexjob`}
+                text={`${job.title} - ${job.company_name} | ${config.site.name}`}
                 url={typeof window !== 'undefined' ? window.location.href : ''}
                 className="inline-flex items-center gap-1.5 px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium bg-white text-gray-700 hover:bg-gray-50 transition-colors"
               />
@@ -308,7 +309,7 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, bre
               </button>
               <ShareButton
                 title={job.title}
-                text={`${job.title} - ${job.company_name} | Nexjob`}
+                text={`${job.title} - ${job.company_name} | ${config.site.name}`}
                 url={typeof window !== 'undefined' ? window.location.href : ''}
                 className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium bg-white text-gray-700"
               />

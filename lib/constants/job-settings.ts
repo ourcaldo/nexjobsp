@@ -2,8 +2,11 @@
  * Shared job page settings used across all lowongan-kerja routes.
  * Centralised here to avoid duplication.
  */
+
+const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Nexjob';
+
 export const JOB_PAGE_SETTINGS = {
-  site_title: 'Nexjob',
+  site_title: SITE_NAME,
   jobs_title: 'Lowongan Kerja {{lokasi}} {{kategori}} - {{site_title}}',
   jobs_description: 'Temukan lowongan kerja terbaru {{lokasi}} {{kategori}} di Indonesia. Lamar sekarang!',
   jobs_og_image: '/og-jobs.jpg',

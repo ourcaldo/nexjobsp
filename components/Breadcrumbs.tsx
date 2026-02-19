@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
+import { config } from '@/lib/config';
 
 interface BreadcrumbItem {
   label: string;
@@ -12,7 +13,7 @@ interface BreadcrumbsProps {
   showHome?: boolean;
 }
 
-const BASE_URL = 'https://nexjob.tech';
+const BASE_URL = config.site.url;
 
 const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items, showHome = false }) => {
   const jsonLdItems = [

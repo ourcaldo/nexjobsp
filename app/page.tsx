@@ -73,8 +73,8 @@ export default async function Home() {
           initialArticles={articles} 
           initialFilterData={filterData}
           settings={{
-            site_title: 'Nexjob',
-            site_description: 'Platform pencarian kerja terpercaya di Indonesia'
+            site_title: config.site.name,
+            site_description: config.site.description
           }}
         />
       </main>

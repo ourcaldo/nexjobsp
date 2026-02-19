@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
+import { config } from '@/lib/config';
 
 const Footer: React.FC = () => {
   return (
@@ -13,11 +14,11 @@ const Footer: React.FC = () => {
           <div className="lg:col-span-4">
             <div className="flex items-center mb-4">
               <span className="text-2xl font-extrabold tracking-tight text-white">
-                Nexjob
+                {config.site.name}
               </span>
             </div>
             <p className="text-white/40 text-sm leading-relaxed max-w-xs mb-6">
-              Platform pencarian kerja terpercaya di Indonesia. Temukan posisi terbaik dari ribuan perusahaan.
+              {config.site.description}. Temukan posisi terbaik dari ribuan perusahaan.
             </p>
             {/* Quick action pills */}
             <div className="flex flex-wrap gap-2">
@@ -76,7 +77,7 @@ const Footer: React.FC = () => {
       <div className="bg-primary-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-white/25">
-            &copy; {new Date().getFullYear()} Nexjob.tech. All rights reserved.
+            &copy; {new Date().getFullYear()} {config.site.url.replace(/^https?:\/\//, '')}. All rights reserved.
           </p>
           <div className="flex items-center gap-5">
             <Link href="/kebijakan-privasi" className="text-xs text-white/25 hover:text-white/50 transition-colors">Privacy</Link>

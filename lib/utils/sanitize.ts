@@ -84,7 +84,7 @@ export const sanitizeURL = (url: string): string => {
   try {
     const baseUrl = typeof window !== 'undefined' && window.location?.origin 
       ? window.location.origin 
-      : 'https://nexjob.tech';
+      : (process.env.NEXT_PUBLIC_SITE_URL || 'https://nexjob.tech');
     const parsed = new URL(url, baseUrl);
     
     if (allowedProtocols.includes(parsed.protocol)) {

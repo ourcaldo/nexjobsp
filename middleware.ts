@@ -52,8 +52,10 @@ export async function middleware(request: NextRequest) {
         let sitemapXml = await response.text();
 
         // Transform CMS URLs to frontend URLs (scoped to <loc> tags for XML safety)
+        const cmsHost = appConfig.cms.endpoint.replace(/https?:\/\//, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const cmsRegex = new RegExp(`https?://${cmsHost}/api/v1/sitemaps/`, 'g');
         sitemapXml = sitemapXml.replace(/<loc>(.*?)<\/loc>/g, (_match, url) => {
-          let rewritten = url.replace(/https:\/\/cms\.nexjob\.tech\/api\/v1\/sitemaps\//g, `${appConfig.site.url}/`);
+          let rewritten = url.replace(cmsRegex, `${appConfig.site.url}/`);
           rewritten = rewritten.replace(/\/api\/v1\/sitemaps\//g, '/');
           return `<loc>${rewritten}</loc>`;
         });
@@ -156,8 +158,10 @@ export async function middleware(request: NextRequest) {
       }
 
       // URL transformations (scoped to <loc> tags for XML safety)
+      const cmsHost2 = appConfig.cms.endpoint.replace(/https?:\/\//, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const cmsRegex2 = new RegExp(`https?://${cmsHost2}/api/v1/sitemaps/`, 'g');
       xml = xml.replace(/<loc>(.*?)<\/loc>/g, (_match, url) => {
-        let rewritten = url.replace(/https:\/\/cms\.nexjob\.tech\/api\/v1\/sitemaps\//g, `${appConfig.site.url}/`);
+        let rewritten = url.replace(cmsRegex2, `${appConfig.site.url}/`);
         rewritten = rewritten.replace(/\/api\/v1\/sitemaps\//g, '/');
         rewritten = rewritten.replace(/\/jobs\//g, '/lowongan-kerja/');
         rewritten = rewritten.replace(/\/blog\//g, '/artikel/');

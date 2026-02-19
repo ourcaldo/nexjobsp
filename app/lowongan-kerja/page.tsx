@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense, cache } from 'react';
-import { getCurrentDomain } from '@/lib/config';
+import { getCurrentDomain, config } from '@/lib/config';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobSearchPage from '@/components/pages/JobSearchPage';
@@ -50,7 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
   
   // Prepare template variables
   const templateVars = {
-    site_title: settings?.site_title || 'Nexjob',
+    site_title: settings?.site_title || config.site.name,
     lokasi: '',
     kategori: ''
   };
@@ -92,7 +92,7 @@ export default async function Jobs() {
 
   // Prepare template variables
   const templateVars = {
-    site_title: settings?.site_title || 'Nexjob',
+    site_title: settings?.site_title || config.site.name,
     lokasi: '',
     kategori: ''
   };

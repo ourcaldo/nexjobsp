@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { cache } from 'react';
 import { articleService } from '@/lib/services/ArticleService';
 import { categoryService } from '@/lib/services/CategoryService';
-import { getCurrentDomain } from '@/lib/config';
+import { getCurrentDomain, config } from '@/lib/config';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import { generateArticleListingSchema, generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
@@ -20,8 +20,8 @@ const getArticleData = cache(async function getArticleData() {
 
     // Default SEO settings since we don't have an admin system
     const seoSettings = {
-      site_title: 'Nexjob',
-      site_description: 'Platform pencarian kerja terpercaya di Indonesia',
+      site_title: config.site.name,
+      site_description: config.site.description,
       articles_title: 'Artikel - Tips Karir dan Berita Kerja Terbaru - {{site_title}}',
       articles_description: 'Baca artikel terbaru seputar tips karir, berita kerja, dan panduan mencari pekerjaan di Indonesia. Dapatkan insight berharga untuk mengembangkan karir Anda.'
     };
@@ -80,7 +80,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const currentUrl = getCurrentDomain();
 
   const templateVars = {
-    site_title: seoSettings?.site_title || 'Nexjob',
+    site_title: seoSettings?.site_title || config.site.name,
     lokasi: '',
     kategori: ''
   };
@@ -137,7 +137,7 @@ export default async function ArtikelPage({ searchParams }: ArtikelPageProps) {
       slug: article.slug,
       meta_description: article.excerpt,
       excerpt: article.excerpt || '',
-      author: { full_name: article.author?.full_name || article.author?.email || 'Nexjob' },
+      author: { full_name: article.author?.full_name || article.author?.email || config.site.name },
       published_at: article.published_at || article.post_date,
     }))
   );
@@ -148,7 +148,7 @@ export default async function ArtikelPage({ searchParams }: ArtikelPageProps) {
   })));
 
   const templateVars = {
-    site_title: seoSettings?.site_title || 'Nexjob',
+    site_title: seoSettings?.site_title || config.site.name,
     lokasi: '',
     kategori: ''
   };

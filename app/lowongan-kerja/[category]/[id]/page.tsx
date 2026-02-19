@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import { jobService } from '@/lib/services/JobService';
-import { getCurrentDomain } from '@/lib/config';
+import { getCurrentDomain, config } from '@/lib/config';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import JobDetailPage from '@/components/pages/JobDetailPage';
@@ -28,7 +28,7 @@ const getJobData = cache(async (category: string, id: string) => {
 
     // Hardcoded settings - no admin panel
     const settings = {
-      site_title: 'Nexjob',
+      site_title: config.site.name,
       default_job_og_image: '/og-job-default.jpg'
     };
 
@@ -93,7 +93,7 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
       locationString = regencyName;
     }
 
-    const pageTitle = job.seo_title || `${job.title} - ${job.company_name} | Nexjob`;
+    const pageTitle = job.seo_title || `${job.title} - ${job.company_name} | ${config.site.name}`;
 
     let defaultDescription = `Lowongan ${job.title} di ${job.company_name}`;
     if (locationString) {
@@ -117,14 +117,14 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
       title: pageTitle,
       description: pageDescription,
       keywords,
-      authors: [{ name: 'Nexjob' }],
+      authors: [{ name: config.site.name }],
       openGraph: {
         title: pageTitle,
         description: pageDescription,
         type: 'article',
         url: canonicalUrl,
         images: [ogImage],
-        siteName: 'Nexjob',
+        siteName: config.site.name,
         publishedTime: job.created_at,
         modifiedTime: job.created_at,
       },
@@ -144,7 +144,7 @@ export async function generateMetadata({ params }: JobPageProps): Promise<Metada
     };
   } catch (error) {
     return {
-      title: 'Job Not Found - Nexjob',
+      title: `Job Not Found - ${config.site.name}`,
     };
   }
 }

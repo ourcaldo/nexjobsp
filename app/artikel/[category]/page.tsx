@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { articleService } from '@/lib/services/ArticleService';
 import { categoryService } from '@/lib/services/CategoryService';
-import { getCurrentDomain } from '@/lib/config';
+import { getCurrentDomain, config } from '@/lib/config';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
 import { generateArticleListingSchema, generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
@@ -94,11 +94,11 @@ export async function generateMetadata({ params }: ArticleCategoryPageProps): Pr
   const currentUrl = getCurrentDomain();
 
   return {
-    title: `${category.name} - Artikel - Nexjob`,
+    title: `${category.name} - Artikel - ${config.site.name}`,
     description: category.description || `Baca artikel terbaru tentang ${category.name} dan tips karir terkait.`,
     keywords: `${category.name}, artikel kerja, tips karir, berita kerja, panduan kerja`,
     openGraph: {
-      title: `${category.name} - Artikel - Nexjob`,
+      title: `${category.name} - Artikel - ${config.site.name}`,
       description: category.description || `Baca artikel terbaru tentang ${category.name} dan tips karir terkait.`,
       type: 'website',
       url: `${currentUrl}/artikel/${category.slug}`,
@@ -106,7 +106,7 @@ export async function generateMetadata({ params }: ArticleCategoryPageProps): Pr
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${category.name} - Artikel - Nexjob`,
+      title: `${category.name} - Artikel - ${config.site.name}`,
       description: category.description || `Baca artikel terbaru tentang ${category.name} dan tips karir terkait.`,
       images: [`${currentUrl}/logo.png`],
     },
@@ -141,7 +141,7 @@ export default async function ArticleCategoryPage({ params }: ArticleCategoryPag
       slug: article.slug,
       meta_description: article.excerpt,
       excerpt: article.excerpt || '',
-      author: { full_name: article.author?.full_name || article.author?.email || 'Nexjob' },
+      author: { full_name: article.author?.full_name || article.author?.email || config.site.name },
       published_at: article.published_at || article.post_date,
     }))
   );
@@ -295,7 +295,7 @@ export default async function ArticleCategoryPage({ params }: ArticleCategoryPag
                             <div className="flex items-center space-x-4 text-sm text-gray-500">
                               <div className="flex items-center">
                                 <User className="h-4 w-4 mr-1" />
-                                <span>{article.author?.full_name || article.author?.email || 'Nexjob'}</span>
+                                <span>{article.author?.full_name || article.author?.email || config.site.name}</span>
                               </div>
                               <div className="flex items-center">
                                 <Calendar className="h-4 w-4 mr-1" />
