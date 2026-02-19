@@ -1,11 +1,112 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { SignUp } from '@clerk/nextjs';
-import { CheckCircle, Briefcase, Building2, Shield } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useSignUp } from '@clerk/nextjs';
+import { CheckCircle, Briefcase, Building2, Shield, Mail, ArrowLeft, Loader2 } from 'lucide-react';
 
 export default function SignUpPage() {
+  const { isLoaded, signUp, setActive } = useSignUp();
+  const router = useRouter();
+
+  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
+  const [verifying, setVerifying] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  // Step 1: Submit email — create sign-up and send verification code
+  async function handleSendCode(e: React.FormEvent) {
+    e.preventDefault();
+    if (!isLoaded || !signUp) return;
+
+    setLoading(true);
+    setError('');
+
+    try {
+      // Create a new sign-up with email
+      await signUp.create({
+        emailAddress: email,
+      });
+
+      // Send email verification code (OTP)
+      await signUp.prepareEmailAddressVerification({
+        strategy: 'email_code',
+      });
+
+      // Move to verification step
+      setVerifying(true);
+    } catch (err: unknown) {
+      const clerkErr = err as { errors?: Array<{ longMessage?: string; message?: string }> };
+      const message =
+        clerkErr.errors?.[0]?.longMessage ||
+        clerkErr.errors?.[0]?.message ||
+        'Terjadi kesalahan. Silakan coba lagi.';
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Step 2: Submit the OTP code — verify the email address
+  async function handleVerifyCode(e: React.FormEvent) {
+    e.preventDefault();
+    if (!isLoaded || !signUp) return;
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const result = await signUp.attemptEmailAddressVerification({
+        code,
+      });
+
+      if (result.status === 'complete') {
+        // Sign-up successful — set active session and redirect
+        await setActive({ session: result.createdSessionId });
+        router.push('/');
+      } else {
+        // Handle other statuses (e.g. missing fields)
+        console.warn('Sign-up status:', result.status);
+        setError('Pendaftaran belum selesai. Silakan hubungi support.');
+      }
+    } catch (err: unknown) {
+      const clerkErr = err as { errors?: Array<{ longMessage?: string; message?: string }> };
+      const message =
+        clerkErr.errors?.[0]?.longMessage ||
+        clerkErr.errors?.[0]?.message ||
+        'Kode verifikasi salah. Silakan coba lagi.';
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // Resend OTP code
+  async function handleResendCode() {
+    if (!isLoaded || !signUp) return;
+
+    setLoading(true);
+    setError('');
+
+    try {
+      await signUp.prepareEmailAddressVerification({
+        strategy: 'email_code',
+      });
+      setCode('');
+      setError('');
+    } catch (err: unknown) {
+      const clerkErr = err as { errors?: Array<{ longMessage?: string; message?: string }> };
+      setError(
+        clerkErr.errors?.[0]?.longMessage ||
+        'Gagal mengirim ulang kode. Coba lagi.',
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Left — Dark panel with benefits */}
@@ -57,7 +158,7 @@ export default function SignUpPage() {
         </div>
       </div>
 
-      {/* Right — Clerk SignUp Form */}
+      {/* Right — Custom SignUp Form */}
       <div className="flex-1 flex flex-col justify-center items-center px-6 sm:px-12 lg:px-20 py-12">
         <div className="w-full max-w-md">
           {/* Logo */}
@@ -65,21 +166,145 @@ export default function SignUpPage() {
             <span className="text-2xl font-extrabold tracking-tight text-gray-900">Nexjob</span>
           </Link>
 
-          {/* Clerk SignUp Component */}
-          <SignUp
-            appearance={{
-              elements: {
-                rootBox: 'w-full',
-                card: 'shadow-none border-0 p-0 w-full',
-                headerTitle: 'text-2xl font-bold text-gray-900',
-                headerSubtitle: 'text-sm text-gray-400',
-                socialButtonsBlockButton: 'border border-gray-200 hover:bg-gray-50 transition-colors',
-                formButtonPrimary: 'bg-primary-700 hover:bg-primary-800 text-white transition-colors',
-                formFieldInput: 'border-gray-200 focus:border-primary-500 focus:ring-primary-500',
-                footerActionLink: 'text-primary-600 hover:text-primary-700',
-              },
-            }}
-          />
+          {!verifying ? (
+            /* ── Step 1: Email Input ── */
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 mb-1">Buat akun baru</h1>
+              <p className="text-sm text-gray-500 mb-8">
+                Masukkan email Anda untuk memulai pendaftaran.
+              </p>
+
+              <form onSubmit={handleSendCode} className="space-y-5">
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Alamat Email
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-gray-400" />
+                    <input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="nama@email.com"
+                      required
+                      autoFocus
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm
+                                 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none
+                                 transition-colors placeholder:text-gray-400"
+                    />
+                  </div>
+                </div>
+
+                {error && (
+                  <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+                    {error}
+                  </p>
+                )}
+
+                {/* Clerk CAPTCHA widget — required for bot protection on sign-up */}
+                <div id="clerk-captcha" />
+
+                <button
+                  type="submit"
+                  disabled={loading || !email}
+                  className="w-full flex items-center justify-center gap-2 bg-primary-700 hover:bg-primary-800
+                             disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-2.5 px-4
+                             rounded-lg transition-colors text-sm"
+                >
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    'Kirim Kode Verifikasi'
+                  )}
+                </button>
+              </form>
+
+              <p className="mt-6 text-center text-sm text-gray-500">
+                Sudah punya akun?{' '}
+                <Link href="/signin" className="text-primary-600 hover:text-primary-700 font-medium">
+                  Masuk
+                </Link>
+              </p>
+            </div>
+          ) : (
+            /* ── Step 2: OTP Code Verification ── */
+            <div>
+              <button
+                type="button"
+                onClick={() => {
+                  setVerifying(false);
+                  setCode('');
+                  setError('');
+                }}
+                className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6 transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Kembali
+              </button>
+
+              <h1 className="text-2xl font-bold text-gray-900 mb-1">Cek email Anda</h1>
+              <p className="text-sm text-gray-500 mb-8">
+                Kami mengirim kode verifikasi ke{' '}
+                <span className="font-medium text-gray-700">{email}</span>
+              </p>
+
+              <form onSubmit={handleVerifyCode} className="space-y-5">
+                <div>
+                  <label htmlFor="code" className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Kode Verifikasi
+                  </label>
+                  <input
+                    id="code"
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    placeholder="Masukkan kode 6 digit"
+                    required
+                    autoFocus
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm text-center
+                               tracking-[0.3em] font-mono text-lg
+                               focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none
+                               transition-colors placeholder:text-gray-400 placeholder:tracking-normal placeholder:font-sans placeholder:text-sm"
+                  />
+                </div>
+
+                {error && (
+                  <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+                    {error}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading || !code}
+                  className="w-full flex items-center justify-center gap-2 bg-primary-700 hover:bg-primary-800
+                             disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-2.5 px-4
+                             rounded-lg transition-colors text-sm"
+                >
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    'Verifikasi & Daftar'
+                  )}
+                </button>
+              </form>
+
+              <p className="mt-4 text-center text-sm text-gray-500">
+                Tidak menerima kode?{' '}
+                <button
+                  type="button"
+                  onClick={handleResendCode}
+                  disabled={loading}
+                  className="text-primary-600 hover:text-primary-700 font-medium disabled:opacity-50"
+                >
+                  Kirim ulang
+                </button>
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
