@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Briefcase, Clock, GraduationCap, Users, Filter, MapPin, ChevronDown, ChevronUp, Star, Zap, Banknote, Search } from 'lucide-react';
+import { ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { FilterData } from '@/lib/cms/interface';
 
 // Searchable city filter sub-component
@@ -34,10 +34,7 @@ function CityFilterSection({
         className="flex items-center justify-between mb-3 cursor-pointer"
         onClick={onToggle}
       >
-        <div className="flex items-center">
-          <MapPin className="h-4 w-4 text-gray-400" />
-          <label className="text-sm font-medium text-gray-700 ml-2">Kota</label>
-        </div>
+        <label className="text-sm font-medium text-gray-700">Kota</label>
         <button className="text-gray-400 hover:text-gray-600">
           {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </button>
@@ -219,10 +216,7 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
           className="flex items-center justify-between mb-3 cursor-pointer"
           onClick={() => toggleSection('sort')}
         >
-          <div className="flex items-center">
-            <Star className="h-4 w-4 text-gray-400 mr-2" />
-            <label className="text-sm font-medium text-gray-700">Prioritaskan</label>
-          </div>
+          <label className="text-sm font-medium text-gray-700">Prioritaskan</label>
           <button className="text-gray-400 hover:text-gray-600">
             {isExpanded ? (
               <ChevronUp className="h-4 w-4" />
@@ -244,8 +238,7 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
                 disabled={isLoading}
                 className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 focus:ring-2 disabled:opacity-50"
               />
-              <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 flex items-center">
-                <Zap className="h-3 w-3 mr-1 text-green-500" />
+              <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
                 Baru Ditambahkan
               </span>
             </label>
@@ -259,8 +252,7 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
                 disabled={true}
                 className="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 focus:ring-primary-500 focus:ring-2 disabled:opacity-50"
               />
-              <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 flex items-center">
-                <Star className="h-3 w-3 mr-1 text-orange-500" />
+              <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900">
                 Paling Relevan
                 <span className="ml-2 px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full">
                   Coming Soon
@@ -275,7 +267,6 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
 
   const renderCheckboxGroup = (
     title: string,
-    icon: React.ReactNode,
     filterKey: string,
     options: string[] | Array<{id: string; name: string}>
   ) => {
@@ -291,10 +282,7 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
           className="flex items-center justify-between mb-3 cursor-pointer"
           onClick={() => toggleSection(filterKey)}
         >
-          <div className="flex items-center">
-            {icon}
-            <label className="text-sm font-medium text-gray-700 ml-2">{title}</label>
-          </div>
+          <label className="text-sm font-medium text-gray-700">{title}</label>
           <button className="text-gray-400 hover:text-gray-600">
             {isExpanded ? (
               <ChevronUp className="h-4 w-4" />
@@ -334,10 +322,7 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
   if (loadingFilters) {
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-32">
-        <div className="flex items-center mb-6">
-          <Filter className="h-5 w-5 text-primary-600 mr-2" />
-          <h2 className="text-lg font-semibold text-gray-900">Filter Pencarian</h2>
-        </div>
+        <h2 className="text-lg font-semibold text-gray-900 mb-6">Filter Pencarian</h2>
         <div className="space-y-4">
           {[...Array(8)].map((_, index) => (
             <div key={index} className="animate-pulse">
@@ -355,10 +340,7 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-32">
-      <div className="flex items-center mb-6">
-        <Filter className="h-5 w-5 text-primary-600 mr-2" />
-        <h2 className="text-lg font-semibold text-gray-900">Filter Pencarian</h2>
-      </div>
+      <h2 className="text-lg font-semibold text-gray-900 mb-6">Filter Pencarian</h2>
 
       <div className="space-y-6">
         {/* Sort Section */}
@@ -380,7 +362,6 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
         {filterData?.categories && filterData.categories.length > 0 && (
           renderCheckboxGroup(
             'Kategori Pekerjaan',
-            <Briefcase className="h-4 w-4 text-gray-400" />,
             'categories',
             filterData.categories.map(c => ({ id: c.id, name: c.name }))
           )
@@ -390,7 +371,6 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
         {filterData?.employment_types && filterData.employment_types.length > 0 && (
           renderCheckboxGroup(
             'Tipe Pekerjaan',
-            <Briefcase className="h-4 w-4 text-gray-400" />,
             'jobTypes',
             filterData.employment_types.map(et => ({ id: et.id, name: et.name }))
           )
@@ -400,7 +380,6 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
         {filterData?.experience_levels && filterData.experience_levels.length > 0 && (
           renderCheckboxGroup(
             'Pengalaman',
-            <Clock className="h-4 w-4 text-gray-400" />,
             'experiences',
             filterData.experience_levels.map(el => ({ id: el.id, name: el.years_max != null ? `${el.years_min}-${el.years_max} tahun` : `${el.years_min}+ tahun` }))
           )
@@ -410,7 +389,6 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
         {filterData?.education_levels && filterData.education_levels.length > 0 && (
           renderCheckboxGroup(
             'Pendidikan',
-            <GraduationCap className="h-4 w-4 text-gray-400" />,
             'educations',
             filterData.education_levels.map(edu => ({ id: edu.id, name: edu.name }))
           )
@@ -419,7 +397,6 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
         {/* Work Policy / Kebijakan Kerja */}
         {renderCheckboxGroup(
           'Kebijakan Kerja',
-          <Users className="h-4 w-4 text-gray-400" />,
           'workPolicies',
           [
             { id: 'onsite', name: 'Kerja di Kantor (Onsite)' },
@@ -431,7 +408,6 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
         {/* Salary Range */}
         {renderCheckboxGroup(
           'Rentang Gaji',
-          <Banknote className="h-4 w-4 text-gray-400" />,
           'salaries',
           [
             { id: '1-3', name: '1-3 Juta' },

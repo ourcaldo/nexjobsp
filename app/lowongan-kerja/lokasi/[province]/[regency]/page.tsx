@@ -246,31 +246,22 @@ export default async function JobLocationPage({ params }: JobLocationPageProps) 
 
       <Header />
       <main className="min-h-screen bg-gray-50">
-        <div className="bg-primary-700 text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            <nav className="mb-8">
-              <ol className="flex items-center justify-center space-x-2 text-sm text-primary-100">
-                <li className="flex items-center">
-                  <a href="/" className="hover:text-white transition-colors">Beranda</a>
-                  <span className="mx-2">/</span>
-                  <a href="/lowongan-kerja/" className="hover:text-white transition-colors">Lowongan Kerja</a>
-                  <span className="mx-2">/</span>
-                  <span className="text-white">Lokasi: {provinceName}</span>
-                  <span className="mx-2">/</span>
-                  <span className="text-white font-medium">{regencyName}</span>
-                </li>
-              </ol>
-            </nav>
-
-            <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Lowongan Kerja di {regencyName}, {provinceName}
-              </h1>
-              <p className="text-xl text-primary-100 max-w-3xl mx-auto leading-relaxed">
-                {pageDescription}
-              </p>
-            </div>
-          </div>
+        {/* Breadcrumb */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
+          <nav aria-label="Breadcrumb">
+            <ol className="flex items-center space-x-2 text-sm text-gray-500">
+              <li className="flex items-center">
+                <a href="/" className="hover:text-primary-600 transition-colors">Beranda</a>
+                <span className="mx-2">/</span>
+                <a href="/lowongan-kerja/" className="hover:text-primary-600 transition-colors">Lowongan Kerja</a>
+                <span className="mx-2">/</span>
+                <span className="text-gray-700">Lokasi: {provinceName}</span>
+                <span className="mx-2">/</span>
+                <span className="text-gray-900 font-medium">{regencyName}</span>
+              </li>
+            </ol>
+          </nav>
+          <h1 className="sr-only">Lowongan Kerja di {regencyName}, {provinceName}</h1>
         </div>
 
         <Suspense fallback={<JobSearchPageFallback />}>
