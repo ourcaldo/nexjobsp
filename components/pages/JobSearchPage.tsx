@@ -76,12 +76,12 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   return (
     <div className="bg-gray-50">
       {/* Search Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-6">
-        <div className="max-w-4xl mx-auto">
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
               {/* Keyword Search */}
-              <div className="lg:col-span-5 relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <div className="lg:col-span-6 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Cari berdasarkan skill, posisi, atau perusahaan..."
@@ -90,7 +90,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
                   onKeyDown={handleKeyPress}
                   onFocus={() => isSearchHistoryEnabled && setShowSearchHistory(true)}
                   onBlur={() => setTimeout(() => setShowSearchHistory(false), 200)}
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-gray-900"
+                  className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-gray-900"
                 />
 
                 {/* Search History Dropdown */}
@@ -132,30 +132,26 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
               </div>
 
               {/* Search Button */}
-              <div className="lg:col-span-3">
+              <div className="lg:col-span-2">
                 <button
                   onClick={handleManualSearch}
                   disabled={searching}
-                  className="w-full bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-full bg-primary-600 text-white px-6 py-2.5 text-sm rounded-lg hover:bg-primary-700 transition-colors font-semibold uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   {searching ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <>
-                      <Search className="h-4 w-4 mr-2" />
-                      Cari
-                    </>
+                    'CARI'
                   )}
                 </button>
               </div>
             </div>
-          </div>
 
           {/* Mobile Filter Toggle */}
           <div className="lg:hidden mt-4 text-center">
             <button
               onClick={() => setShowMobileFilters(!showMobileFilters)}
-              className="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors font-medium inline-flex items-center"
+              className="bg-gray-100 text-gray-700 px-6 py-2.5 text-sm rounded-lg hover:bg-gray-200 transition-colors font-medium inline-flex items-center"
             >
               <Filter className="h-4 w-4 mr-2" />
               Filter ({getActiveFiltersCount})
@@ -214,6 +210,7 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
               </button>
             </div>
           )}
+        </div>
       </div>
 
       {/* Main Content */}
@@ -236,30 +233,6 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
 
           {/* Job Results */}
           <div className="lg:col-span-3">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <p className="text-2xl font-bold text-gray-900 mb-2">
-                  {searching ? 'Mencari...' : `${totalJobs.toLocaleString()} Lowongan Ditemukan`}
-                </p>
-                {initialCategory && (
-                  <p className="text-gray-600">
-                    Kategori: <span className="font-medium">{initialCategory}</span>
-                  </p>
-                )}
-                {initialLocation && (
-                  <p className="text-gray-600">
-                    Lokasi: <span className="font-medium">{initialLocationName || initialLocation}</span>
-                    {locationType === 'city' && ' (Kota)'}
-                    {locationType === 'province' && ' (Provinsi)'}
-                  </p>
-                )}
-                {keyword && (
-                  <p className="text-gray-600">
-                    Hasil pencarian untuk &quot;<span className="font-medium">{keyword}</span>&quot;
-                  </p>
-                )}
-              </div>
-            </div>
 
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
