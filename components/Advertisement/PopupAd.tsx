@@ -1,20 +1,39 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
-import { X } from 'lucide-react';
+
+// Cookie helpers
+function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  return match ? decodeURIComponent(match[2]) : null;
+}
+
+function setCookie(name: string, value: string, days: number) {
+  const expires = new Date(Date.now() + days * 86400000).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires};path=/;SameSite=Lax`;
+}
+
+// Build a cookie key unique to the current page path
+function getPageCookieKey(pathname: string): string {
+  const sanitized = pathname.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_');
+  return `popupAd_${sanitized}`;
+}
+
+interface PopupConfig {
+  url: string;
+  enabled: boolean;
+  loadSettings: string[];
+  maxExecutions: number;
+  device: string;
+}
 
 const PopupAd: React.FC = () => {
   const pathname = usePathname();
-  const [popupConfig, setPopupConfig] = useState({
-    url: '',
-    enabled: false,
-    loadSettings: ['all_pages'],
-    maxExecutions: 1,
-    device: 'all'
-  });
-  const [isConfigLoaded, setIsConfigLoaded] = useState(false);
-  const [isDismissed, setIsDismissed] = useState(false);
+  const configRef = useRef<PopupConfig | null>(null);
+  const executionCountRef = useRef(0);
+  const listenerAttachedRef = useRef(false);
 
   // Device detection
   const getDeviceType = (): 'mobile' | 'desktop' => {
@@ -22,7 +41,7 @@ const PopupAd: React.FC = () => {
     return window.innerWidth <= 768 ? 'mobile' : 'desktop';
   };
 
-  // Check if current page should trigger popup
+  // Check if current page should trigger popup based on load_settings
   const shouldTriggerOnPage = useCallback((loadSettings: string[]): boolean => {
     const currentPath = pathname || '';
 
@@ -32,18 +51,19 @@ const PopupAd: React.FC = () => {
       if (/^\/artikel\/[^/]+\/[^/]+\/?$/.test(currentPath)) return true;
     }
 
-    if (loadSettings.includes('article_archive')) {
+    if (loadSettings.includes('article_page')) {
       if (currentPath === '/artikel/' || currentPath === '/artikel') return true;
       if (/^\/artikel\/[^/]+\/?$/.test(currentPath)) return true;
+      if (/^\/artikel\/[^/]+\/[^/]+\/?$/.test(currentPath)) return true;
     }
 
-    if (loadSettings.includes('job_archive')) {
+    if (loadSettings.includes('job_post_page')) {
       if (currentPath === '/lowongan-kerja/' || currentPath === '/lowongan-kerja') return true;
       if (currentPath.startsWith('/lowongan-kerja/kategori/')) return true;
       if (currentPath.startsWith('/lowongan-kerja/lokasi/')) return true;
     }
 
-    if (loadSettings.includes('single_jobs')) {
+    if (loadSettings.includes('single_job_post')) {
       const jobMatch = currentPath.match(/^\/lowongan-kerja\/[^/]+\/[^/]+\/?$/);
       if (jobMatch && !currentPath.includes('/kategori/') && !currentPath.includes('/lokasi/')) {
         return true;
@@ -53,86 +73,94 @@ const PopupAd: React.FC = () => {
     return false;
   }, [pathname]);
 
-  // Load popup configuration
+  // Click handler — opens ad URL in new tab, tracks via cookie
+  const handleClick = useCallback(() => {
+    const config = configRef.current;
+    if (!config || !config.enabled || !config.url) return;
+
+    const cookieKey = getPageCookieKey(pathname || '/');
+    const cookieVal = getCookie(cookieKey);
+    const currentExecCount = cookieVal ? parseInt(cookieVal, 10) : 0;
+
+    if (currentExecCount >= config.maxExecutions) return;
+
+    // Open the ad URL in a new tab
+    window.open(config.url, '_blank', 'noopener,noreferrer');
+
+    // Update execution count in cookie (expires in 1 day)
+    setCookie(cookieKey, String(currentExecCount + 1), 1);
+    executionCountRef.current = currentExecCount + 1;
+
+    // If we've reached max executions, remove the listener
+    if (currentExecCount + 1 >= config.maxExecutions) {
+      document.removeEventListener('click', handleClick);
+      listenerAttachedRef.current = false;
+    }
+  }, [pathname]);
+
+  // Load config and attach click listener
   useEffect(() => {
-    const loadConfig = async () => {
+    let cancelled = false;
+
+    const init = async () => {
       try {
         const response = await fetch('/api/advertisements');
         const data = await response.json();
 
+        if (cancelled) return;
+
         if (data.success && data.data && data.data.popup_ad) {
-          setPopupConfig({
-            url: data.data.popup_ad.url || '',
-            enabled: data.data.popup_ad.enabled || false,
-            loadSettings: data.data.popup_ad.load_settings || ['all_pages'],
-            maxExecutions: data.data.popup_ad.max_executions || 1,
-            device: data.data.popup_ad.device || 'all'
-          });
+          const popupAd = data.data.popup_ad;
+          const config: PopupConfig = {
+            url: popupAd.url || '',
+            enabled: popupAd.enabled || false,
+            loadSettings: popupAd.load_settings || [],
+            maxExecutions: popupAd.max_executions || 1,
+            device: popupAd.device || 'all',
+          };
+
+          configRef.current = config;
+
+          // Check if popup should be active
+          if (!config.enabled || !config.url) return;
+
+          // Check device compatibility
+          const currentDevice = getDeviceType();
+          if (config.device !== 'all' && config.device !== currentDevice) return;
+
+          // Check page compatibility
+          if (!shouldTriggerOnPage(config.loadSettings)) return;
+
+          // Check if max executions already reached for this page (via cookie)
+          const cookieKey = getPageCookieKey(pathname || '/');
+          const cookieVal = getCookie(cookieKey);
+          const currentExecCount = cookieVal ? parseInt(cookieVal, 10) : 0;
+          executionCountRef.current = currentExecCount;
+
+          if (currentExecCount >= config.maxExecutions) return;
+
+          // Attach the click listener
+          document.addEventListener('click', handleClick);
+          listenerAttachedRef.current = true;
         }
-        setIsConfigLoaded(true);
       } catch (error) {
-        console.error('PopupAd: Error loading popup config:', error);
-        setIsConfigLoaded(true);
+        console.error('PopupAd: Error loading config:', error);
       }
     };
 
-    loadConfig();
-  }, []);
+    init();
 
-  // Check if already dismissed this session
-  useEffect(() => {
-    const dismissKey = `popupAd_dismissed_${pathname}`;
-    if (sessionStorage.getItem(dismissKey)) {
-      setIsDismissed(true);
-    }
-  }, [pathname]);
+    return () => {
+      cancelled = true;
+      if (listenerAttachedRef.current) {
+        document.removeEventListener('click', handleClick);
+        listenerAttachedRef.current = false;
+      }
+    };
+  }, [pathname, handleClick, shouldTriggerOnPage]);
 
-  const handleDismiss = useCallback(() => {
-    setIsDismissed(true);
-    const dismissKey = `popupAd_dismissed_${pathname}`;
-    sessionStorage.setItem(dismissKey, 'true');
-  }, [pathname]);
-
-  // Don't render if not configured, not loaded, or already dismissed
-  if (!isConfigLoaded || !popupConfig.enabled || !popupConfig.url || isDismissed) {
-    return null;
-  }
-
-  // Check page and device compatibility
-  if (!shouldTriggerOnPage(popupConfig.loadSettings)) {
-    return null;
-  }
-
-  const currentDevice = getDeviceType();
-  if (popupConfig.device !== 'all' && popupConfig.device !== currentDevice) {
-    return null;
-  }
-
-  // Render a visible, dismissable notification bar instead of hijacking clicks
-  return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-primary-900 text-white px-4 py-3 shadow-lg">
-      <div className="container mx-auto flex items-center justify-between gap-4">
-        <p className="text-sm flex-1">
-          <span className="text-xs text-white/60 mr-2">Iklan</span>
-          <a
-            href={popupConfig.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-white/80 transition-colors"
-          >
-            Kunjungi sponsor kami →
-          </a>
-        </p>
-        <button
-          onClick={handleDismiss}
-          className="p-1 hover:bg-white/10 rounded-md transition-colors"
-          aria-label="Tutup iklan"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
-    </div>
-  );
+  // This component renders nothing — it only attaches a click event listener
+  return null;
 };
 
 export default PopupAd;
