@@ -74,9 +74,9 @@ const JobSearchPage: React.FC<JobSearchPageProps> = ({
   if (loading) return <JobSearchSkeleton />;
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-[#f4f4f5]">
       {/* Search Section */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-[#f4f4f5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
               {/* Keyword Search */}
