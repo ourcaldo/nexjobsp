@@ -450,7 +450,11 @@ export function useJobSearch({
     switch (filterType) {
       case 'cities': return filterData.regencies.find((r) => r.id === value)?.name ?? value;
       case 'jobTypes': return filterData.employment_types.find((t) => t.id === value)?.name ?? value;
-      case 'experiences': return filterData.experience_levels.find((e) => e.id === value)?.name ?? value;
+      case 'experiences': {
+        const exp = filterData.experience_levels.find((e) => e.id === value);
+        if (!exp) return value;
+        return exp.years_max != null ? `${exp.years_min}-${exp.years_max} tahun` : `${exp.years_min}+ tahun`;
+      }
       case 'educations': return filterData.education_levels.find((e) => e.id === value)?.name ?? value;
       case 'categories': return filterData.categories.find((c) => c.id === value)?.name ?? value;
       case 'workPolicies': return filterData.work_policy.find((w) => w.value === value)?.name ?? value;

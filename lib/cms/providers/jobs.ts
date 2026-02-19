@@ -132,7 +132,7 @@ export function transformCMSJobToJob(cmsJob: CMSJobPost): Job {
     job_regency_id: cmsJob.job_regency_id || undefined,
     tipe_pekerjaan: cmsJob.employment_type?.name || 'Full Time',
     pendidikan: cmsJob.education_level?.name || '',
-    pengalaman: cmsJob.experience_level?.name || '',
+    pengalaman: formatExperienceRange(cmsJob.experience_level),
     tag: cmsJob.job_tags?.[0]?.name || '',
     job_tags: cmsJob.job_tags || [],
     gender: '',
@@ -198,6 +198,17 @@ export interface JobSearchParams {
 }
 
 // ─── URL builder ─────────────────────────────────────────────────────
+
+/**
+ * Format experience level as years range string (e.g. "0-2 tahun", "7+ tahun")
+ */
+export function formatExperienceRange(exp: { years_min: number; years_max: number | null; name?: string } | null | undefined): string {
+  if (!exp) return '';
+  if (exp.years_max === null || exp.years_max === undefined) {
+    return `${exp.years_min}+ tahun`;
+  }
+  return `${exp.years_min}-${exp.years_max} tahun`;
+}
 
 export function buildJobsUrl(baseUrl: string, filters: JobSearchParams = {}, page: number = 1, perPage: number = 24): string {
   const params = new URLSearchParams();

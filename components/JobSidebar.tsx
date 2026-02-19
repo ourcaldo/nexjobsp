@@ -402,7 +402,7 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
             'Pengalaman',
             <Clock className="h-4 w-4 text-gray-400" />,
             'experiences',
-            filterData.experience_levels.map(el => ({ id: el.id, name: el.name }))
+            filterData.experience_levels.map(el => ({ id: el.id, name: el.years_max != null ? `${el.years_min}-${el.years_max} tahun` : `${el.years_min}+ tahun` }))
           )
         )}
 
