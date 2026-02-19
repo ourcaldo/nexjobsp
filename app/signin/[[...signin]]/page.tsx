@@ -4,21 +4,22 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSignIn } from '@clerk/nextjs';
-import type { EmailCodeFactor, SignInFirstFactor } from '@clerk/types';
-import { Briefcase, TrendingUp, Users, Mail, ArrowLeft, Loader2 } from 'lucide-react';
+import type { EmailCodeFactor } from '@clerk/types';
+import { Briefcase, TrendingUp, Users, Mail, Lock, ArrowLeft, Loader2 } from 'lucide-react';
 
 export default function SignInPage() {
   const { isLoaded, signIn, setActive } = useSignIn();
   const router = useRouter();
 
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
-  const [verifying, setVerifying] = useState(false);
+  const [showEmailCode, setShowEmailCode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Step 1: Submit email — create sign-in and prepare email_code first factor
-  async function handleSendCode(e: React.FormEvent) {
+  // Step 1: Submit email + password
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!isLoaded || !signIn) return;
 
@@ -26,33 +27,51 @@ export default function SignInPage() {
     setError('');
 
     try {
-      // Create the sign-in with the user's email
-      const { supportedFirstFactors } = await signIn.create({
+      const signInAttempt = await signIn.create({
         identifier: email,
+        password,
       });
 
-      // Find the email_code factor among supported first factors
-      const emailCodeFactor = supportedFirstFactors?.find(
-        (factor): factor is EmailCodeFactor =>
-          factor.strategy === 'email_code',
-      );
+      if (signInAttempt.status === 'complete') {
+        // Sign-in successful — set the active session and redirect
+        await setActive({ session: signInAttempt.createdSessionId });
+        router.push('/');
+      } else if (signInAttempt.status === 'needs_second_factor') {
+        // Client Trust or 2FA requires email_code verification
+        const emailCodeFactor = signInAttempt.supportedSecondFactors?.find(
+          (factor): factor is EmailCodeFactor => factor.strategy === 'email_code',
+        );
 
-      if (!emailCodeFactor) {
-        setError('Login dengan kode email tidak tersedia. Hubungi administrator.');
-        setLoading(false);
-        return;
+        if (emailCodeFactor) {
+          await signIn.prepareSecondFactor({
+            strategy: 'email_code',
+            emailAddressId: emailCodeFactor.emailAddressId,
+          });
+          setShowEmailCode(true);
+        } else {
+          setError('Metode verifikasi tidak tersedia. Hubungi administrator.');
+        }
+      } else if (signInAttempt.status === 'needs_first_factor') {
+        // Password was not sufficient, needs first factor verification
+        const emailCodeFactor = signInAttempt.supportedFirstFactors?.find(
+          (factor): factor is EmailCodeFactor => factor.strategy === 'email_code',
+        );
+
+        if (emailCodeFactor) {
+          await signIn.prepareFirstFactor({
+            strategy: 'email_code',
+            emailAddressId: emailCodeFactor.emailAddressId,
+          });
+          setShowEmailCode(true);
+        } else {
+          setError('Metode verifikasi tidak tersedia. Hubungi administrator.');
+        }
+      } else {
+        console.error('Sign-in status:', signInAttempt.status);
+        setError('Login memerlukan langkah tambahan. Silakan hubungi support.');
       }
-
-      // Send the OTP code to user's email
-      await signIn.prepareFirstFactor({
-        strategy: 'email_code',
-        emailAddressId: emailCodeFactor.emailAddressId,
-      });
-
-      // Move to verification step
-      setVerifying(true);
     } catch (err: unknown) {
-      const clerkErr = err as { errors?: Array<{ longMessage?: string; message?: string }> };
+      const clerkErr = err as { errors?: Array<{ longMessage?: string; message?: string; code?: string }> };
       const message =
         clerkErr.errors?.[0]?.longMessage ||
         clerkErr.errors?.[0]?.message ||
@@ -63,8 +82,8 @@ export default function SignInPage() {
     }
   }
 
-  // Step 2: Submit the OTP code — attempt verification
-  async function handleVerifyCode(e: React.FormEvent) {
+  // Step 2: Submit email verification code (second factor)
+  async function handleEmailCode(e: React.FormEvent) {
     e.preventDefault();
     if (!isLoaded || !signIn) return;
 
@@ -72,19 +91,17 @@ export default function SignInPage() {
     setError('');
 
     try {
-      const result = await signIn.attemptFirstFactor({
+      const signInAttempt = await signIn.attemptSecondFactor({
         strategy: 'email_code',
         code,
       });
 
-      if (result.status === 'complete') {
-        // Sign-in successful — set the active session and redirect
-        await setActive({ session: result.createdSessionId });
+      if (signInAttempt.status === 'complete') {
+        await setActive({ session: signInAttempt.createdSessionId });
         router.push('/');
       } else {
-        // Handle other statuses (e.g. needs_second_factor)
-        console.warn('Sign-in status:', result.status);
-        setError('Verifikasi tambahan diperlukan. Silakan hubungi support.');
+        console.error('Sign-in status after 2FA:', signInAttempt.status);
+        setError('Verifikasi gagal. Silakan coba lagi.');
       }
     } catch (err: unknown) {
       const clerkErr = err as { errors?: Array<{ longMessage?: string; message?: string }> };
@@ -98,7 +115,7 @@ export default function SignInPage() {
     }
   }
 
-  // Resend OTP code
+  // Resend verification code
   async function handleResendCode() {
     if (!isLoaded || !signIn) return;
 
@@ -106,22 +123,24 @@ export default function SignInPage() {
     setError('');
 
     try {
-      const { supportedFirstFactors } = await signIn.create({
+      // Re-create sign-in and prepare second factor again
+      const signInAttempt = await signIn.create({
         identifier: email,
+        password,
       });
 
-      const emailCodeFactor = supportedFirstFactors?.find(
-        (factor): factor is EmailCodeFactor =>
-          factor.strategy === 'email_code',
-      );
+      if (signInAttempt.status === 'needs_second_factor') {
+        const emailCodeFactor = signInAttempt.supportedSecondFactors?.find(
+          (factor): factor is EmailCodeFactor => factor.strategy === 'email_code',
+        );
 
-      if (emailCodeFactor) {
-        await signIn.prepareFirstFactor({
-          strategy: 'email_code',
-          emailAddressId: emailCodeFactor.emailAddressId,
-        });
-        setCode('');
-        setError('');
+        if (emailCodeFactor) {
+          await signIn.prepareSecondFactor({
+            strategy: 'email_code',
+            emailAddressId: emailCodeFactor.emailAddressId,
+          });
+          setCode('');
+        }
       }
     } catch (err: unknown) {
       const clerkErr = err as { errors?: Array<{ longMessage?: string; message?: string }> };
@@ -144,15 +163,15 @@ export default function SignInPage() {
             <span className="text-2xl font-extrabold tracking-tight text-gray-900">Nexjob</span>
           </Link>
 
-          {!verifying ? (
-            /* ── Step 1: Email Input ── */
+          {!showEmailCode ? (
+            /* ── Step 1: Email + Password Input ── */
             <div>
               <h1 className="text-2xl font-bold text-gray-900 mb-1">Masuk ke akun Anda</h1>
               <p className="text-sm text-gray-500 mb-8">
-                Masukkan email Anda untuk menerima kode verifikasi.
+                Masukkan email dan password Anda untuk masuk.
               </p>
 
-              <form onSubmit={handleSendCode} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
                     Alamat Email
@@ -174,6 +193,26 @@ export default function SignInPage() {
                   </div>
                 </div>
 
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-gray-400" />
+                    <input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Masukkan password"
+                      required
+                      className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm
+                                 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none
+                                 transition-colors placeholder:text-gray-400"
+                    />
+                  </div>
+                </div>
+
                 {error && (
                   <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
                     {error}
@@ -182,7 +221,7 @@ export default function SignInPage() {
 
                 <button
                   type="submit"
-                  disabled={loading || !email}
+                  disabled={loading || !email || !password}
                   className="w-full flex items-center justify-center gap-2 bg-primary-700 hover:bg-primary-800
                              disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-2.5 px-4
                              rounded-lg transition-colors text-sm"
@@ -190,7 +229,7 @@ export default function SignInPage() {
                   {loading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    'Kirim Kode Verifikasi'
+                    'Masuk'
                   )}
                 </button>
               </form>
@@ -203,12 +242,12 @@ export default function SignInPage() {
               </p>
             </div>
           ) : (
-            /* ── Step 2: OTP Code Verification ── */
+            /* ── Step 2: Email Code Verification (2FA / Client Trust) ── */
             <div>
               <button
                 type="button"
                 onClick={() => {
-                  setVerifying(false);
+                  setShowEmailCode(false);
                   setCode('');
                   setError('');
                 }}
@@ -218,13 +257,13 @@ export default function SignInPage() {
                 Kembali
               </button>
 
-              <h1 className="text-2xl font-bold text-gray-900 mb-1">Cek email Anda</h1>
+              <h1 className="text-2xl font-bold text-gray-900 mb-1">Verifikasi email Anda</h1>
               <p className="text-sm text-gray-500 mb-8">
-                Kami mengirim kode verifikasi ke{' '}
+                Kode verifikasi telah dikirim ke{' '}
                 <span className="font-medium text-gray-700">{email}</span>
               </p>
 
-              <form onSubmit={handleVerifyCode} className="space-y-5">
+              <form onSubmit={handleEmailCode} className="space-y-5">
                 <div>
                   <label htmlFor="code" className="block text-sm font-medium text-gray-700 mb-1.5">
                     Kode Verifikasi
