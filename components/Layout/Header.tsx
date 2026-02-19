@@ -3,13 +3,30 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
+import { useUser, SignOutButton } from '@clerk/nextjs';
+import { Menu, X, User, LogOut } from 'lucide-react';
 import { config } from '@/lib/config';
 
 const Header: React.FC = () => {
   const pathname = usePathname();
+  const { isSignedIn, user, isLoaded } = useUser();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close profile dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+        setShowProfileMenu(false);
+      }
+    };
+    if (showProfileMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showProfileMenu]);
 
   const closeMobileMenu = useCallback(() => {
     setShowMobileMenu(false);
@@ -113,8 +130,78 @@ const Header: React.FC = () => {
               </Link>
             </nav>
 
-            {/* Mobile Menu Button */}
-            <div className="flex md:hidden">
+            {/* Right side: Auth buttons (desktop) + Mobile menu button */}
+            <div className="flex items-center gap-3">
+              {/* Desktop auth */}
+              <div className="hidden md:flex items-center gap-2">
+                {isLoaded && !isSignedIn && (
+                  <>
+                    <Link
+                      href="/signin"
+                      className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
+                    >
+                      Masuk
+                    </Link>
+                    <Link
+                      href="/signup"
+                      className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors"
+                    >
+                      Daftar
+                    </Link>
+                  </>
+                )}
+                {isLoaded && isSignedIn && (
+                  <div className="relative" ref={profileMenuRef}>
+                    <button
+                      onClick={() => setShowProfileMenu(!showProfileMenu)}
+                      className="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                      aria-label="Menu profil"
+                    >
+                      {user?.imageUrl ? (
+                        <img
+                          src={user.imageUrl}
+                          alt={user.fullName || 'Profil'}
+                          className="h-8 w-8 rounded-full object-cover border-2 border-gray-200 hover:border-primary-400 transition-colors"
+                        />
+                      ) : (
+                        <div className="h-8 w-8 rounded-full bg-primary-100 border-2 border-gray-200 hover:border-primary-400 flex items-center justify-center text-primary-700 text-xs font-bold transition-colors">
+                          {(user?.fullName || 'U').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                        </div>
+                      )}
+                    </button>
+
+                    {/* Profile dropdown */}
+                    {showProfileMenu && (
+                      <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+                        <div className="px-4 py-3 border-b border-gray-100">
+                          <p className="text-sm font-medium text-gray-900 truncate">{user?.fullName}</p>
+                          <p className="text-xs text-gray-500 truncate">{user?.primaryEmailAddress?.emailAddress}</p>
+                        </div>
+                        <Link
+                          href="/profil"
+                          onClick={() => setShowProfileMenu(false)}
+                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <User className="h-4 w-4 text-gray-400" />
+                          Profil Saya
+                        </Link>
+                        <SignOutButton>
+                          <button
+                            onClick={() => setShowProfileMenu(false)}
+                            className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                          >
+                            <LogOut className="h-4 w-4" />
+                            Keluar
+                          </button>
+                        </SignOutButton>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile Menu Button */}
+              <div className="flex md:hidden">
               <button
                 onClick={() => setShowMobileMenu(!showMobileMenu)}
                 className="p-2 rounded-lg text-gray-600 hover:text-primary-600 hover:bg-primary-50 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
@@ -128,6 +215,7 @@ const Header: React.FC = () => {
                   <Menu className="h-6 w-6" aria-hidden="true" />
                 )}
               </button>
+              </div>
             </div>
           </div>
         </div>
@@ -206,6 +294,57 @@ const Header: React.FC = () => {
               </div>
             </nav>
 
+            {/* Mobile Auth */}
+            <div className="p-4 border-t border-gray-200">
+              {isLoaded && !isSignedIn && (
+                <div className="space-y-2">
+                  <Link
+                    href="/signin"
+                    onClick={handleMobileNavClick}
+                    className="block w-full px-4 py-3 text-center text-sm font-medium text-primary-600 border border-primary-200 rounded-lg hover:bg-primary-50 transition-colors"
+                  >
+                    Masuk
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={handleMobileNavClick}
+                    className="block w-full px-4 py-3 text-center text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors"
+                  >
+                    Daftar
+                  </Link>
+                </div>
+              )}
+              {isLoaded && isSignedIn && (
+                <div className="space-y-2">
+                  <Link
+                    href="/profil"
+                    onClick={handleMobileNavClick}
+                    className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    {user?.imageUrl ? (
+                      <img src={user.imageUrl} alt="" className="h-8 w-8 rounded-full object-cover border border-gray-200" />
+                    ) : (
+                      <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 text-xs font-bold">
+                        {(user?.fullName || 'U').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">{user?.fullName}</p>
+                      <p className="text-xs text-gray-500 truncate">{user?.primaryEmailAddress?.emailAddress}</p>
+                    </div>
+                  </Link>
+                  <SignOutButton>
+                    <button
+                      onClick={handleMobileNavClick}
+                      className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Keluar
+                    </button>
+                  </SignOutButton>
+                </div>
+              )}
+            </div>
 
           </div>
         </div>
