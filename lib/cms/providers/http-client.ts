@@ -24,6 +24,11 @@ export class CMSHttpClient {
     return this.baseUrl;
   }
 
+  /**
+   * Ensures CMS settings are loaded. Currently a no-op since config is
+   * read synchronously from env vars at construction time.
+   * Retained for future async config sources (e.g. DB-stored settings).
+   */
   async ensureInitialized(): Promise<void> {
     if (this.settingsInitialized) return;
     if (this.initializationPromise) return this.initializationPromise;

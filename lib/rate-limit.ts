@@ -31,6 +31,7 @@ const DEFAULT_CONFIG: RateLimitConfig = {
 };
 
 const store = new Map<string, RateLimitEntry>();
+const MAX_STORE_SIZE = 50_000; // M-19: Prevent unbounded memory growth under attack
 let lastCleanup = Date.now();
 
 /**
@@ -71,6 +72,9 @@ export function getClientIp(request: Request): string {
     if (lastIp) return lastIp;
   }
 
+  // L-14: 'anonymous' bucket is shared by all clients without identifiable IP.
+  // In production behind Nginx, X-Real-IP should always be set.
+  // Monitor: if anonymous bucket grows large, Nginx config needs fixing.
   return 'anonymous';
 }
 
@@ -105,6 +109,15 @@ export function checkRateLimit(
   let entry = store.get(ip);
 
   if (!entry) {
+    // Reject new entries when store is at capacity to prevent memory exhaustion
+    if (store.size >= MAX_STORE_SIZE) {
+      return {
+        allowed: false,
+        remaining: 0,
+        limit: maxRequests,
+        retryAfter: windowSeconds,
+      };
+    }
     entry = { timestamps: [] };
     store.set(ip, entry);
   }

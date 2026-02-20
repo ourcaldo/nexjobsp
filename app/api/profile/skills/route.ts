@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { cmsUserRequest } from '@/lib/services/cmsUserApi';
+import { skillsSchema } from '@/lib/validation/schemas';
 
 // GET /api/profile/skills — List user skills
 export async function GET() {
@@ -25,9 +26,17 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
+  const parsed = skillsSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { success: false, error: parsed.error.issues[0]?.message || 'Invalid input' },
+      { status: 400 }
+    );
+  }
+
   const result = await cmsUserRequest(userId, '/skills', {
     method: 'POST',
-    body: JSON.stringify(body),
+    body: JSON.stringify(parsed.data),
   });
 
   if (!result.success) {

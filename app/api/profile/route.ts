@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { cmsUserRequest } from '@/lib/services/cmsUserApi';
+import { profileUpdateSchema } from '@/lib/validation/schemas';
 
 // GET /api/profile — Get full user profile (user + skills + experience + education)
 export async function GET() {
@@ -26,9 +27,17 @@ export async function PUT(request: NextRequest) {
   }
 
   const body = await request.json();
+  const parsed = profileUpdateSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { success: false, error: parsed.error.issues[0]?.message || 'Invalid input' },
+      { status: 400 }
+    );
+  }
+
   const result = await cmsUserRequest(userId, '', {
     method: 'PUT',
-    body: JSON.stringify(body),
+    body: JSON.stringify(parsed.data),
   });
 
   if (!result.success) {

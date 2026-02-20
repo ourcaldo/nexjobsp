@@ -15,14 +15,20 @@ export async function cmsUserRequest<T = any>(
   const url = `${config.cms.endpoint}/api/v1/users/${clerkId}${path}`;
 
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), config.cms.timeout);
+
     const response = await fetch(url, {
       ...options,
+      signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${config.cms.token}`,
         ...(options.headers || {}),
       },
     });
+
+    clearTimeout(timeoutId);
 
     const json = await response.json();
 

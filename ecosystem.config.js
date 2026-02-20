@@ -5,6 +5,9 @@ module.exports = {
       script: 'node_modules/.bin/next',
       args: 'start',
       cwd: '/home/nexjob/nexjobsp',
+      // NOTE: Using fork mode with 1 instance. Next.js handles its own worker
+      // threads internally. For multi-core, change to exec_mode: 'cluster' and
+      // instances: 'max', but ensure no in-process state (e.g. rate-limit Map).
       instances: 1,
       exec_mode: 'fork',
       env: {

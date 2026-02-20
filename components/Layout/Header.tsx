@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useUser, SignOutButton } from '@clerk/nextjs';
 import { Menu, X, User, LogOut } from 'lucide-react';
@@ -158,10 +159,13 @@ const Header: React.FC = () => {
                       aria-label="Menu profil"
                     >
                       {user?.imageUrl ? (
-                        <img
+                        <Image
                           src={user.imageUrl}
                           alt={user.fullName || 'Profil'}
+                          width={32}
+                          height={32}
                           className="h-8 w-8 rounded-full object-cover border-2 border-gray-200 hover:border-primary-400 transition-colors"
+                          unoptimized
                         />
                       ) : (
                         <div className="h-8 w-8 rounded-full bg-primary-100 border-2 border-gray-200 hover:border-primary-400 flex items-center justify-center text-primary-700 text-xs font-bold transition-colors">
@@ -240,9 +244,9 @@ const Header: React.FC = () => {
           <div className="flex flex-col h-full">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <Link href="/" className="flex items-center" onClick={handleMobileNavClick} aria-label="Nexjob - Beranda">
+              <Link href="/" className="flex items-center" onClick={handleMobileNavClick} aria-label={`${config.site.name} - Beranda`}>
                 <span className="text-2xl font-extrabold tracking-tight text-gray-900">
-                  Nexjob
+                  {config.site.name}
                 </span>
               </Link>
               <button
@@ -322,7 +326,7 @@ const Header: React.FC = () => {
                     className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     {user?.imageUrl ? (
-                      <img src={user.imageUrl} alt="" className="h-8 w-8 rounded-full object-cover border border-gray-200" />
+                      <Image src={user.imageUrl} alt="" width={32} height={32} className="h-8 w-8 rounded-full object-cover border border-gray-200" unoptimized />
                     ) : (
                       <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 text-xs font-bold">
                         {(user?.fullName || 'U').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}

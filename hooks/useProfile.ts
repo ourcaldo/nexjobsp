@@ -70,21 +70,37 @@ export function useProfile() {
 
   // ─── Skills ───
   const updateSkills = useCallback(async (data: UpdateSkillsPayload) => {
-    // Delete all then batch-insert (simplest approach)
-    await apiFetch('/api/profile/skills', { method: 'DELETE' });
+    // Snapshot current skills for rollback in case POST fails
+    const previousSkills = profile?.skills ?? [];
+
+    const deleteResult = await apiFetch('/api/profile/skills', { method: 'DELETE' });
+    if (!deleteResult.success) {
+      return deleteResult;
+    }
+
     const result = await apiFetch('/api/profile/skills', {
       method: 'POST',
       body: JSON.stringify(data),
     });
-    if (result.success) {
-      // Refetch skills
-      const skillsResult = await apiFetch('/api/profile/skills');
-      if (skillsResult.success && skillsResult.data) {
-        setProfile((prev) => prev ? { ...prev, skills: skillsResult.data } : prev);
+
+    if (!result.success) {
+      // Rollback: re-insert previous skills
+      if (previousSkills.length > 0) {
+        await apiFetch('/api/profile/skills', {
+          method: 'POST',
+          body: JSON.stringify({ skills: previousSkills.map((s: any) => s.name || s) }),
+        });
       }
+      return result;
+    }
+
+    // Refetch skills from server
+    const skillsResult = await apiFetch('/api/profile/skills');
+    if (skillsResult.success && skillsResult.data) {
+      setProfile((prev) => prev ? { ...prev, skills: skillsResult.data } : prev);
     }
     return result;
-  }, []);
+  }, [profile?.skills]);
 
   // ─── Experience ───
   const addExperience = useCallback(async (data: ExperiencePayload) => {

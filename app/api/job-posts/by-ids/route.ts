@@ -1,24 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jobService } from '@/lib/services/JobService';
 import { logger } from '@/lib/logger';
+import { z } from 'zod';
 
 const log = logger.child('api:job-posts:by-ids');
 
+const jobIdsSchema = z.object({
+  jobIds: z.array(z.string().min(1)).min(1, 'At least one job ID is required').max(50, 'Maximum 50 IDs allowed'),
+});
+
 export async function POST(request: NextRequest) {
   try {
-    const { jobIds } = await request.json();
+    const body = await request.json();
+    const parsed = jobIdsSchema.safeParse(body);
 
-    if (!Array.isArray(jobIds) || jobIds.length === 0) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { success: false, error: 'Invalid job IDs provided' },
+        { success: false, error: parsed.error.issues[0]?.message || 'Invalid job IDs provided' },
         { status: 400 }
       );
     }
 
-    // Limit to 50 IDs max to prevent excessive upstream load
-    const limitedIds = jobIds.slice(0, 50);
+    const { jobIds } = parsed.data;
 
-    const jobs = await jobService.getJobsByIds(limitedIds);
+    const jobs = await jobService.getJobsByIds(jobIds);
 
     return NextResponse.json({
       success: true,

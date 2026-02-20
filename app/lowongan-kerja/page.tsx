@@ -11,6 +11,7 @@ import { logger } from '@/lib/logger';
 import { JOB_PAGE_SETTINGS } from '@/lib/constants/job-settings';
 import Link from 'next/link';
 
+// cache() deduplicates between generateMetadata() and the page component render
 const getJobsData = cache(async function getJobsData() {
   const settings = JOB_PAGE_SETTINGS;
   const currentUrl = getCurrentDomain();

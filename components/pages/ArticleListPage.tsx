@@ -1,3 +1,5 @@
+// TODO [M-10]: Split into a server component shell + client interactive islands
+// (pagination, category filter) to reduce JS bundle.
 'use client';
 
 import { useState } from 'react';

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import DOMPurify from 'dompurify';
 
 // Module-level cache: deduplicates fetch() across all AdDisplay instances per render cycle
 let adDataPromise: Promise<any> | null = null;
@@ -81,9 +82,15 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '' }) => {
   // Execute any scripts in the ad code
   useEffect(() => {
     if (adCode) {
+      // C-1: Sanitize ad HTML — allow ad-related tags but strip dangerous attributes
+      const sanitizedHtml = DOMPurify.sanitize(adCode, {
+        ADD_TAGS: ['ins', 'script'],
+        ADD_ATTR: ['data-ad-client', 'data-ad-slot', 'data-ad-format', 'data-full-width-responsive', 'async', 'crossorigin', 'data-cfasync'],
+        WHOLE_DOCUMENT: false,
+      });
       // Create a temporary container to parse the HTML
       const tempContainer = document.createElement('div');
-      tempContainer.innerHTML = adCode;
+      tempContainer.innerHTML = sanitizedHtml;
 
       // Handle external script tags with src attribute
       const externalScripts = tempContainer.querySelectorAll('script[src]');
@@ -165,16 +172,16 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '' }) => {
     );
   }
 
+  // C-1: Sanitize ad HTML for display — scripts handled separately via useEffect above
+  const sanitizedAdCode = adCode ? DOMPurify.sanitize(adCode, {
+    ADD_TAGS: ['ins'],
+    ADD_ATTR: ['data-ad-client', 'data-ad-slot', 'data-ad-format', 'data-full-width-responsive', 'data-cfasync'],
+    FORBID_TAGS: ['script', 'iframe', 'object', 'embed'],
+  }) : '';
+
   return (
     <div className={`advertisement-${position} ${className}`}>
       <h3 className="text-lg font-bold text-gray-900 mb-4">Advertisement</h3>
-      {/*
-        SECURITY NOTE: Ad code is rendered without sanitization because ad networks 
-        (Google AdSense, etc.) require script execution. Security is enforced by:
-        1. CMS access control - only authenticated admins can set ad code
-        2. HTTPS-only content delivery
-        3. Consider adding CSP headers in next.config.js to restrict script sources
-      */}
       <div
         className="ad-content-container max-w-full overflow-hidden"
         style={{
@@ -183,7 +190,7 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '' }) => {
           display: 'block',
           overflow: 'hidden'
         }}
-        dangerouslySetInnerHTML={{ __html: adCode }}
+        dangerouslySetInnerHTML={{ __html: sanitizedAdCode }}
       />
     </div>
   );

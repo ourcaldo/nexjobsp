@@ -1,5 +1,6 @@
 class BookmarkService {
   private storageKey = 'nexjob_bookmarks';
+  private static MAX_BOOKMARKS = 200;
 
   private get isClient(): boolean {
     return typeof window !== 'undefined';
@@ -21,6 +22,9 @@ class BookmarkService {
     try {
       const bookmarks = this.getBookmarks();
       if (!bookmarks.includes(jobId)) {
+        if (bookmarks.length >= BookmarkService.MAX_BOOKMARKS) {
+          bookmarks.shift(); // Remove oldest bookmark to make room
+        }
         bookmarks.push(jobId);
         localStorage.setItem(this.storageKey, JSON.stringify(bookmarks));
         this.notifyBookmarkChange();

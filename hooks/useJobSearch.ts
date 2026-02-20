@@ -8,27 +8,19 @@ import { useAnalytics } from '@/hooks/useAnalytics';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { useSearchHistory } from '@/hooks/useSearchHistory';
 import { features } from '@/lib/features';
+import {
+  SidebarFilters,
+  EMPTY_SIDEBAR_FILTERS,
+  buildSearchParams,
+  getFilterLabel as _getFilterLabel,
+  getProvinceName as _getProvinceName,
+  getProvinceOptions as _getProvinceOptions,
+  getFilterTypeLabel,
+  countActiveFilters,
+} from '@/lib/utils/jobSearchUtils';
 
-export interface SidebarFilters {
-  cities: string[];
-  jobTypes: string[];
-  experiences: string[];
-  educations: string[];
-  industries: string[];
-  workPolicies: string[];
-  categories: string[];
-  salaries: string[];
-}
+export type { SidebarFilters } from '@/lib/utils/jobSearchUtils';
 
-/**
- * @todo This hook is ~488 lines and handles too many responsibilities.
- * It should be refactored into smaller, composable hooks:
- *  - useJobFilters: filter state and URL sync
- *  - useJobPagination: page tracking, infinite scroll, load-more
- *  - useJobAnalytics: page-view and search tracking
- *  - useJobFetch: data fetching and caching logic
- * Refactoring deferred until adequate test coverage is in place.
- */
 interface UseJobSearchProps {
   initialCategory?: string;
   initialLocation?: string;
@@ -107,40 +99,6 @@ export function useJobSearch({
 
   // --- Helpers ---
 
-  const calculateSalaryRange = useCallback((selectedRanges: string[]): { min: string | null; max: string | null } => {
-    if (!selectedRanges || selectedRanges.length === 0) return { min: null, max: null };
-
-    const rangeMapping: Record<string, { min: number; max: number | null }> = {
-      '1-3': { min: 1_000_000, max: 3_000_000 },
-      '4-6': { min: 4_000_000, max: 6_000_000 },
-      '7-9': { min: 7_000_000, max: 9_000_000 },
-      '10+': { min: 10_000_000, max: null },
-    };
-
-    if (selectedRanges.length === 4) return { min: '1000000', max: null };
-
-    let minSalary = Number.MAX_SAFE_INTEGER;
-    let maxSalary: number | null = null;
-    let hasOpenRange = false;
-
-    selectedRanges.forEach((range) => {
-      const mapping = rangeMapping[range];
-      if (mapping) {
-        minSalary = Math.min(minSalary, mapping.min);
-        if (mapping.max === null) {
-          hasOpenRange = true;
-        } else if (!hasOpenRange) {
-          maxSalary = maxSalary === null ? mapping.max : Math.max(maxSalary, mapping.max);
-        }
-      }
-    });
-
-    return {
-      min: minSalary === Number.MAX_SAFE_INTEGER ? null : String(minSalary),
-      max: hasOpenRange ? null : maxSalary !== null ? String(maxSalary) : null,
-    };
-  }, []);
-
   const getCurrentFilters = useCallback(() => {
     const locationFilter = selectedProvince || (initialLocation && locationType === 'province' ? initialLocation : '');
     return { search: keyword, location: locationFilter, sortBy, ...sidebarFilters };
@@ -149,27 +107,6 @@ export function useJobSearch({
   const hasFiltersChanged = useCallback(
     (newFilters: any) => JSON.stringify(newFilters) !== JSON.stringify(currentFiltersRef.current),
     [],
-  );
-
-  const buildSearchParams = useCallback(
-    (filters: any, page: number) => {
-      const salaryRange = calculateSalaryRange(filters.salaries);
-      return new URLSearchParams({
-        page: String(page),
-        limit: '24',
-        ...(filters.search && { search: filters.search }),
-        ...(filters.location && { location: filters.location }),
-        ...(filters.cities?.length > 0 && { city: filters.cities[0] }),
-        ...(filters.categories?.length > 0 && { job_category: filters.categories[0] }),
-        ...(filters.jobTypes?.length > 0 && { employment_type: filters.jobTypes[0] }),
-        ...(filters.experiences?.length > 0 && { experience_level: filters.experiences[0] }),
-        ...(filters.educations?.length > 0 && { education_level: filters.educations[0] }),
-        ...(filters.workPolicies?.length > 0 && { work_policy: filters.workPolicies[0] }),
-        ...(salaryRange.min && { job_salary_min: salaryRange.min }),
-        ...(salaryRange.max && { job_salary_max: salaryRange.max }),
-      });
-    },
-    [calculateSalaryRange],
   );
 
   // --- Data fetching ---
@@ -243,7 +180,7 @@ export function useJobSearch({
     } finally {
       setLoading(false);
     }
-  }, [searchParams, selectedProvince, sidebarFilters, initialLocation, locationType, initialCategory, initialCityId, initialProvinceId, buildSearchParams, getCurrentFilters, hasServerData, serverFilterData]);
+  }, [searchParams, selectedProvince, sidebarFilters, initialLocation, locationType, initialCategory, initialCityId, initialProvinceId, getCurrentFilters, hasServerData, serverFilterData]);
 
   const searchWithFilters = useCallback(
     async (filters: any, isManualSearch = false) => {
@@ -286,7 +223,7 @@ export function useJobSearch({
         isSearchingRef.current = false;
       }
     },
-    [trackSearch, initialCategory, initialLocation, selectedProvince, router, buildSearchParams],
+    [trackSearch, initialCategory, initialLocation, selectedProvince, router],
   );
 
   const handleManualSearch = useCallback(async () => {
@@ -327,7 +264,7 @@ export function useJobSearch({
     } finally {
       setLoadingMore(false);
     }
-  }, [currentPage, hasMore, loadingMore, getCurrentFilters, buildSearchParams]);
+  }, [currentPage, hasMore, loadingMore, getCurrentFilters]);
 
   // --- Effects ---
 
@@ -401,7 +338,7 @@ export function useJobSearch({
       cities: [], jobTypes: [], experiences: [], educations: [], industries: [], workPolicies: [], categories: [], salaries: [],
     };
     setKeyword(''); setSelectedProvince('');
-    setSidebarFilters({ cities: [], jobTypes: [], experiences: [], educations: [], industries: [], workPolicies: [], categories: [], salaries: [] });
+    setSidebarFilters(EMPTY_SIDEBAR_FILTERS);
     setSortBy('newest');
     searchWithFilters(cleared, false);
     if (initialCategory || initialLocation || initialProvinceId || initialCityId) router.replace('/lowongan-kerja/');
@@ -428,53 +365,22 @@ export function useJobSearch({
 
   // --- Computed / memoized values ---
 
-  const getProvinceOptions = useMemo(() => {
-    if (!filterData) return [];
-    return filterData.provinces.map((p) => ({ value: p.id, label: p.name }));
-  }, [filterData]);
+  const provinceOptions = useMemo(() => _getProvinceOptions(filterData), [filterData]);
 
-  const getActiveFiltersCount = useMemo(() => {
-    let count = 0;
-    if (keyword) count++;
-    if ((initialLocation && locationType === 'province') || selectedProvince) count++;
-    Object.entries(sidebarFilters).forEach(([key, arr]) => {
-      if (key === 'categories' && initialCategory) count += arr.filter((v: string) => v !== initialCategory).length;
-      else if (key === 'cities' && initialLocation && locationType === 'city') count += arr.filter((v: string) => v !== initialLocation).length;
-      else count += arr.length;
-    });
-    return count;
-  }, [keyword, selectedProvince, sidebarFilters, initialLocation, locationType, initialCategory]);
+  const activeFiltersCount = useMemo(
+    () => countActiveFilters(keyword, selectedProvince, sidebarFilters, initialLocation, locationType, initialCategory),
+    [keyword, selectedProvince, sidebarFilters, initialLocation, locationType, initialCategory],
+  );
 
-  const getFilterLabel = useCallback((filterType: string, value: string): string => {
-    if (!filterData) return value;
-    switch (filterType) {
-      case 'cities': return filterData.regencies.find((r) => r.id === value)?.name ?? value;
-      case 'jobTypes': return filterData.employment_types.find((t) => t.id === value)?.name ?? value;
-      case 'experiences': {
-        const exp = filterData.experience_levels.find((e) => e.id === value);
-        if (!exp) return value;
-        return exp.years_max != null ? `${exp.years_min}-${exp.years_max} tahun` : `${exp.years_min}+ tahun`;
-      }
-      case 'educations': return filterData.education_levels.find((e) => e.id === value)?.name ?? value;
-      case 'categories': return filterData.categories.find((c) => c.id === value)?.name ?? value;
-      case 'workPolicies': return filterData.work_policy.find((w) => w.value === value)?.name ?? value;
-      case 'salaries': return ({ '1-3': '1-3 Juta', '4-6': '4-6 Juta', '7-9': '7-9 Juta', '10+': '10+ Juta' })[value] ?? value;
-      default: return value;
-    }
-  }, [filterData]);
+  const getFilterLabelFn = useCallback(
+    (filterType: string, value: string) => _getFilterLabel(filterData, filterType, value),
+    [filterData],
+  );
 
-  const getProvinceName = useCallback((provinceId: string): string => {
-    if (!filterData) return provinceId;
-    return filterData.provinces.find((p) => p.id === provinceId)?.name ?? provinceId;
-  }, [filterData]);
-
-  const getFilterTypeLabel = useCallback((filterType: string): string => {
-    const labels: Record<string, string> = {
-      cities: 'Kota', jobTypes: 'Tipe Pekerjaan', experiences: 'Pengalaman', educations: 'Pendidikan',
-      categories: 'Kategori', workPolicies: 'Kebijakan Kerja', salaries: 'Gaji', industries: 'Industri',
-    };
-    return labels[filterType] || filterType;
-  }, []);
+  const getProvinceNameFn = useCallback(
+    (provinceId: string) => _getProvinceName(filterData, provinceId),
+    [filterData],
+  );
 
   return {
     // State
@@ -491,8 +397,11 @@ export function useJobSearch({
     handleKeyPress, clearAllFilters, removeFilter,
 
     // Computed
-    getProvinceOptions, getActiveFiltersCount, getFilterLabel,
-    getProvinceName, getFilterTypeLabel,
+    getProvinceOptions: provinceOptions,
+    getActiveFiltersCount: activeFiltersCount,
+    getFilterLabel: getFilterLabelFn,
+    getProvinceName: getProvinceNameFn,
+    getFilterTypeLabel,
 
     // Infinite scroll
     setTarget,

@@ -6,6 +6,8 @@ import { checkRateLimit, getClientIp } from '@/lib/rate-limit';
 import { logger } from '@/lib/logger';
 
 // Routes that require authentication
+// IMPORTANT: Add new authenticated routes here (e.g. '/dashboard(.*)', '/settings(.*)').
+// All routes NOT listed here are public by default.
 const isProtectedRoute = createRouteMatcher([
   '/profil(.*)',
 ]);

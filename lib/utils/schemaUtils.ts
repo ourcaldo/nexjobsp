@@ -43,13 +43,8 @@ export const generateOrganizationSchema = () => {
       "contactType": "customer service",
       "availableLanguage": "Indonesian"
     },
-    // TODO: Social media URLs should come from config/CMS instead of being hardcoded
-    "sameAs": [
-      "https://www.facebook.com/nexjob",
-      "https://www.twitter.com/nexjob",
-      "https://www.instagram.com/nexjob",
-      "https://www.linkedin.com/company/nexjob"
-    ]
+    // L-2: Social media URLs removed — add verified URLs via config/CMS when accounts are created
+    "sameAs": []
   };
 };
 

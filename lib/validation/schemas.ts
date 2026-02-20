@@ -49,3 +49,40 @@ export const validateInput = <T>(schema: z.ZodSchema<T>, data: unknown) => {
     data: result.data,
   };
 };
+
+// ─── Profile mutation schemas (H-1) ───
+
+export const profileUpdateSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  bio: z.string().max(500).optional(),
+  phone: z.string().max(20).optional(),
+  avatar: urlSchema.optional(),
+  location: z.string().max(100).optional(),
+}).strict();
+
+export const experienceSchema = z.object({
+  company_name: z.string().min(1, 'Company name is required').max(200),
+  position: z.string().min(1, 'Position is required').max(200),
+  start_date: z.string().min(1, 'Start date is required'),
+  end_date: z.string().optional().nullable(),
+  is_current: z.boolean().optional(),
+  description: z.string().max(2000).optional(),
+});
+
+export const educationSchema = z.object({
+  institution: z.string().min(1, 'Institution is required').max(200),
+  degree: z.string().min(1, 'Degree is required').max(200),
+  field_of_study: z.string().max(200).optional(),
+  start_date: z.string().min(1, 'Start date is required'),
+  end_date: z.string().optional().nullable(),
+  is_current: z.boolean().optional(),
+  description: z.string().max(2000).optional(),
+});
+
+export const skillsSchema = z.object({
+  skills: z.array(z.string().min(1).max(100)).min(1, 'At least one skill is required').max(50),
+});
+
+export const savedJobSchema = z.object({
+  job_post_id: z.string().min(1, 'Job post ID is required'),
+});

@@ -1,3 +1,5 @@
+// TODO [M-9]: Split into a server component shell + client interactive islands
+// (search bar, filter sidebar, job list with infinite scroll) to reduce JS bundle.
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';

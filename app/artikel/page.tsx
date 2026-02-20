@@ -99,7 +99,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: seoTitle,
       description: seoDescription,
       type: 'website',
-      url: `${currentUrl}/artikel`,
+      url: `${currentUrl}/artikel/`,
       images: [`${currentUrl}/logo.png`],
     },
     twitter: {
@@ -109,7 +109,7 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [`${currentUrl}/logo.png`],
     },
     alternates: {
-      canonical: `${currentUrl}/artikel`,
+      canonical: `${currentUrl}/artikel/`,
     },
   };
 }

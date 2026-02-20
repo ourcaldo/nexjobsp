@@ -78,6 +78,14 @@ const PopupAd: React.FC = () => {
     const config = configRef.current;
     if (!config || !config.enabled || !config.url) return;
 
+    // M-16: Validate URL protocol to prevent javascript: or data: injection
+    try {
+      const parsed = new URL(config.url);
+      if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return;
+    } catch {
+      return; // Invalid URL
+    }
+
     const cookieKey = getPageCookieKey(pathname || '/');
     const cookieVal = getCookie(cookieKey);
     const currentExecCount = cookieVal ? parseInt(cookieVal, 10) : 0;

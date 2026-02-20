@@ -63,10 +63,11 @@ const Footer: React.FC = () => {
             <nav aria-label="Informasi perusahaan">
               <h3 className="text-xs font-semibold uppercase tracking-widest text-white/30 mb-4">Perusahaan</h3>
               <ul className="space-y-2.5">
-                <li><Link href="/tentang-kami" className="text-sm text-white/50 hover:text-white transition-colors">Tentang Kami</Link></li>
-                <li><Link href="/kontak" className="text-sm text-white/50 hover:text-white transition-colors">Kontak</Link></li>
-                <li><Link href="/kebijakan-privasi" className="text-sm text-white/50 hover:text-white transition-colors">Kebijakan Privasi</Link></li>
-                <li><Link href="/syarat-ketentuan" className="text-sm text-white/50 hover:text-white transition-colors">Syarat & Ketentuan</Link></li>
+                {/* TODO [L-4]: These routes resolve to CMS-served pages — create [slug]/page.tsx catch-all or static pages */}
+                <li><Link href="/tentang-kami" className="text-sm text-white/50 hover:text-white transition-colors" prefetch={false}>Tentang Kami</Link></li>
+                <li><Link href="/kontak" className="text-sm text-white/50 hover:text-white transition-colors" prefetch={false}>Kontak</Link></li>
+                <li><Link href="/kebijakan-privasi" className="text-sm text-white/50 hover:text-white transition-colors" prefetch={false}>Kebijakan Privasi</Link></li>
+                <li><Link href="/syarat-ketentuan" className="text-sm text-white/50 hover:text-white transition-colors" prefetch={false}>Syarat &amp; Ketentuan</Link></li>
               </ul>
             </nav>
           </div>

@@ -1,5 +1,5 @@
 // TODO: Add unit test coverage (see audit E-11)
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const SEARCH_HISTORY_KEY = 'job_search_history';
 const MAX_HISTORY_ITEMS = 5;
@@ -12,11 +12,7 @@ interface SearchHistoryItem {
 export const useSearchHistory = () => {
   const [history, setHistory] = useState<string[]>([]);
 
-  useEffect(() => {
-    loadHistory();
-  }, []);
-
-  const loadHistory = () => {
+  const loadHistory = useCallback(() => {
     try {
       const stored = localStorage.getItem(SEARCH_HISTORY_KEY);
       if (stored) {
@@ -24,10 +20,14 @@ export const useSearchHistory = () => {
         const queries = items.map(item => item.query);
         setHistory(queries);
       }
-    } catch (error) {
+    } catch {
       setHistory([]);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadHistory();
+  }, [loadHistory]);
 
   const addToHistory = (query: string) => {
     if (!query.trim()) return;

@@ -29,8 +29,10 @@ export interface Job {
   status?: string;
   seo_title?: string;
   seo_description?: string;
-  _id: { $oid: string };
-  id_obj: { $numberInt: string };
+  /** @internal MongoDB ObjectId — not used in frontend rendering */
+  _id?: { $oid: string };
+  /** @internal MongoDB numeric id — not used in frontend rendering */
+  id_obj?: { $numberInt: string };
 }
 
 export interface JobFilters {

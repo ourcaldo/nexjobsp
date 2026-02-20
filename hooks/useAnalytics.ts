@@ -22,6 +22,15 @@ interface PageViewData {
 export const useAnalytics = () => {
   const pathname = usePathname();
 
+  // Auto-track page views on route changes (L-6)
+  useEffect(() => {
+    if (!env.GA_ID || typeof window.gtag === 'undefined') return;
+    window.gtag('config', env.GA_ID!, {
+      page_title: document.title,
+      page_location: window.location.href,
+    });
+  }, [pathname]);
+
   // Track page views
   const trackPageView = (data?: Partial<PageViewData>) => {
     if (!env.GA_ID || typeof window.gtag === 'undefined') return;

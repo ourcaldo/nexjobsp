@@ -48,15 +48,18 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
+              // NOTE: 'unsafe-inline' required for GTM, Google Ads, and CMS-injected ad scripts.
+              // TODO: Migrate to nonce-based CSP when ad providers support it.
               `script-src 'self' 'unsafe-inline' ${process.env.NODE_ENV !== 'production' ? "'unsafe-eval'" : ''} https://www.googletagmanager.com https://www.google-analytics.com https://pagead2.googlesyndication.com https://adservice.google.com https://clerk.nexjob.tech https://challenges.cloudflare.com`.replace(/  +/g, ' '),
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "img-src 'self' data: blob: https: http:",
+              "img-src 'self' data: blob: https:",
               "font-src 'self' https://fonts.gstatic.com",
               "connect-src 'self' https://cms.nexjob.tech https://www.google-analytics.com https://analytics.google.com https://pagead2.googlesyndication.com https://clerk.nexjob.tech https://api.clerk.com",
               "frame-src 'self' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://challenges.cloudflare.com https://clerk.nexjob.tech",
               "worker-src 'self' blob:",
               "object-src 'none'",
               "base-uri 'self'",
+              "frame-ancestors 'self'",
               "form-action 'self'",
             ].join('; ')
           },
@@ -86,8 +89,15 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'cdn.nexjob.tech',
       },
+      {
+        protocol: 'https',
+        hostname: 'img.clerk.com',
+      },
     ],
     unoptimized: false,
+    // Tuned for mobile-heavy Indonesian user base
+    deviceSizes: [360, 414, 640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
   },
   async rewrites() {
     return [];

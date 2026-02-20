@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { cmsUserRequest } from '@/lib/services/cmsUserApi';
+import { savedJobSchema } from '@/lib/validation/schemas';
 
 // GET /api/profile/saved-jobs — List saved jobs with pagination
 export async function GET(request: NextRequest) {
@@ -9,8 +10,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   }
 
-  const page = request.nextUrl.searchParams.get('page') || '1';
-  const limit = request.nextUrl.searchParams.get('limit') || '20';
+  const page = String(Math.max(1, Math.min(1000, parseInt(request.nextUrl.searchParams.get('page') || '1') || 1)));
+  const limit = String(Math.max(1, Math.min(100, parseInt(request.nextUrl.searchParams.get('limit') || '20') || 20)));
 
   const result = await cmsUserRequest(userId, `/saved-jobs?page=${page}&limit=${limit}`);
   if (!result.success) {
@@ -28,9 +29,17 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
+  const parsed = savedJobSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { success: false, error: parsed.error.issues[0]?.message || 'Invalid input' },
+      { status: 400 }
+    );
+  }
+
   const result = await cmsUserRequest(userId, '/saved-jobs', {
     method: 'POST',
-    body: JSON.stringify(body),
+    body: JSON.stringify(parsed.data),
   });
 
   if (!result.success) {

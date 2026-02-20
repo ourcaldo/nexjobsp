@@ -22,14 +22,14 @@ export const config = {
       process.env.NEXT_PUBLIC_GA_ENABLE_DEV === 'true',
   },
 
-  // Storage (if needed)
-  storage: {
+  // Storage — only populated when STORAGE_ENDPOINT is set
+  storage: process.env.STORAGE_ENDPOINT ? {
     accessKey: process.env.STORAGE_ACCESS_KEY || '',
     secretKey: process.env.STORAGE_SECRET_KEY || '',
-    endpoint: process.env.STORAGE_ENDPOINT || '',
+    endpoint: process.env.STORAGE_ENDPOINT,
     region: process.env.STORAGE_REGION || 'ap-southeast-1',
     bucket: process.env.STORAGE_BUCKET || 'nexjob-uploads',
-  },
+  } : null,
 
   // Performance
   cache: {
@@ -66,6 +66,9 @@ export const validateConfig = () => {
 
   if (missing.length > 0) {
     const errorMessage = `Missing required environment variables: ${missing.join(', ')}`;
+    if (config.isProduction) {
+      throw new Error(errorMessage);
+    }
     console.warn(`Warning: ${errorMessage}`);
     return false;
   }
@@ -112,7 +115,9 @@ export const env = {
   IS_DEVELOPMENT: config.isDevelopment,
 } as const;
 
-// Validate in development on both client and server
-if (process.env.NODE_ENV === 'development') {
+// L-9: Validate config at module load time (server-side).
+// In production: throws on missing required vars (fail-fast).
+// In development: logs warnings and continues.
+if (typeof window === 'undefined') {
   validateConfig();
 }
