@@ -1,19 +1,12 @@
-// TODO [M-9]: Split into a server component shell + client interactive islands
-// (search bar, filter sidebar, job list with infinite scroll) to reduce JS bundle.
-'use client';
-
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import Link from 'next/link';
+import React from 'react';
 import Image from 'next/image';
-import { Search, ArrowRight, Briefcase, ChevronLeft, ChevronRight, FileText, UserCheck, Send } from 'lucide-react';
+import { ArrowRight, FileText, UserCheck, Send } from 'lucide-react';
 import { FilterData } from '@/lib/cms/interface';
-import SearchableSelect from '@/components/SearchableSelect';
-import { Job } from '@/types/job';
-import JobCard from '@/components/JobCard';
 import { sanitizeHTML } from '@/lib/utils/sanitize';
 import { getBlurDataURL } from '@/lib/utils/image';
-import { formatLocationName } from '@/lib/utils/textUtils';
-import { formatJobDate } from '@/lib/utils/date';
+import HomeSearchBox from './home/HomeSearchBox';
+import { HomeJobsProvider, HomeHeroCard, HomeJobGrid } from './home/HomeFeaturedJobs';
+import HomeCategoryScroll from './home/HomeCategoryScroll';
 
 interface HomePageProps {
   initialArticles: any[];
@@ -21,102 +14,18 @@ interface HomePageProps {
   settings: any;
 }
 
+/**
+ * Server component shell for the Homepage.
+ * Static sections (hero text, how-it-works, articles) render on the server with zero JS.
+ * Interactive parts are isolated client islands: HomeSearchBox, HomeHeroCard, HomeJobGrid, HomeCategoryScroll.
+ * HomeJobsProvider shares a single fetch between HomeHeroCard and HomeJobGrid via React Context.
+ */
 const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData, settings }) => {
-  const [searchKeyword, setSearchKeyword] = useState('');
-  const [selectedLocation, setSelectedLocation] = useState('');
-  const [articles] = useState<any[]>(initialArticles || []);
-  const [filterData, setFilterData] = useState<FilterData | null>(initialFilterData);
-  const [jobCategories, setJobCategories] = useState<string[]>([]);
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
-  const categoryScrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!filterData) {
-      loadFilterData();
-    } else if (filterData.categories) {
-      setJobCategories(filterData.categories.map(c => c.name).slice(0, 12));
-    }
-  }, [filterData]);
-
-  const loadFilterData = async () => {
-    try {
-      const response = await fetch('/api/job-posts/filters');
-      const result = await response.json();
-      if (result.success) {
-        setFilterData(result.data);
-        if (result.data.categories) {
-          setJobCategories(result.data.categories.map((c: any) => c.name).slice(0, 12));
-        }
-      }
-    } catch (error) {
-      console.error('Error loading filter data:', error);
-    }
-  };
-
-  const handleSearch = useCallback(() => {
-    const params = new URLSearchParams();
-    if (searchKeyword) params.set('search', searchKeyword);
-    if (selectedLocation) params.set('location', selectedLocation);
-    const url = `/lowongan-kerja/?${params.toString()}`;
-    window.open(url, '_blank');
-  }, [searchKeyword, selectedLocation]);
-
-  const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleSearch();
-  }, [handleSearch]);
-
-  const getProvinceOptions = useMemo(() => {
-    if (!filterData) return [];
-    return filterData.provinces.map(province => ({
-      value: province.name,
-      label: province.name
-    }));
-  }, [filterData]);
-
-  const getCategoryUrl = useCallback((category: string) => {
-    const slug = category
-      .toLowerCase()
-      .replace(/[&]/g, '')
-      .replace(/[^a-z0-9\s]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
-    return `/lowongan-kerja/kategori/${slug}/`;
-  }, []);
-
-  const getArticleUrl = useCallback((slug: string) => `/artikel/${slug}/`, []);
-
-  useEffect(() => {
-    const loadJobs = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch('/api/job-posts?page=1&limit=6');
-        const result = await response.json();
-        setJobs(result.success ? result.data.jobs : []);
-      } catch {
-        setJobs([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadJobs();
-  }, []);
-
-  const scrollCategories = (direction: 'left' | 'right') => {
-    if (categoryScrollRef.current) {
-      const amount = 260;
-      categoryScrollRef.current.scrollBy({
-        left: direction === 'left' ? -amount : amount,
-        behavior: 'smooth'
-      });
-    }
-  };
-
-  // Featured job for the hero card
-  const featuredJob = jobs[0];
+  const articles = initialArticles || [];
+  const getArticleUrl = (slug: string) => `/artikel/${slug}/`;
 
   return (
+    <HomeJobsProvider>
     <div className="min-h-screen bg-gray-50">
       {/* Organization/WebSite schemas are emitted globally in app/layout.tsx */}
 
@@ -142,141 +51,21 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
                   {settings.site_description || 'Platform pencarian kerja terpercaya di Indonesia'}
                 </p>
 
-                {/* Search Card */}
-                <div className="bg-white rounded-2xl shadow-xl p-5">
-                  <div className="space-y-3">
-                    <div className="relative">
-                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-                      <input
-                        type="text"
-                        placeholder="Posisi, skill, atau perusahaan..."
-                        value={searchKeyword}
-                        onChange={(e) => setSearchKeyword(e.target.value)}
-                        onKeyDown={handleKeyPress}
-                        className="w-full pl-12 pr-4 py-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none text-gray-900"
-                      />
-                    </div>
-                    <div className="flex gap-3">
-                      <div className="flex-1">
-                        <SearchableSelect
-                          options={getProvinceOptions}
-                          value={selectedLocation}
-                          onChange={setSelectedLocation}
-                          placeholder="Semua Provinsi"
-                        />
-                      </div>
-                      <button
-                        onClick={handleSearch}
-                        className="bg-primary-600 text-white px-7 py-3.5 rounded-xl hover:bg-primary-700 transition-colors font-semibold whitespace-nowrap"
-                      >
-                        Cari
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                {/* Client island: Search Card */}
+                <HomeSearchBox initialFilterData={initialFilterData} />
               </div>
 
-              {/* Right: Featured Job Preview Card */}
+              {/* Right: Featured Job Preview Card (client island) */}
               <div className="hidden lg:block">
-                {featuredJob ? (
-                  <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
-                    <p className="text-primary-300 text-xs font-medium uppercase tracking-wider mb-4">Lowongan Terbaru</p>
-                    {/* Main featured card */}
-                    <div className="bg-white rounded-xl p-5 mb-4">
-                      <div className="flex items-start gap-3 mb-3">
-                        <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <span className="text-white text-sm font-bold">{(featuredJob.company_name || 'P').charAt(0)}</span>
-                        </div>
-                        <div>
-                          <h3 className="text-gray-900 font-semibold line-clamp-1">{featuredJob.title}</h3>
-                          <p className="text-gray-500 text-sm">{featuredJob.company_name}</p>
-                        </div>
-                      </div>
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {featuredJob.tipe_pekerjaan && (
-                          <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">{featuredJob.tipe_pekerjaan}</span>
-                        )}
-                        {featuredJob.lokasi_provinsi && (
-                          <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                            {formatLocationName(featuredJob.lokasi_provinsi)}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-accent-600 font-medium">{featuredJob.gaji}</p>
-                    </div>
-                    {/* Two mini rows */}
-                    {jobs.slice(1, 3).map((job) => (
-                      <div key={job.id} className="flex items-center gap-3 py-3 border-t border-white/10">
-                        <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <span className="text-white text-xs font-bold">{(job.company_name || 'P').charAt(0)}</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-white text-sm font-medium truncate">{job.title}</p>
-                          <p className="text-primary-300 text-xs truncate">{job.company_name}</p>
-                        </div>
-                        <span className="text-primary-300 text-xs whitespace-nowrap">{formatJobDate(job.created_at)}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-12 flex items-center justify-center">
-                    <div className="text-center">
-                      <Briefcase className="h-12 w-12 text-primary-400 mx-auto mb-3" />
-                      <p className="text-primary-300">Memuat lowongan...</p>
-                    </div>
-                  </div>
-                )}
+                <HomeHeroCard />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ─── Categories: Horizontal Scrolling Pills ─── */}
-      <section className="bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Kategori Populer</h2>
-              <p className="text-gray-500 text-sm mt-1">Jelajahi lowongan berdasarkan bidang keahlian</p>
-            </div>
-            <div className="hidden sm:flex items-center gap-2">
-              <button
-                onClick={() => scrollCategories('left')}
-                className="p-2 rounded-full border border-gray-200 text-gray-400 hover:text-gray-700 hover:border-gray-300 transition-colors"
-                aria-label="Scroll left"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => scrollCategories('right')}
-                className="p-2 rounded-full border border-gray-200 text-gray-400 hover:text-gray-700 hover:border-gray-300 transition-colors"
-                aria-label="Scroll right"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-          <div
-            ref={categoryScrollRef}
-            className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-1 px-1"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            {jobCategories.map((category, index) => (
-              <a
-                key={index}
-                href={getCategoryUrl(category)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2.5 px-5 py-3 rounded-full border border-gray-200 bg-white text-gray-700 hover:bg-primary-800 hover:text-white hover:border-primary-800 transition-all duration-200 whitespace-nowrap flex-shrink-0 group"
-              >
-                <Briefcase className="h-4 w-4 text-gray-400 group-hover:text-white transition-colors" />
-                <span className="text-sm font-medium">{category}</span>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ─── Categories: Horizontal Scrolling Pills (client island) ─── */}
+      <HomeCategoryScroll initialFilterData={initialFilterData} />
 
       {/* ─── How It Works ─── */}
       <section className="bg-gray-50">
@@ -307,7 +96,7 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
         </div>
       </section>
 
-      {/* ─── Jobs: 3-Column Card Grid ─── */}
+      {/* ─── Jobs: 3-Column Card Grid (client island) ─── */}
       <section className="bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="flex items-end justify-between mb-10">
@@ -325,31 +114,7 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
             </a>
           </div>
 
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-gray-50 rounded-xl p-6 animate-pulse">
-                  <div className="flex gap-3 mb-4">
-                    <div className="w-10 h-10 bg-gray-200 rounded-lg" />
-                    <div className="flex-1">
-                      <div className="h-5 bg-gray-200 rounded w-3/4 mb-2" />
-                      <div className="h-4 bg-gray-200 rounded w-1/2" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-2/3" />
-                    <div className="h-4 bg-gray-200 rounded w-1/2" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {jobs.slice(0, 6).map((job) => (
-                <JobCard key={job.id} job={job} />
-              ))}
-            </div>
-          )}
+          <HomeJobGrid />
 
           {/* Mobile CTA */}
           <div className="sm:hidden text-center mt-8">
@@ -475,6 +240,7 @@ const HomePage: React.FC<HomePageProps> = ({ initialArticles, initialFilterData,
         </section>
       )}
     </div>
+    </HomeJobsProvider>
   );
 };
 
