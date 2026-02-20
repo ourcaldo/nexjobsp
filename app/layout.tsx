@@ -13,6 +13,11 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://nexjob.tech'),
+  title: {
+    default: 'Nexjob - Platform Lowongan Kerja di Indonesia',
+    template: '%s | Nexjob',
+  },
+  description: 'Platform pencarian kerja terpercaya di Indonesia. Temukan ribuan lowongan kerja terbaru dari perusahaan ternama.',
   icons: {
     icon: '/favicon.ico',
   },
