@@ -1,0 +1,21 @@
+{
+  "name": "Nexjob - Platform Lowongan Kerja",
+  "short_name": "Nexjob",
+  "description": "Platform pencarian kerja terpercaya di Indonesia. Temukan ribuan lowongan kerja terbaru dari perusahaan ternama.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f2b3c",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

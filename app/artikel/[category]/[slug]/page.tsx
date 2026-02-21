@@ -5,7 +5,7 @@ import { articleService } from '@/lib/services/ArticleService';
 import { getCurrentDomain, config } from '@/lib/config';
 import Header from '@/components/Layout/Header';
 import Footer from '@/components/Layout/Footer';
-import { generateArticleSchema, generateBreadcrumbSchema } from '@/lib/utils/schemaUtils';
+import { generateArticleSchema } from '@/lib/utils/schemaUtils';
 import { formatDistance } from 'date-fns';
 import { id } from 'date-fns/locale/id';
 import { Calendar, User, Tag, Folder } from 'lucide-react';
@@ -119,7 +119,7 @@ export async function generateMetadata({ params }: ArticleDetailPageProps): Prom
       title: article.seo_title || article.title,
       description: article.meta_description || article.excerpt,
       type: 'article',
-      url: `${currentUrl}/artikel/${categorySlug}/${article.slug}`,
+      url: `${currentUrl}/artikel/${categorySlug}/${article.slug}/`,
       images: article.featured_image ? [article.featured_image] : [],
       publishedTime: article.published_at || article.post_date || undefined,
       modifiedTime: article.updated_at ?? undefined,
@@ -134,7 +134,7 @@ export async function generateMetadata({ params }: ArticleDetailPageProps): Prom
       images: article.featured_image ? [article.featured_image] : [],
     },
     alternates: {
-      canonical: `${currentUrl}/artikel/${categorySlug}/${article.slug}`,
+      canonical: `${currentUrl}/artikel/${categorySlug}/${article.slug}/`,
     },
   };
 }
@@ -161,7 +161,6 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
   ];
 
   const articleSchema = generateArticleSchema(article);
-  const breadcrumbSchema = generateBreadcrumbSchema(breadcrumbItems);
 
 
 
@@ -171,12 +170,6 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(articleSchema)
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(breadcrumbSchema)
         }}
       />
       <Header />

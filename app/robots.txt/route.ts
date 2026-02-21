@@ -29,6 +29,9 @@ Sitemap: ${process.env.NEXT_PUBLIC_SITE_URL || 'https://nexjob.tech'}/sitemap.xm
 Disallow: /admin/
 Disallow: /dashboard/
 Disallow: /_next/
+Disallow: /profil/
+Disallow: /signin/
+Disallow: /signup/
 
 # Block internal search and tracking params, but allow pagination
 Disallow: /search?

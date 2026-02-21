@@ -326,7 +326,7 @@ const Header: React.FC = () => {
                     className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors"
                   >
                     {user?.imageUrl ? (
-                      <Image src={user.imageUrl} alt="" width={32} height={32} className="h-8 w-8 rounded-full object-cover border border-gray-200" unoptimized />
+                      <Image src={user.imageUrl} alt={user?.fullName || 'Profil'} width={32} height={32} className="h-8 w-8 rounded-full object-cover border border-gray-200" unoptimized />
                     ) : (
                       <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 text-xs font-bold">
                         {(user?.fullName || 'U').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}

@@ -98,11 +98,18 @@ export async function generateMetadata({ params }: JobCategoryPageProps): Promis
 }
 
 export async function generateStaticParams() {
-  // Generate paths for common job categories
-  const commonCategories = Object.keys(wpCategoryMappings);
-  return commonCategories.map(slug => ({
-    slug
-  }));
+  // Fetch categories from the API for pre-generation
+  try {
+    const filterData = await jobService.getFiltersData();
+    if (filterData?.categories?.length) {
+      return filterData.categories.map((cat: { slug: string }) => ({
+        slug: cat.slug,
+      }));
+    }
+  } catch {
+    // Fallback: no pre-generated pages, all rendered on-demand via dynamicParams
+  }
+  return [];
 }
 
 export const revalidate = 300; // ISR: Revalidate every 5 minutes

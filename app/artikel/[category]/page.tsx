@@ -101,7 +101,7 @@ export async function generateMetadata({ params }: ArticleCategoryPageProps): Pr
       title: `${category.name} - Artikel - ${config.site.name}`,
       description: category.description || `Baca artikel terbaru tentang ${category.name} dan tips karir terkait.`,
       type: 'website',
-      url: `${currentUrl}/artikel/${category.slug}`,
+      url: `${currentUrl}/artikel/${category.slug}/`,
       images: [`${currentUrl}/logo.png`],
     },
     twitter: {
@@ -111,7 +111,7 @@ export async function generateMetadata({ params }: ArticleCategoryPageProps): Pr
       images: [`${currentUrl}/logo.png`],
     },
     alternates: {
-      canonical: `${currentUrl}/artikel/${category.slug}`,
+      canonical: `${currentUrl}/artikel/${category.slug}/`,
     },
   };
 }

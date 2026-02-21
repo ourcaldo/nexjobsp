@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Profil Saya',
-  description: 'Kelola profil dan pengaturan akun Nexjob Anda.',
+  title: 'Daftar',
+  description: 'Buat akun Nexjob untuk mulai mencari lowongan kerja terbaik di Indonesia.',
   robots: { index: false, follow: false },
 };
 
-export default function ProfilLayout({
+export default function SignupLayout({
   children,
 }: {
   children: React.ReactNode;

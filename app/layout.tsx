@@ -19,7 +19,29 @@ export const metadata: Metadata = {
   },
   description: 'Platform pencarian kerja terpercaya di Indonesia. Temukan ribuan lowongan kerja terbaru dari perusahaan ternama.',
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
+  manifest: '/manifest.json',
+  openGraph: {
+    type: 'website',
+    locale: 'id_ID',
+    siteName: 'Nexjob',
+    images: [
+      {
+        url: '/og-home.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Nexjob - Platform Lowongan Kerja di Indonesia',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/og-home.jpg'],
   },
 };
 

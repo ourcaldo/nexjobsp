@@ -42,9 +42,7 @@ export const generateOrganizationSchema = () => {
       "@type": "ContactPoint",
       "contactType": "customer service",
       "availableLanguage": "Indonesian"
-    },
-    // L-2: Social media URLs removed — add verified URLs via config/CMS when accounts are created
-    "sameAs": []
+    }
   };
 };
 
