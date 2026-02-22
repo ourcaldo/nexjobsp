@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
+import { isAdExcludedPath } from '@/lib/utils/adUtils';
 
 // Cookie helpers
 function getCookie(name: string): string | null {
@@ -44,6 +45,9 @@ const PopupAd: React.FC = () => {
   // Check if current page should trigger popup based on load_settings
   const shouldTriggerOnPage = useCallback((loadSettings: string[]): boolean => {
     const currentPath = pathname || '';
+
+    // Never show ads on excluded pages (login, signup, profile)
+    if (isAdExcludedPath(currentPath)) return false;
 
     if (loadSettings.includes('all_pages')) return true;
 

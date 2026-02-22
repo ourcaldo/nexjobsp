@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import DOMPurify from 'dompurify';
+import { isAdExcludedPath } from '@/lib/utils/adUtils';
 
 // Module-level cache: deduplicates fetch() across all AdDisplay instances per render cycle
 let adDataPromise: Promise<any> | null = null;
@@ -20,10 +22,20 @@ interface AdDisplayProps {
 }
 
 const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '' }) => {
+  const pathname = usePathname();
   const [adCode, setAdCode] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
+  // Check if current page is excluded from ads (login, signup, profile)
+  const excluded = isAdExcludedPath(pathname || '');
+
   useEffect(() => {
+    // Skip fetching ads on excluded pages
+    if (excluded) {
+      setLoading(false);
+      return;
+    }
+
     const loadAd = async () => {
       try {
         // Normalize position to include _ad_code suffix if not already present
@@ -55,7 +67,7 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '' }) => {
     };
 
     loadAd();
-  }, [position]);
+  }, [position, excluded]);
 
   // Allowed ad network script domains (defense-in-depth)
   const ALLOWED_SCRIPT_DOMAINS = [
@@ -149,6 +161,9 @@ const AdDisplay: React.FC<AdDisplayProps> = ({ position, className = '' }) => {
       });
     }
   }, [adCode, position]);
+
+  // Never render ads on excluded pages
+  if (excluded) return null;
 
   if (loading) {
     return (
