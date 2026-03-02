@@ -269,15 +269,72 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, bre
               <div className="px-6 py-5 border-b border-gray-100">
                 <h2 className="text-xl font-bold text-gray-900">Deskripsi Pekerjaan</h2>
               </div>
-              <div className="px-6 py-5">
+              <div className="px-6 py-5 space-y-8">
                 <div
                   className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-li:text-gray-700"
                   dangerouslySetInnerHTML={{ __html: sanitizeHTML(parseJobContent(job.content)) }}
                 />
 
-                {/* Tags — inline after description */}
+                {/* Job Responsibilities */}
+                {job.job_responsibilities && (
+                  <div className="pt-6 border-t border-gray-100">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Tanggung Jawab</h3>
+                    <div
+                      className="prose prose-gray max-w-none prose-p:text-gray-700 prose-li:text-gray-700"
+                      dangerouslySetInnerHTML={{ __html: sanitizeHTML(parseJobContent(job.job_responsibilities)) }}
+                    />
+                  </div>
+                )}
+
+                {/* Job Requirements */}
+                {job.job_requirements && (
+                  <div className="pt-6 border-t border-gray-100">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Kualifikasi</h3>
+                    <div
+                      className="prose prose-gray max-w-none prose-p:text-gray-700 prose-li:text-gray-700"
+                      dangerouslySetInnerHTML={{ __html: sanitizeHTML(parseJobContent(job.job_requirements)) }}
+                    />
+                  </div>
+                )}
+
+                {/* Job Skills */}
+                {job.job_skills && job.job_skills.length > 0 && (
+                  <div className="pt-6 border-t border-gray-100">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Keahlian yang Dibutuhkan</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {job.job_skills.map((skill, index) => (
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-primary-50 text-primary-700 border border-primary-100"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Job Benefits */}
+                {job.job_benefits && job.job_benefits.length > 0 && (
+                  <div className="pt-6 border-t border-gray-100">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Benefit dan Keuntungan</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {job.job_benefits.map((benefit, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100"
+                        >
+                          <div className="w-1.5 h-1.5 rounded-full bg-gray-400 flex-shrink-0" />
+                          <span className="text-sm text-gray-700">{benefit}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tags */}
                 {tags.length > 0 && (
-                  <div className="mt-6 pt-5 border-t border-gray-100">
+                  <div className="pt-6 border-t border-gray-100">
                     <div className="flex flex-wrap gap-2">
                       {tags.map((tag, index) => (
                         <span
@@ -292,79 +349,6 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, bre
                 )}
               </div>
             </div>
-
-            {/* Job Responsibilities */}
-            {job.job_responsibilities && (
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                <div className="px-6 py-5 border-b border-gray-100">
-                  <h2 className="text-xl font-bold text-gray-900">Tanggung Jawab</h2>
-                </div>
-                <div className="px-6 py-5">
-                  <div
-                    className="prose prose-gray max-w-none prose-p:text-gray-700 prose-li:text-gray-700"
-                    dangerouslySetInnerHTML={{ __html: sanitizeHTML(parseJobContent(job.job_responsibilities)) }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Job Requirements */}
-            {job.job_requirements && (
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                <div className="px-6 py-5 border-b border-gray-100">
-                  <h2 className="text-xl font-bold text-gray-900">Kualifikasi</h2>
-                </div>
-                <div className="px-6 py-5">
-                  <div
-                    className="prose prose-gray max-w-none prose-p:text-gray-700 prose-li:text-gray-700"
-                    dangerouslySetInnerHTML={{ __html: sanitizeHTML(parseJobContent(job.job_requirements)) }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Job Skills */}
-            {job.job_skills && job.job_skills.length > 0 && (
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                <div className="px-6 py-5 border-b border-gray-100">
-                  <h2 className="text-xl font-bold text-gray-900">Keahlian yang Dibutuhkan</h2>
-                </div>
-                <div className="px-6 py-5">
-                  <div className="flex flex-wrap gap-2">
-                    {job.job_skills.map((skill, index) => (
-                      <span
-                        key={index}
-                        className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-primary-50 text-primary-700 border border-primary-100"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Job Benefits */}
-            {job.job_benefits && job.job_benefits.length > 0 && (
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                <div className="px-6 py-5 border-b border-gray-100">
-                  <h2 className="text-xl font-bold text-gray-900">Benefit dan Keuntungan</h2>
-                </div>
-                <div className="px-6 py-5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {job.job_benefits.map((benefit, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-gray-50 border border-gray-100"
-                      >
-                        <div className="w-1.5 h-1.5 rounded-full bg-gray-400 flex-shrink-0" />
-                        <span className="text-sm text-gray-700">{benefit}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Mobile Action Buttons */}
             <div className="sm:hidden flex gap-2">
