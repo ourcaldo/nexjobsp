@@ -136,9 +136,9 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, bre
       .replace(/<h2>/g, '<h2 class="text-xl font-semibold text-gray-900 mt-6 mb-3">')
       .replace(/<h3>/g, '<h3 class="text-lg font-semibold text-gray-800 mt-5 mb-2">')
       .replace(/<p>/g, '<p class="text-gray-700 leading-relaxed mb-4">')
-      .replace(/<ol>/g, '<ol class="list-decimal pl-5 space-y-3 mb-4 text-gray-700">')
-      .replace(/<ul>/g, '<ul class="pl-5 space-y-3 mb-4 text-gray-700" style="list-style-type: disc">')
-      .replace(/<li>/g, '<li class="leading-relaxed">');
+      .replace(/<ol>/g, '<ol class="list-decimal pl-6 space-y-3 mb-4 text-gray-700">')
+      .replace(/<ul>/g, '<ul class="list-disc pl-6 space-y-3 mb-4 text-gray-700">')
+      .replace(/<li>/g, '<li class="leading-relaxed pl-1">');
   };
 
   const getJobTags = (tagString: string) => {
