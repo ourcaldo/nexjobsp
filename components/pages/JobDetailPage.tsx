@@ -14,6 +14,10 @@ import {
   AlertTriangle,
   ChevronRight,
   Globe,
+  Star,
+  Gift,
+  ClipboardList,
+  ListChecks,
 } from 'lucide-react';
 import { Job } from '@/types/job';
 import { bookmarkService } from '@/lib/utils/bookmarks';
@@ -292,6 +296,83 @@ const JobDetailPage: React.FC<JobDetailPageProps> = ({ job, jobId, settings, bre
                 )}
               </div>
             </div>
+
+            {/* Job Responsibilities */}
+            {job.job_responsibilities && (
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-2">
+                  <ClipboardList className="h-5 w-5 text-primary-600" />
+                  <h2 className="text-xl font-bold text-gray-900">Tanggung Jawab</h2>
+                </div>
+                <div className="px-6 py-5">
+                  <div
+                    className="prose prose-gray max-w-none prose-li:text-gray-700"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHTML(parseJobContent(job.job_responsibilities)) }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Job Requirements */}
+            {job.job_requirements && (
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-2">
+                  <ListChecks className="h-5 w-5 text-primary-600" />
+                  <h2 className="text-xl font-bold text-gray-900">Kualifikasi</h2>
+                </div>
+                <div className="px-6 py-5">
+                  <div
+                    className="prose prose-gray max-w-none prose-li:text-gray-700"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHTML(parseJobContent(job.job_requirements)) }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Job Skills */}
+            {job.job_skills && job.job_skills.length > 0 && (
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-2">
+                  <Star className="h-5 w-5 text-primary-600" />
+                  <h2 className="text-xl font-bold text-gray-900">Keahlian yang Dibutuhkan</h2>
+                </div>
+                <div className="px-6 py-5">
+                  <div className="flex flex-wrap gap-2">
+                    {job.job_skills.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-primary-50 text-primary-700 border border-primary-100"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Job Benefits */}
+            {job.job_benefits && job.job_benefits.length > 0 && (
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                <div className="px-6 py-5 border-b border-gray-100 flex items-center gap-2">
+                  <Gift className="h-5 w-5 text-accent-600" />
+                  <h2 className="text-xl font-bold text-gray-900">Benefit dan Keuntungan</h2>
+                </div>
+                <div className="px-6 py-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {job.job_benefits.map((benefit, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-accent-50/50 border border-accent-100"
+                      >
+                        <div className="w-1.5 h-1.5 rounded-full bg-accent-500 flex-shrink-0" />
+                        <span className="text-sm text-gray-700">{benefit}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Mobile Action Buttons */}
             <div className="sm:hidden flex gap-2">

@@ -29,6 +29,11 @@ export interface Job {
   status?: string;
   seo_title?: string;
   seo_description?: string;
+  excerpt?: string;
+  job_skills?: string[];
+  job_benefits?: string[];
+  job_requirements?: string;
+  job_responsibilities?: string;
   /** @internal MongoDB ObjectId — not used in frontend rendering */
   _id?: { $oid: string };
   /** @internal MongoDB numeric id — not used in frontend rendering */

@@ -151,6 +151,12 @@ export function transformCMSJobToJob(cmsJob: CMSJobPost): Job {
     created_at: cmsJob.created_at,
     seo_title: cmsJob.seo_title || cmsJob.title,
     seo_description: cmsJob.meta_description || cmsJob.excerpt || '',
+    excerpt: cmsJob.excerpt || '',
+    job_skills: cmsJob.job_skills || [],
+    job_benefits: cmsJob.job_benefits || [],
+    job_requirements: cmsJob.job_requirements || '',
+    job_responsibilities: cmsJob.job_responsibilities || '',
+    deadline: cmsJob.job_deadline || undefined,
     _id: { $oid: cmsJob.id },
     id_obj: { $numberInt: cmsJob.id }
   };
